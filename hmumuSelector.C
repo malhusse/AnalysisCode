@@ -28,7 +28,7 @@
 #include "hmumuSelector.h"
 #include <TH2.h>
 #include <TStyle.h>
-//test
+
 void hmumuSelector::Begin(TTree * /*tree*/)
 {
    // The Begin() function is called at the start of the query.
