@@ -45,7 +45,8 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
    // The tree argument is deprecated (on PROOF 0 is passed).
 
    TString option = GetOption();
-
+    hmuon_pt = new TH1f("muon_pt", "muon pT", 500,0,500);
+    GetOutputList->Add(hmuon_pt);
 }
 
 Bool_t hmumuSelector::Process(Long64_t entry)
@@ -67,8 +68,10 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    // The return value is currently not used.
 
    fReader.SetLocalEntry(entry);
-   
-   return kTRUE;
+   for (float m_pt: Muons__pt){
+       hmuon_pt->Fill(m_pt);
+   }
+    return kTRUE;
 }
 
 void hmumuSelector::SlaveTerminate()
@@ -84,5 +87,6 @@ void hmumuSelector::Terminate()
    // The Terminate() function is the last function to be called during
    // a query. It always runs on the client, it can be used to present
    // the results graphically or save the results to file.
-
+    hmuon_pt->Print("test.png");
+    output->Write();
 }

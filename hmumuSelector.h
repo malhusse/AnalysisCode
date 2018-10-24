@@ -14,6 +14,7 @@
 #include <TTreeReader.h>
 #include <TTreeReaderValue.h>
 #include <TTreeReaderArray.h>
+#include <TH1.h>
 
 // Headers needed by this particular selector
 #include "HMuMu/Core/interface/Muon.h"
@@ -38,7 +39,7 @@ class hmumuSelector : public TSelector {
 public :
    TTreeReader     fReader;  //!the tree reader
    TTree          *fChain = 0;   //!pointer to the analyzed TTree or TChain
-   TH1 hmuon_pt = 0;
+   TH1 *hmuon_pt = 0;
    TFile output("processed_ntuples.root","recreate");
    
    // Readers to access the data (delete the ones you do not need).
