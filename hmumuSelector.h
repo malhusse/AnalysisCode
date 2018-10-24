@@ -40,7 +40,6 @@ public :
    TTreeReader     fReader;  //!the tree reader
    TTree          *fChain = 0;   //!pointer to the analyzed TTree or TChain
    TH1 *hmuon_pt = 0;
-   TFile output("processed_ntuples.root","recreate");
    
    // Readers to access the data (delete the ones you do not need).
    TTreeReaderArray<Int_t> Muons__charge = {fReader, "Muons._charge"};

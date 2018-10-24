@@ -88,5 +88,6 @@ void hmumuSelector::Terminate()
    // a query. It always runs on the client, it can be used to present
    // the results graphically or save the results to file.
     hmuon_pt->Print("test.png");
+    TFile output("processed_ntuples.root","recreate");
     output->Write();
 }
