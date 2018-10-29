@@ -78,6 +78,7 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
    h_met_pt = new TH1F("met_pt","MET p_{T};p_{T}  (GeV);Events / bin",250,0,500);
    h_met_eta = new TH1F("met_eta","MET \\eta;\\eta;Events / bin",94,-4.7,4.7);
    h_met_phi = new TH1F("met_phi","MET \\phi;\\phi;Events / bin",36,-3.6,3.6);
+   h_num_vertices = new TH1F("num_vertices","Number of Vertices;NPV;Events / bin",25,0,25);
 
    GetOutputList()->Add(h_muon_pt);
    GetOutputList()->Add(h_muon_corrpt);
@@ -110,7 +111,7 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
    GetOutputList()->Add(h_met_pt);
    GetOutputList()->Add(h_met_eta);
    GetOutputList()->Add(h_met_phi);
-
+   GetOutputList()->Add(h_num_vertices);
 }
 
 Bool_t hmumuSelector::Process(Long64_t entry)
@@ -132,6 +133,12 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    // The return value is currently not used.
 
    fReader.SetLocalEntry(entry);
+
+   int nVert = Vertices__z.GetSize();
+   if (!passVertex(nVert, Vertices__z,Vertices__ndf))
+      return kFalse;
+   h_num_vertices->Fill(nVert);
+
    for (int iMuon = 0, nMuons = Muons__charge.GetSize(); iMuon < nMuons; ++iMuon){
       h_muon_pt->Fill(Muons__pt[iMuon]);
       h_muon_corrPT->Fill(Muons__corrPT[iMuon]);
@@ -187,20 +194,20 @@ void hmumuSelector::Terminate()
 
 
 // pass vertices 
-// bool passVertex(Vertices *v)
-// {
-// 	if (v->size() == 0)
-// 		return false;
-// 	for (Vertices::const_iterator it = v->begin();
-// 		 it != v->end(); ++it)
-// 	{
-// 		if (TMath::Abs(it->_z) < 24 &&
-// 			it->_ndf > 4)
-// 			return true;
-// 	}
+bool hmumuSelector::passVertex(int nVert, TTreeReaderArray<Float_t> vert_z, TTreeReaderArray<Float_t> vert_ndf)
+{
+	if (nVert == 0)
+		return false;
 
-// 	return false;
-// }
+   for (int iVert = 0; iVert < nVert; ++iVert)
+	{
+		if (TMath::Abs(vert_z[iVert]) < 24 &&
+			vert_ndf[iVert] > 4)
+			return true;
+	}
+
+	return false;
+}
 
 
 // bool passMuon(Muon const &m)
