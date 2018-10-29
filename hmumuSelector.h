@@ -66,7 +66,7 @@ public :
    TH1   *h_met_phi = 0;
 
    TH1   *h_num_vertices = 0;
-   
+
    // Readers to access the data (delete the ones you do not need).
    TTreeReaderArray<Int_t> Muons__charge = {fReader, "Muons._charge"};
    TTreeReaderArray<Float_t> Muons__pt = {fReader, "Muons._pt"};
@@ -210,15 +210,15 @@ public :
    virtual TList  *GetOutputList() const { return fOutput; }
    virtual void    SlaveTerminate();
    virtual void    Terminate();
-   bool passVertex();
-   bool passMuon();
-   bool passMuonHLT();
-   bool passMuons();
-   float jetMuondR();
-   bool passElectronVeto();
-   bool passBTaggedJetVeto();
-   bool passTightJetID();
-   bool passLoosePUID();
+   bool passVertex(int nVert, TTreeReaderArray<Float_t> vert_z, TTreeReaderArray<Float_t> vert_ndf);
+   // bool passMuon();
+   // bool passMuonHLT();
+   // bool passMuons();
+   // float jetMuondR();
+   // bool passElectronVeto();
+   // bool passBTaggedJetVeto();
+   // bool passTightJetID();
+   // bool passLoosePUID();
 
    ClassDef(hmumuSelector,0);
 
