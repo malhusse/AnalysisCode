@@ -15,16 +15,8 @@
 #include <TTreeReaderValue.h>
 #include <TTreeReaderArray.h>
 #include <TH1.h>
-
-// Headers needed by this particular selector
-//#include "interface/Muon.h"
+#include <TLorentzVector.h>
 #include <vector>
-//#include "interface/Jet.h"
-//#include "interface/Vertex.h"
-//#include "interface/Event.h"
-//#include "interface/MET.h"
-//#include "interface/MetaHiggs.h"
-//#include "interface/Electron.h"
 
 
 
@@ -32,10 +24,46 @@ class hmumuSelector : public TSelector {
 public :
    TTreeReader     fReader;  //!the tree reader
    TTree          *fChain = 0;   //!pointer to the analyzed TTree or TChain
-   TH1 *h_leadMuon_pt = 0;
-   TH1 *h_subMuon_pt = 0;
-   TH1 *h_muon_corrPT = 0;
-    TH1 *h_muon_pt = 0;
+
+   TH1   *h_muon_pt = 0;
+   TH1   *h_muon_corrpt = 0;
+
+   TH1   *h_leadMuon_pt = 0;
+   TH1   *h_leadMuon_phi = 0;
+   TH1   *h_leadMuon_eta = 0;
+
+   TH1   *h_subMuon_pt = 0;
+   TH1   *h_subMuon_phi = 0;
+   TH1   *h_subMuon_eta = 0;
+
+   TH1   *h_dimuon_mass = 0;
+   TH1   *h_dimuon_pt = 0;
+   TH1   *h_dimuon_eta = 0;
+   TH1   *h_dimuon_phi = 0;
+   TH1   *h_dimuon_deta = 0;
+   TH1   *h_dimuon_dphi = 0;
+
+   TH1   *h_num_jets = 0;
+   TH1   *h_num_bjets = 0;
+
+   TH1   *h_leadjet_pt = 0;
+   TH1   *h_leadjet_eta = 0;
+   TH1   *h_leadjet_phi = 0;
+
+   TH1   *h_subjet_pt = 0;
+   TH1   *h_subjet_eta = 0;
+   TH1   *h_subjet_phi = 0;
+
+   TH1   *h_dijet_pt = 0;
+   TH1   *h_dijet_mass = 0;
+   TH1   *h_dijet_eta = 0;
+   TH1   *h_dijet_phi = 0;
+   TH1   *h_dijet_deta = 0;
+   TH1   *h_dijet_dphi = 0;
+
+   TH1   *h_met_pt = 0;
+   TH1   *h_met_eta = 0;
+   TH1   *h_met_phi = 0;
 
    // Readers to access the data (delete the ones you do not need).
    TTreeReaderArray<Int_t> Muons__charge = {fReader, "Muons._charge"};
