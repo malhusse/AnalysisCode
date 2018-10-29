@@ -137,12 +137,24 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    int nVert = Vertices__z.GetSize();
    if (!passVertex(nVert, Vertices__z,Vertices__ndf))
       return kFALSE;
-   h_num_vertices->Fill(nVert);
+   if(!(*_hasHLTFired[0] || *_hasHLTFired[1]))
+      return kFALSE;
+   if(!*_passedMetFilters)
+      return kFALSE;
 
-   for (int iMuon = 0, nMuons = Muons__charge.GetSize(); iMuon < nMuons; ++iMuon){
-      h_muon_pt->Fill(Muons__pt[iMuon]);
-      h_muon_corrpt->Fill(Muons__corrPT[iMuon]);
-   }
+
+   if (!passMuon(muon1,muon2))
+      return kFALSE;
+
+   // only two muons...
+   // for (int iMuon = 0, nMuons = Muons__charge.GetSize(); iMuon < nMuons; ++iMuon){
+
+   h_num_vertices->Fill(nVert);
+   h_muon_pt->Fill(Muons__pt[0]);
+   h_muon_pt->Fill(Muons__pt[1]);
+   h_muon_corrpt->Fill(Muons__corrPT[0]);
+   h_muon_corrpt->Fill(Muons__corrPT[1]);
+   // }
 
 
    int lead_muon_id = 0;

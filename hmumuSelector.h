@@ -68,6 +68,7 @@ public :
    TH1   *h_num_vertices = 0;
 
    // Readers to access the data (delete the ones you do not need).
+   TTreeReaderArray<Muon> 
    TTreeReaderArray<Int_t> Muons__charge = {fReader, "Muons._charge"};
    TTreeReaderArray<Float_t> Muons__pt = {fReader, "Muons._pt"};
    TTreeReaderArray<Float_t> Muons__corrPT = {fReader, "Muons._corrPT"};
@@ -75,6 +76,8 @@ public :
    TTreeReaderArray<Float_t> Muons__eta = {fReader, "Muons._eta"};
    TTreeReaderArray<Float_t> Muons__phi = {fReader, "Muons._phi"};
    TTreeReaderArray<Bool_t> Muons__isTracker = {fReader, "Muons._isTracker"};
+   TTreeReaderArray<Bool_t> Muons__isGlobal = {fReader, "Muons._isGlobal"};
+   // TTreeReaderArray<vector<bool>>
    TTreeReaderArray<Int_t> Muons__track__charge = {fReader, "Muons._track._charge"};
    TTreeReaderArray<Float_t> Muons__track__pt = {fReader, "Muons._track._pt"};
    TTreeReaderArray<Float_t> Muons__track__pterr = {fReader, "Muons._track._pterr"};
@@ -194,6 +197,15 @@ public :
    TTreeReaderArray<Bool_t> Electrons__isPF = {fReader, "Electrons._isPF"};
    TTreeReaderArray<Bool_t> Electrons__convVeto = {fReader, "Electrons._convVeto"};
 
+   double _muonMatchedPt = 30.;
+   double _muonMatchedEta = 2.4;
+   double _muonPt = 20.;
+   double _muonEta = 2.4;
+   double _muonIso = 0.25;
+   double _dimuonMinMass = 80.;
+   double _dimuonMaxMass = 85.;
+   double _JetPt = 30.;
+   double _JetEta = 4.7;
 
    hmumuSelector(TTree * /*tree*/ =0) { }
    virtual ~hmumuSelector() { }
@@ -211,9 +223,9 @@ public :
    virtual void    SlaveTerminate();
    virtual void    Terminate();
    bool passVertex(int nVert, TTreeReaderArray<Float_t> vert_z, TTreeReaderArray<Float_t> vert_ndf);
-   // bool passMuon();
-   // bool passMuonHLT();
-   // bool passMuons();
+   bool passMuon();
+   bool passMuonHLT();
+   bool passMuons();
    // float jetMuondR();
    // bool passElectronVeto();
    // bool passBTaggedJetVeto();
