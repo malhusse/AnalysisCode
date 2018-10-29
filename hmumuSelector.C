@@ -136,12 +136,12 @@ Bool_t hmumuSelector::Process(Long64_t entry)
 
    int nVert = Vertices__z.GetSize();
    if (!passVertex(nVert, Vertices__z,Vertices__ndf))
-      return kFalse;
+      return kFALSE;
    h_num_vertices->Fill(nVert);
 
    for (int iMuon = 0, nMuons = Muons__charge.GetSize(); iMuon < nMuons; ++iMuon){
       h_muon_pt->Fill(Muons__pt[iMuon]);
-      h_muon_corrPT->Fill(Muons__corrPT[iMuon]);
+      h_muon_corrpt->Fill(Muons__corrPT[iMuon]);
    }
 
 
