@@ -28,6 +28,7 @@
 #include "hmumuSelector.h"
 #include <TH2.h>
 #include <TStyle.h>
+#include <TList.h>
 
 void hmumuSelector::Begin(TTree * /*tree*/)
 {
@@ -45,8 +46,17 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
    // The tree argument is deprecated (on PROOF 0 is passed).
 
    TString option = GetOption();
-    hmuon_pt = new TH1f("muon_pt", "muon pT", 500,0,500);
-    GetOutputList->Add(hmuon_pt);
+   //   outputTree = new TTree("processedNtuples","processedNtuplesTree");
+    h_muon_pt = new TH1F("muon_pt", "Muon pT", 500,0,500);
+    h_muon_corrPT = new TH1F("muon_corrPT", "Muon corrected pT", 500,0,500);
+    h_leadMuon_pt = new TH1F("lead_muon_pt", "Leading Muon pT", 500,0,500);
+    h_subMuon_pt = new TH1F("sub_muon_pt", "Subleading Muon pT", 500, 0,500);
+
+    GetOutputList()->Add(h_muon_pt);
+    GetOutputList()->Add(h_muon_corrPT);
+    GetOutputList()->Add(h_leadMuon_pt);
+    GetOutputList()->Add(h_subMuon_pt);
+
 }
 
 Bool_t hmumuSelector::Process(Long64_t entry)
@@ -67,10 +77,24 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    //
    // The return value is currently not used.
 
-   fReader.SetLocalEntry(entry);
-   for (float m_pt: Muons__pt){
-       hmuon_pt->Fill(m_pt);
-   }
+    fReader.SetLocalEntry(entry);
+    for (int iMuon = 0, nMuons = Muons__charge.GetSize(); iMuon < nMuons; ++iMuon){
+       h_muon_pt->Fill(Muons__pt[iMuon]);
+       h_muon_corrPT->Fill(Muons__corrPT[iMuon]);
+    }
+
+
+    int lead_muon_id = 0;
+    int sub_muon_id = 1;
+
+    if (Muons__corrPT[1] > Muons__corrPT[0]){
+        lead_muon_id = 1;
+        sub_muon_id = 0;
+    }
+
+    h_leadMuon_pt->Fill(Muons__corrPT[lead_muon_id]);
+    h_subMuon_pt->Fill(Muons__corrPT[sub_muon_id]);
+
     return kTRUE;
 }
 
@@ -87,7 +111,20 @@ void hmumuSelector::Terminate()
    // The Terminate() function is the last function to be called during
    // a query. It always runs on the client, it can be used to present
    // the results graphically or save the results to file.
-    hmuon_pt->Print("test.png");
-    TFile output("processed_ntuples.root","recreate");
-    output->Write();
+  //hmuon_pt = dynamic_cast<TH1D*>(fOutput->FindObject(Form("muon_pt")));
+  //TFile fout("test.root","recreate");
+  //hmuon_pt->Write();
+  //fout.Close();
+  // TFile output("processed_ntuples.root","recreate");
+  //output.Write();
+  TList *output_list = (TList*)GetOutputList();
+  TFile fout("processed.root","recreate");
+  //TIter iter(output_list);
+  //std::for_each(iter.Begin(), TIter::End(), writeObj());
+  for(const auto&& obj: *output_list){
+    if(obj->IsA()->InheritsFrom("TH1"))
+      obj->Write();
+  }
+  fout.Close();
 }
+

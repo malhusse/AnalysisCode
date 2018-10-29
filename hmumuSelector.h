@@ -17,21 +17,14 @@
 #include <TH1.h>
 
 // Headers needed by this particular selector
-#include "HMuMu/Core/interface/Muon.h"
-
+//#include "interface/Muon.h"
 #include <vector>
-
-#include "HMuMu/Core/interface/Jet.h"
-
-#include "HMuMu/Core/interface/Vertex.h"
-
-#include "HMuMu/Core/interface/Event.h"
-
-#include "HMuMu/Core/interface/MET.h"
-
-#include "HMuMu/Core/interface/MetaHiggs.h"
-
-#include "HMuMu/Core/interface/Electron.h"
+//#include "interface/Jet.h"
+//#include "interface/Vertex.h"
+//#include "interface/Event.h"
+//#include "interface/MET.h"
+//#include "interface/MetaHiggs.h"
+//#include "interface/Electron.h"
 
 
 
@@ -39,11 +32,15 @@ class hmumuSelector : public TSelector {
 public :
    TTreeReader     fReader;  //!the tree reader
    TTree          *fChain = 0;   //!pointer to the analyzed TTree or TChain
-   TH1 *hmuon_pt = 0;
-   
+   TH1 *h_leadMuon_pt = 0;
+   TH1 *h_subMuon_pt = 0;
+   TH1 *h_muon_corrPT = 0;
+    TH1 *h_muon_pt = 0;
+
    // Readers to access the data (delete the ones you do not need).
    TTreeReaderArray<Int_t> Muons__charge = {fReader, "Muons._charge"};
    TTreeReaderArray<Float_t> Muons__pt = {fReader, "Muons._pt"};
+   TTreeReaderArray<Float_t> Muons__corrPT = {fReader, "Muons._corrPT"};
    TTreeReaderArray<Float_t> Muons__pterr = {fReader, "Muons._pterr"};
    TTreeReaderArray<Float_t> Muons__eta = {fReader, "Muons._eta"};
    TTreeReaderArray<Float_t> Muons__phi = {fReader, "Muons._phi"};
