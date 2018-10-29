@@ -18,7 +18,13 @@
 #include <TLorentzVector.h>
 #include <vector>
 
-
+#include "interface/Muon.h"
+#include "interface/Jet.h"
+#include "interface/Vertex.h"
+#include "interface/Event.h"
+#include "interface/MET.h"
+#include "interface/MetaHiggs.h"
+#include "interface/Electron.h"
 
 class hmumuSelector : public TSelector {
 public :
@@ -68,21 +74,22 @@ public :
    TH1   *h_num_vertices = 0;
 
    // Readers to access the data (delete the ones you do not need).
-   TTreeReaderArray<Muon> 
-   TTreeReaderArray<Int_t> Muons__charge = {fReader, "Muons._charge"};
-   TTreeReaderArray<Float_t> Muons__pt = {fReader, "Muons._pt"};
-   TTreeReaderArray<Float_t> Muons__corrPT = {fReader, "Muons._corrPT"};
-   TTreeReaderArray<Float_t> Muons__pterr = {fReader, "Muons._pterr"};
-   TTreeReaderArray<Float_t> Muons__eta = {fReader, "Muons._eta"};
-   TTreeReaderArray<Float_t> Muons__phi = {fReader, "Muons._phi"};
-   TTreeReaderArray<Bool_t> Muons__isTracker = {fReader, "Muons._isTracker"};
-   TTreeReaderArray<Bool_t> Muons__isGlobal = {fReader, "Muons._isGlobal"};
+   //   TTreeReaderArray<Muon> 
+   TTreeReaderArray<analysis::core::Muon> Muons = {fReader,"Muons"};
+   //   TTreeReaderArray<Int_t> Muons__charge = {fReader, "Muons._charge"};
+   //TTreeReaderArray<Float_t> Muons__pt = {fReader, "Muons._pt"};
+   // TTreeReaderArray<Float_t> Muons__corrPT = {fReader, "Muons._corrPT"};
+   // TTreeReaderArray<Float_t> Muons__pterr = {fReader, "Muons._pterr"};
+   //TTreeReaderArray<Float_t> Muons__eta = {fReader, "Muons._eta"};
+   //TTreeReaderArray<Float_t> Muons__phi = {fReader, "Muons._phi"};
+   //TTreeReaderArray<Bool_t> Muons__isTracker = {fReader, "Muons._isTracker"};
+   //TTreeReaderArray<Bool_t> Muons__isGlobal = {fReader, "Muons._isGlobal"};
    // TTreeReaderArray<vector<bool>>
-   TTreeReaderArray<Int_t> Muons__track__charge = {fReader, "Muons._track._charge"};
-   TTreeReaderArray<Float_t> Muons__track__pt = {fReader, "Muons._track._pt"};
-   TTreeReaderArray<Float_t> Muons__track__pterr = {fReader, "Muons._track._pterr"};
-   TTreeReaderArray<Float_t> Muons__track__eta = {fReader, "Muons._track._eta"};
-   TTreeReaderArray<Float_t> Muons__track__phi = {fReader, "Muons._track._phi"};
+   //TTreeReaderArray<Int_t> Muons__track__charge = {fReader, "Muons._track._charge"};
+   //TTreeReaderArray<Float_t> Muons__track__pt = {fReader, "Muons._track._pt"};
+   //TTreeReaderArray<Float_t> Muons__track__pterr = {fReader, "Muons._track._pterr"};
+   //TTreeReaderArray<Float_t> Muons__track__eta = {fReader, "Muons._track._eta"};
+   //TTreeReaderArray<Float_t> Muons__track__phi = {fReader, "Muons._track._phi"};
    TTreeReaderArray<Float_t> Jets__px = {fReader, "Jets._px"};
    TTreeReaderArray<Float_t> Jets__py = {fReader, "Jets._py"};
    TTreeReaderArray<Float_t> Jets__pz = {fReader, "Jets._pz"};

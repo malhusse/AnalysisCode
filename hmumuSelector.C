@@ -137,36 +137,36 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    int nVert = Vertices__z.GetSize();
    if (!passVertex(nVert, Vertices__z,Vertices__ndf))
       return kFALSE;
-   if(!(*_hasHLTFired[0] || *_hasHLTFired[1]))
-      return kFALSE;
+   //   if(!(*_hasHLTFired[0] || *_hasHLTFired[1]))
+   // return kFALSE;
    if(!*_passedMetFilters)
       return kFALSE;
 
 
-   if (!passMuon(muon1,muon2))
-      return kFALSE;
+   //   if (!passMuon(muon1,muon2))
+   // return kFALSE;
 
    // only two muons...
    // for (int iMuon = 0, nMuons = Muons__charge.GetSize(); iMuon < nMuons; ++iMuon){
 
    h_num_vertices->Fill(nVert);
-   h_muon_pt->Fill(Muons__pt[0]);
-   h_muon_pt->Fill(Muons__pt[1]);
-   h_muon_corrpt->Fill(Muons__corrPT[0]);
-   h_muon_corrpt->Fill(Muons__corrPT[1]);
+   h_muon_pt->Fill(Muons[0]._pt);
+   h_muon_pt->Fill(Muons[1]._pt);
+   h_muon_corrpt->Fill(Muons[0]._corrPT);
+   h_muon_corrpt->Fill(Muons[1]._corrPT);
    // }
 
 
    int lead_muon_id = 0;
    int sub_muon_id = 1;
 
-   if (Muons__corrPT[1] > Muons__corrPT[0]){
+   if (Muons[1]._corrPT > Muons[0]._corrPT){
       lead_muon_id = 1;
       sub_muon_id = 0;
    }
 
-   h_leadMuon_pt->Fill(Muons__corrPT[lead_muon_id]);
-   h_subMuon_pt->Fill(Muons__corrPT[sub_muon_id]);
+   h_leadMuon_pt->Fill(Muons[lead_muon_id]._corrPT);
+   h_subMuon_pt->Fill(Muons[sub_muon_id]._corrPT);
 
    return kTRUE;
 }
