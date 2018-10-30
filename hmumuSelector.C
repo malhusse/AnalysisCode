@@ -221,7 +221,7 @@ bool hmumuSelector::passVertex(TTreeReaderArray<analysis::core::Vertex> vertexCo
 	if (vertexCol.GetSize() == 0)
 		return false;
 
-   for (int iVert = 0; iVert < vertexCol.GetSize(); ++iVert)
+	for (unsigned int iVert = 0; iVert < vertexCol.GetSize(); ++iVert)
 	{
 		if (TMath::Abs(vertexCol[iVert]._z) < 24 &&
 			vertexCol[iVert]._ndf > 4)
@@ -232,33 +232,33 @@ bool hmumuSelector::passVertex(TTreeReaderArray<analysis::core::Vertex> vertexCo
 }
 
 
-bool passMuon(analysis::core::Muon m)
+//bool passMuon(analysis::core::Muon m)
+//{
+//	double muonIsolation = (m._sumChargedHadronPtR04 + std::max(0.,
+//													//			m._sumNeutralHadronEtR04 + m._sumPhotonEtR04 - 0.5 * m._sumPUPtR04)) /
+//						   m._corrPT;
+//
+//	if (m._isGlobal && m._isTracker &&
+//		m._corrPT > _muonPt && TMath::Abs(m._eta) < _muonEta &&
+//		m._isMedium && muonIsolation < _muonIso)
+//		return true;
+//	return false;
+//}
+
+//bool passMuonHLT(analysis::core::Muon m)
+//{
+  //	if ((m._isHLTMatched[1] || m._isHLTMatched[0]) && m._corrPT > _muonMatchedPt && TMath::Abs(m._eta) < _muonMatchedEta)
+	  //	return true;
+	//
+	//	return false;
+	//}
+
+bool hmumuSelector::passMuons(TTreeReaderArray<analysis::core::Muon> muonCol)
 {
-	double muonIsolation = (m._sumChargedHadronPtR04 + std::max(0.,
-																m._sumNeutralHadronEtR04 + m._sumPhotonEtR04 - 0.5 * m._sumPUPtR04)) /
-						   m._corrPT;
-
-	if (m._isGlobal && m._isTracker &&
-		m._corrPT > _muonPt && TMath::Abs(m._eta) < _muonEta &&
-		m._isMedium && muonIsolation < _muonIso)
-		return true;
-	return false;
-}
-
-bool passMuonHLT(analysis::core::Muon m)
-{
-	if ((m._isHLTMatched[1] || m._isHLTMatched[0]) && m._corrPT > _muonMatchedPt && TMath::Abs(m._eta) < _muonMatchedEta)
-		return true;
-
-	return false;
-}
-
-bool passMuons(TTreeReaderArray<analysis::core::Muon> muonCol);
-{
-	if ((muonCol[0]._charge != muonCol[1]._charge) && passMuon(muonCol[0]) && passMuon(muonCol[1]))
+  if ((muonCol[0]._charge != muonCol[1]._charge))// && passMuon(muonCol[0]) && passMuon(muonCol[1]))
 	{
-		if (passMuonHLT(muonCol[0]) || passMuonHLT(muonCol[0]))
-		{
+	  //	if (passMuonHLT(muonCol[0]) || passMuonHLT(muonCol[1]))
+	  //	{
 			// TLorentzVector p4m1, p4m2;
 			// p4m1.SetPtEtaPhiM(m1._pt, m1._eta, m1._phi, PDG_MASS_Mu);
 			// p4m2.SetPtEtaPhiM(m2._pt, m2._eta, m2._phi, PDG_MASS_Mu);
@@ -266,7 +266,7 @@ bool passMuons(TTreeReaderArray<analysis::core::Muon> muonCol);
 
 			// if (p4dimuon.M() > _dimuonMinMass && p4dimuon.M() < _dimuonMaxMass)
 			return true;
-		}
+			//	}
 	}
 
 	return false;
