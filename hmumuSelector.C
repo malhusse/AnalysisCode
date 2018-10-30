@@ -229,15 +229,15 @@ bool passMuon(analysis::core::Muon m)
 						   m._corrPT;
 
 	if (m._isGlobal && m._isTracker &&
-		m._corrPT > _muonPt && TMath::Abs(m._eta) < _muonEta &&
-		m._isMedium && muonIsolation < _muonIso)
+		m._corrPT > hmumuSelector._muonPt && TMath::Abs(m._eta) < hmumuSelector._muonEta &&
+		m._isMedium && muonIsolation < hmumuSelector._muonIso)
 		return true;
 	return false;
 }
 
 bool passMuonHLT(analysis::core::Muon m)
 {
-	if ((m._isHLTMatched[1] || m._isHLTMatched[0]) && m._corrPT > _muonMatchedPt && TMath::Abs(m._eta) < _muonMatchedEta)
+	if ((m._isHLTMatched[1] || m._isHLTMatched[0]) && m._corrPT > hmumuSelector._muonMatchedPt && TMath::Abs(m._eta) < hmumuSelector._muonMatchedEta)
 		return true;
 
 	return false;
