@@ -31,6 +31,16 @@
 #include <TList.h>
 #include <TMath.h>
 
+double _muonMatchedPt = 30.;
+double _muonMatchedEta = 2.4;
+double _muonPt = 20.;
+double _muonEta = 2.4;
+double _muonIso = 0.25;
+// double _dimuonMinMass = 80.;
+// double _dimuonMaxMass = 85.;
+// double _JetPt = 30.;
+// double _JetEta = 4.7;
+
 void hmumuSelector::Begin(TTree * /*tree*/)
 {
    // The Begin() function is called at the start of the query.
@@ -229,15 +239,15 @@ bool passMuon(analysis::core::Muon m)
 						   m._corrPT;
 
 	if (m._isGlobal && m._isTracker &&
-		m._corrPT > hmumuSelector::_muonPt && TMath::Abs(m._eta) < hmumuSelector::_muonEta &&
-		m._isMedium && muonIsolation < hmumuSelector::_muonIso)
+		m._corrPT > _muonPt && TMath::Abs(m._eta) < _muonEta &&
+		m._isMedium && muonIsolation < _muonIso)
 		return true;
 	return false;
 }
 
 bool passMuonHLT(analysis::core::Muon m)
 {
-	if ((m._isHLTMatched[1] || m._isHLTMatched[0]) && m._corrPT > hmumuSelector::_muonMatchedPt && TMath::Abs(m._eta) < hmumuSelector::_muonMatchedEta)
+	if ((m._isHLTMatched[1] || m._isHLTMatched[0]) && m._corrPT > _muonMatchedPt && TMath::Abs(m._eta) < _muonMatchedEta)
 		return true;
 
 	return false;

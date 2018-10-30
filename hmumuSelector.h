@@ -212,16 +212,6 @@ public :
 //    TTreeReaderArray<Bool_t> Electrons__isPF = {fReader, "Electrons._isPF"};
 //    TTreeReaderArray<Bool_t> Electrons__convVeto = {fReader, "Electrons._convVeto"};
 
-   double _muonMatchedPt = 30.;
-   double _muonMatchedEta = 2.4;
-   double _muonPt = 20.;
-   double _muonEta = 2.4;
-   double _muonIso = 0.25;
-   double _dimuonMinMass = 80.;
-   double _dimuonMaxMass = 85.;
-   double _JetPt = 30.;
-   double _JetEta = 4.7;
-
    hmumuSelector(TTree * /*tree*/ =0) { }
    virtual ~hmumuSelector() { }
    virtual Int_t   Version() const { return 2; }
