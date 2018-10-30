@@ -232,18 +232,16 @@ bool hmumuSelector::passVertex(TTreeReaderArray<analysis::core::Vertex> vertexCo
 }
 
 
-//bool passMuon(analysis::core::Muon m)
-//{
-//	double muonIsolation = (m._sumChargedHadronPtR04 + std::max(0.,
-//													//			m._sumNeutralHadronEtR04 + m._sumPhotonEtR04 - 0.5 * m._sumPUPtR04)) /
-//						   m._corrPT;
-//
-//	if (m._isGlobal && m._isTracker &&
-//		m._corrPT > _muonPt && TMath::Abs(m._eta) < _muonEta &&
-//		m._isMedium && muonIsolation < _muonIso)
-//		return true;
-//	return false;
-//}
+bool hmumuSelector::passMuon(analysis::core::Muon m)
+{
+	double muonIsolation = (m._sumChargedHadronPtR04 + std::max(0., m._sumNeutralHadronEtR04 + m._sumPhotonEtR04 - 0.5 * m._sumPUPtR04)) / m._corrPT;
+
+	if (m._isGlobal && m._isTracker &&
+		m._corrPT > _muonPt && TMath::Abs(m._eta) < _muonEta &&
+		m._isMedium && muonIsolation < _muonIso)
+		return true;
+	return false;
+}
 
 //bool passMuonHLT(analysis::core::Muon m)
 //{
@@ -255,7 +253,7 @@ bool hmumuSelector::passVertex(TTreeReaderArray<analysis::core::Vertex> vertexCo
 
 bool hmumuSelector::passMuons(TTreeReaderArray<analysis::core::Muon> muonCol)
 {
-  if ((muonCol[0]._charge != muonCol[1]._charge))// && passMuon(muonCol[0]) && passMuon(muonCol[1]))
+  if ((muonCol[0]._charge != muonCol[1]._charge) && passMuon(muonCol[0]) && passMuon(muonCol[1]))
 	{
 	  //	if (passMuonHLT(muonCol[0]) || passMuonHLT(muonCol[1]))
 	  //	{
