@@ -240,7 +240,7 @@ public :
    bool passVertex(TTreeReaderArray<analysis::core::Vertex> vertexCol);
    // bool passMuon();
    // bool passMuonHLT();
-   // bool passMuons();
+   bool passMuons(TTreeReaderArray<analysis::core::Muon> muonCol);
    // float jetMuondR();
    // bool passElectronVeto();
    // bool passBTaggedJetVeto();

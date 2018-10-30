@@ -143,8 +143,8 @@ Bool_t hmumuSelector::Process(Long64_t entry)
       return kFALSE;
 
 
-   //   if (!passMuon(muon1,muon2))
-   // return kFALSE;
+   if (!passMuons(Muons))
+      return kFALSE;
 
    // only two muons...
    // for (int iMuon = 0, nMuons = Muons__charge.GetSize(); iMuon < nMuons; ++iMuon){
@@ -205,7 +205,7 @@ void hmumuSelector::Terminate()
 // implement the following::
 
 
-// pass vertices 
+// pass vertices
 bool hmumuSelector::passVertex(TTreeReaderArray<analysis::core::Vertex> vertexCol)
 {
 	if (vertexCol.GetSize() == 0)
@@ -222,46 +222,45 @@ bool hmumuSelector::passVertex(TTreeReaderArray<analysis::core::Vertex> vertexCo
 }
 
 
-// bool passMuon(Muon const &m)
-// {
-// 	double muonIsolation = (m._sumChargedHadronPtR04 + std::max(0.,
-// 																m._sumNeutralHadronEtR04 + m._sumPhotonEtR04 - 0.5 * m._sumPUPtR04)) /
-// 						   m._corrPT;
+bool passMuon(analysis::core::Muon m)
+{
+	double muonIsolation = (m._sumChargedHadronPtR04 + std::max(0.,
+																m._sumNeutralHadronEtR04 + m._sumPhotonEtR04 - 0.5 * m._sumPUPtR04)) /
+						   m._corrPT;
 
-// 	if (m._isGlobal && m._isTracker &&
-// 		m._corrPT > _muonPt && TMath::Abs(m._eta) < _muonEta &&
-// 		m._isMedium && muonIsolation < _muonIso)
-// 		return true;
-// 	return false;
-// }
+	if (m._isGlobal && m._isTracker &&
+		m._corrPT > _muonPt && TMath::Abs(m._eta) < _muonEta &&
+		m._isMedium && muonIsolation < _muonIso)
+		return true;
+	return false;
+}
 
-// bool passMuonHLT(Muon const &m)
-// {
-// 	if ((m._isHLTMatched[1] || m._isHLTMatched[0]) &&
-// 		m._corrPT > _muonMatchedPt && TMath::Abs(m._eta) < _muonMatchedEta)
-// 		return true;
+bool passMuonHLT(analysis::core::Muon m)
+{
+	if ((m._isHLTMatched[1] || m._isHLTMatched[0]) && m._corrPT > _muonMatchedPt && TMath::Abs(m._eta) < _muonMatchedEta)
+		return true;
 
-// 	return false;
-// }
+	return false;
+}
 
-// bool passMuons(Muon const &m1, Muon const &m2)
-// {
-// 	if ((m1._charge != m2._charge) && passMuon(m1) && passMuon(m2))
-// 	{
-// 		if (passMuonHLT(m1) || passMuonHLT(m2))
-// 		{
-// 			// TLorentzVector p4m1, p4m2;
-// 			// p4m1.SetPtEtaPhiM(m1._pt, m1._eta, m1._phi, PDG_MASS_Mu);
-// 			// p4m2.SetPtEtaPhiM(m2._pt, m2._eta, m2._phi, PDG_MASS_Mu);
-// 			// TLorentzVector p4dimuon = p4m1 + p4m2;
+bool passMuons(TTreeReaderArray<analysis::core::Muon> muonCol);
+{
+	if ((muonCol[0]._charge != muonCol[1]._charge) && passMuon(muonCol[0]) && passMuon(muonCol[1]))
+	{
+		if (passMuonHLT(muonCol[0]) || passMuonHLT(muonCol[0]))
+		{
+			// TLorentzVector p4m1, p4m2;
+			// p4m1.SetPtEtaPhiM(m1._pt, m1._eta, m1._phi, PDG_MASS_Mu);
+			// p4m2.SetPtEtaPhiM(m2._pt, m2._eta, m2._phi, PDG_MASS_Mu);
+			// TLorentzVector p4dimuon = p4m1 + p4m2;
 
-// 			// if (p4dimuon.M() > _dimuonMinMass && p4dimuon.M() < _dimuonMaxMass)
-// 			return true;
-// 		}
-// 	}
+			// if (p4dimuon.M() > _dimuonMinMass && p4dimuon.M() < _dimuonMaxMass)
+			return true;
+		}
+	}
 
-// 	return false;
-// }
+	return false;
+}
 
 // float jetMuondR(float jeta, float jphi, float meta, float mphi)
 // {
