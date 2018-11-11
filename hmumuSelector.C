@@ -30,6 +30,10 @@
 #include <TStyle.h>
 #include <TList.h>
 #include <TMath.h>
+#include <TString.h>
+#include <TNamed.h>
+#include <TParameter.h>
+//std::string _outputName = "results/Run2017B.root";
 
 double const PDG_MASS_Mu = 0.1056583745;
 double _muonMatchedPt = 30.;
@@ -41,6 +45,7 @@ double _dimuonMinMass = 100.;
 double _dimuonMaxMass = 200.;
 double _JetPt = 30.;
 double _JetEta = 4.7;
+TString _outputName;
 
 void hmumuSelector::Begin(TTree * /*tree*/)
 {
@@ -49,6 +54,21 @@ void hmumuSelector::Begin(TTree * /*tree*/)
    // The tree argument is deprecated (on PROOF 0 is passed).
 
    TString option = GetOption();
+   TNamed *name = dynamic_cast<TNamed *>(fInput->FindObject("outputName"));
+   _outputName += name ? name->GetTitle() : "outputName";  
+
+   if (fInput->FindObject("getSumEvents") && fInput->FindObject("getSumEventsWeighted")){
+     TParameter<Int_t> *pSumEvents = dynamic_cast<TParameter<Int_t>*>(fInput->FindObject("getSumEvents"));
+     TParameter<Int_t> *pSumEventsWeighted = dynamic_cast<TParameter<Int_t>*>(fInput->FindObject("getSumEventsWeighted"));
+     valueSumEvents = pSumEvents->GetVal();
+     valueSumEventsWeighted = pSumEventsWeighted->GetVal();
+   }
+   h_numEventsWeighted = new TH1I("numEventsWeighted","Weighted numEvents Proccessed", 2, 0, 2);
+   h_numEvents = new TH1I("numEvents","numEvents Processed",2,0,2);
+   GetOutputList()->Add(h_numEventsWeighted);
+   GetOutputList()->Add(h_numEvents);
+   h_numEventsWeighted->Fill(1,valueSumEventsWeighted);
+   h_numEvents->Fill(1,valueSumEvents);
 }
 
 void hmumuSelector::SlaveBegin(TTree * /*tree*/)
@@ -88,6 +108,7 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
    h_dijet_deta = new TH1F("dijet_deta","DiJet deta;deta;Events / bin",47,0,4.7);
    h_met_pt = new TH1F("met_pt","MET p_{T};p_{T}  (GeV);Events / bin",250,0,500);
    h_num_vertices = new TH1F("num_vertices","Number of Vertices;NPV;Events / bin",50,0,50);
+  
 
    GetOutputList()->Add(h_muon_pt);
    GetOutputList()->Add(h_muon_corrpt);
@@ -119,6 +140,7 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
    GetOutputList()->Add(h_dijet_dphi);
    GetOutputList()->Add(h_met_pt);
    GetOutputList()->Add(h_num_vertices);
+  
 }
 
 Bool_t hmumuSelector::Process(Long64_t entry)
@@ -154,7 +176,7 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    for(int im = 0, nMuons = Muons.GetSize(); im < nMuons; ++im){
      for(int jm = im+1; jm < nMuons; ++jm){
        if(passMuons(Muons[im],Muons[jm]))
-	 muonPairs.push_back(std::make_pair(Muons[im],Muons[jm]));
+   muonPairs.push_back(std::make_pair(Muons[im],Muons[jm]));
      }
    }
      // for(analysis::core::Muon it = (analysis::core::Muon) Muons.begin(); it != Muons.end(); ++it)
@@ -179,17 +201,17 @@ Bool_t hmumuSelector::Process(Long64_t entry)
        TLorentzVector p4dimuon = p4m1 + p4m2;
        
        if (p4dimuon.Pt() > highestPtSum)
-	 {
-	   highestPtSum = p4dimuon.Pt();
-	   highestPtMuonPair = twoMuons;
-	   highestPtMuonsP4 = p4dimuon;
-	   
-	 }
+   {
+     highestPtSum = p4dimuon.Pt();
+     highestPtMuonPair = twoMuons;
+     highestPtMuonsP4 = p4dimuon;
+     
+   }
      }
    
    if (highestPtMuonsP4.M() < _dimuonMinMass || highestPtMuonsP4.M() > _dimuonMaxMass)
      return kFALSE;
-
+  
    h_num_vertices->Fill(Vertices.GetSize());
    h_muon_pt->Fill(highestPtMuonPair.first._pt);
    h_muon_pt->Fill(highestPtMuonPair.second._pt);
@@ -223,13 +245,13 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    for (analysis::core::Jet iJet: Jets){
      if(iJet._pt > _JetPt && TMath::Abs(iJet._eta) < _JetEta && passTightJetID(iJet) && passLoosePUID(iJet._fullid)){
        if((jetMuondR(iJet._eta,iJet._phi,highestPtMuonPair.first._eta,highestPtMuonPair.first._phi) > 0.4) && (jetMuondR(iJet._eta,iJet._phi,highestPtMuonPair.second._eta,highestPtMuonPair.second._phi) > 0.4))
-	 {
-	   if (iJet._btag[0] > 0.4941)
-	     _btagJets++;
-	   TLorentzVector p4;
-	   p4.SetPtEtaPhiM(iJet._pt, iJet._eta, iJet._phi, iJet._mass);
-	   p4jets.push_back(p4);
-	 }
+   {
+     if (iJet._btag[0] > 0.4941)
+       _btagJets++;
+     TLorentzVector p4;
+     p4.SetPtEtaPhiM(iJet._pt, iJet._eta, iJet._phi, iJet._mass);
+     p4jets.push_back(p4);
+   }
      } 
    }
 
@@ -244,14 +266,14 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    else if (p4jets.size() >= 2){
      for (unsigned int i = 0; i < p4jets.size(); ++i){
        for (unsigned int j = i + 1; j < p4jets.size(); ++j){
-	 TLorentzVector p4lead = p4jets[i];
-	 TLorentzVector p4sub = p4jets[j];
-	 TLorentzVector p4dijet = p4lead + p4sub;
-	 if (p4dijet.M() > diJet.M()){
-	   leadJet = p4lead;
-	   subJet = p4sub;
-	   diJet = p4dijet;
-	 }
+   TLorentzVector p4lead = p4jets[i];
+   TLorentzVector p4sub = p4jets[j];
+   TLorentzVector p4dijet = p4lead + p4sub;
+   if (p4dijet.M() > diJet.M()){
+     leadJet = p4lead;
+     subJet = p4sub;
+     diJet = p4dijet;
+   }
        }
      }
    }
@@ -267,12 +289,12 @@ Bool_t hmumuSelector::Process(Long64_t entry)
        h_subjet_phi->Fill(subJet.Phi());
        
        if (diJet.M() > 1){
-	 h_dijet_pt->Fill(diJet.Pt());
-	 h_dijet_mass->Fill(diJet.M());
-	 h_dijet_eta->Fill(diJet.Eta());
-	 h_dijet_phi->Fill(diJet.Phi());
-	 h_dijet_deta->Fill(TMath::Abs(leadJet.Eta()-subJet.Eta()));
-	 h_dijet_dphi->Fill(TMath::Abs(leadJet.Phi()-subJet.Phi()));
+   h_dijet_pt->Fill(diJet.Pt());
+   h_dijet_mass->Fill(diJet.M());
+   h_dijet_eta->Fill(diJet.Eta());
+   h_dijet_phi->Fill(diJet.Phi());
+   h_dijet_deta->Fill(TMath::Abs(leadJet.Eta()-subJet.Eta()));
+   h_dijet_dphi->Fill(TMath::Abs(leadJet.Phi()-subJet.Phi()));
        }
      }
    }
@@ -300,7 +322,7 @@ void hmumuSelector::Terminate()
   // TFile output("processed_ntuples.root","recreate");
    //output.Write();
    TList *output_list = (TList*)GetOutputList();
-   TFile fout("processed.root","recreate");
+   TFile fout(_outputName,"recreate");
    //TIter iter(output_list);
    //std::for_each(iter.Begin(), TIter::End(), writeObj());
    for(const auto&& obj: *output_list){
@@ -317,54 +339,54 @@ void hmumuSelector::Terminate()
 // pass vertices
 bool hmumuSelector::passVertex(TTreeReaderArray<analysis::core::Vertex> vertexCol)
 {
-	if (vertexCol.GetSize() == 0)
-		return false;
+  if (vertexCol.GetSize() == 0)
+    return false;
 
-	for (unsigned int iVert = 0; iVert < vertexCol.GetSize(); ++iVert)
-	{
-		if (TMath::Abs(vertexCol[iVert]._z) < 24 &&
-			vertexCol[iVert]._ndf > 4)
-			return true;
-	}
+  for (unsigned int iVert = 0; iVert < vertexCol.GetSize(); ++iVert)
+  {
+    if (TMath::Abs(vertexCol[iVert]._z) < 24 &&
+      vertexCol[iVert]._ndf > 4)
+      return true;
+  }
 
-	return false;
+  return false;
 }
 
 
 bool hmumuSelector::passMuon(analysis::core::Muon const &m)
 {
-	double muonIsolation = (m._sumChargedHadronPtR04 + std::max(0., m._sumNeutralHadronEtR04 + m._sumPhotonEtR04 - 0.5 * m._sumPUPtR04)) / m._corrPT;
+  double muonIsolation = (m._sumChargedHadronPtR04 + std::max(0., m._sumNeutralHadronEtR04 + m._sumPhotonEtR04 - 0.5 * m._sumPUPtR04)) / m._corrPT;
 
-	if (m._isGlobal && m._isTracker &&
-		m._corrPT > _muonPt && TMath::Abs(m._eta) < _muonEta &&
-		m._isMedium && muonIsolation < _muonIso)
-		return true;
-	return false;
+  if (m._isGlobal && m._isTracker &&
+    m._corrPT > _muonPt && TMath::Abs(m._eta) < _muonEta &&
+    m._isMedium && muonIsolation < _muonIso)
+    return true;
+  return false;
 }
 
 bool hmumuSelector::passMuonHLT(analysis::core::Muon const &m)
 {
-	if ((m._isHLTMatched[1] || m._isHLTMatched[0]) && m._corrPT > _muonMatchedPt && TMath::Abs(m._eta) < _muonMatchedEta)
-	  	return true;
-	
-	return false;
+  if ((m._isHLTMatched[1] || m._isHLTMatched[0]) && m._corrPT > _muonMatchedPt && TMath::Abs(m._eta) < _muonMatchedEta)
+      return true;
+  
+  return false;
 }
 
 bool hmumuSelector::passMuons(analysis::core::Muon const &m1, analysis::core::Muon const &m2)
 {
   if ((m1._charge != m2._charge) && passMuon(m1) && passMuon(m2))
-	{
-	  if (passMuonHLT(m1) || passMuonHLT(m2))
-	    {
-	      TLorentzVector p4m1, p4m2;
-	      p4m1.SetPtEtaPhiM(m1._pt, m1._eta, m1._phi, PDG_MASS_Mu);
-	      p4m2.SetPtEtaPhiM(m2._pt, m2._eta, m2._phi, PDG_MASS_Mu);
-	      TLorentzVector p4dimuon = p4m1 + p4m2;
+  {
+    if (passMuonHLT(m1) || passMuonHLT(m2))
+      {
+        TLorentzVector p4m1, p4m2;
+        p4m1.SetPtEtaPhiM(m1._pt, m1._eta, m1._phi, PDG_MASS_Mu);
+        p4m2.SetPtEtaPhiM(m2._pt, m2._eta, m2._phi, PDG_MASS_Mu);
+        TLorentzVector p4dimuon = p4m1 + p4m2;
 
-	      if (p4dimuon.M() > _dimuonMinMass && p4dimuon.M() < _dimuonMaxMass)
-	      return true;
-	    }
-	}
+        if (p4dimuon.M() > _dimuonMinMass && p4dimuon.M() < _dimuonMaxMass)
+        return true;
+      }
+  }
   return false;
 }
 
@@ -387,9 +409,9 @@ bool hmumuSelector::passTightJetID(analysis::core::Jet j)
       tightID = (j._nhf < 0.90 && j._nef < 0.90 && numConst > 1);
       
       if (jeta < 2.4)
-	{
-	  tightID &= (j._chf > 0 && j._cm > 0);
-	}
+  {
+    tightID &= (j._chf > 0 && j._cm > 0);
+  }
     }
   else if (jeta <= 3.0)
     {

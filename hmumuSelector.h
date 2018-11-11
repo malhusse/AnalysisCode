@@ -70,7 +70,12 @@ public :
    TH1   *h_met_pt = 0;
 
    TH1   *h_num_vertices = 0;
-
+   
+   TH1   *h_numEventsWeighted = 0;
+   TH1   *h_numEvents = 0;
+   
+   Int_t valueSumEvents = 0;
+   Int_t valueSumEventsWeighted = 0;
    // Readers to access the data (delete the ones you do not need).
    //   TTreeReaderArray<Muon> 
    TTreeReaderArray<analysis::core::Muon> Muons = {fReader,"Muons"};
@@ -83,14 +88,14 @@ public :
    // TTreeReaderValue<Int_t> _bx = {fReader, "_bx"};
    // TTreeReaderValue<Int_t> _orbit = {fReader, "_orbit"};
    // TTreeReaderValue<Int_t> _nPU = {fReader, "_nPU"};
-   // TTreeReaderValue<Int_t> _genWeight = {fReader, "_genWeight"};
+  //  TTreeReaderValue<Int_t> _genWeight = {fReader, "_genWeight"};
    TTreeReaderValue<Bool_t> _passedMetFilters = {fReader, "_passedMetFilters"};
    TTreeReaderValue<vector<bool>> _hasHLTFired = {fReader, "_hasHLTFired"};
    // TTreeReaderArray<pair<string,int>> _metFilterBits = {fReader, "_metFilterBits"};
    TTreeReaderValue<Float_t> _pt = {fReader, "_pt"};
    // TTreeReaderValue<Bool_t> _isMC = {fReader, "_isMC"};
   
-   hmumuSelector(TTree * /*tree*/ =0) { }
+ hmumuSelector(TTree * /*tree*/ =0){ }
    virtual ~hmumuSelector() { }
    virtual Int_t   Version() const { return 2; }
    virtual void    Begin(TTree *tree);
