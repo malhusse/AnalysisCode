@@ -45,7 +45,7 @@ double _dimuonMinMass = 100.;
 double _dimuonMaxMass = 200.;
 double _JetPt = 30.;
 double _JetEta = 4.7;
-TString _outputName;
+TString _outputNameFinal;
 
 void hmumuSelector::Begin(TTree * /*tree*/)
 {
@@ -55,7 +55,8 @@ void hmumuSelector::Begin(TTree * /*tree*/)
 
    TString option = GetOption();
    TNamed *name = dynamic_cast<TNamed *>(fInput->FindObject("outputName"));
-   _outputName += name ? name->GetTitle() : "outputName";  
+   _outputNameFinal = "results/";
+   _outputNameFinal += name ? name->GetTitle() : "outputName.root";  
 
    if (fInput->FindObject("getSumEvents") && fInput->FindObject("getSumEventsWeighted")){
      TParameter<Int_t> *pSumEvents = dynamic_cast<TParameter<Int_t>*>(fInput->FindObject("getSumEvents"));
@@ -322,7 +323,7 @@ void hmumuSelector::Terminate()
   // TFile output("processed_ntuples.root","recreate");
    //output.Write();
    TList *output_list = (TList*)GetOutputList();
-   TFile fout(_outputName,"recreate");
+   TFile fout(_outputNameFinal,"recreate");
    //TIter iter(output_list);
    //std::for_each(iter.Begin(), TIter::End(), writeObj());
    for(const auto&& obj: *output_list){
