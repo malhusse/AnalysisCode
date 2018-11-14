@@ -109,7 +109,36 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
    h_dijet_deta = new TH1F("dijet_deta","DiJet deta;deta;Events / bin",47,0,4.7);
    h_met_pt = new TH1F("met_pt","MET p_{T};p_{T}  (GeV);Events / bin",250,0,500);
    h_num_vertices = new TH1F("num_vertices","Number of Vertices;NPV;Events / bin",50,0,50);
-  
+   h_muon_pt->Sumw2();
+   h_muon_corrpt->Sumw2();
+   h_leadMuon_pt->Sumw2();
+   h_leadMuon_eta->Sumw2();
+   h_leadMuon_phi->Sumw2();
+   h_subMuon_pt->Sumw2();
+   h_subMuon_eta->Sumw2();
+   h_subMuon_phi->Sumw2();
+   h_dimuon_mass->Sumw2();
+   h_dimuon_pt->Sumw2();
+   h_dimuon_eta->Sumw2();
+   h_dimuon_phi->Sumw2();
+   h_dimuon_deta->Sumw2();
+   h_dimuon_dphi->Sumw2();
+   h_num_jets->Sumw2();
+   h_num_bjets->Sumw2();
+   h_leadjet_pt->Sumw2();
+   h_leadjet_eta->Sumw2();
+   h_leadjet_phi->Sumw2();
+   h_subjet_pt->Sumw2();
+   h_subjet_eta->Sumw2();
+   h_subjet_phi->Sumw2();
+   h_dijet_pt->Sumw2();
+   h_dijet_mass->Sumw2();
+   h_dijet_eta->Sumw2();
+   h_dijet_phi->Sumw2();
+   h_dijet_dphi->Sumw2();
+   h_dijet_deta->Sumw2();
+   h_met_pt->Sumw2();
+   h_num_vertices->Sumw2();
 
    GetOutputList()->Add(h_muon_pt);
    GetOutputList()->Add(h_muon_corrpt);
