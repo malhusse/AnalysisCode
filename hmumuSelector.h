@@ -17,7 +17,9 @@
 #include <TH1.h>
 #include <TLorentzVector.h>
 #include <vector>
+#include "TParameter.h"
 
+#include "interface/LumiReweightingStandAlone.h"
 #include "interface/Muon.h"
 #include "interface/Jet.h"
 #include "interface/Vertex.h"
@@ -31,6 +33,7 @@ public :
    TTreeReader     fReader;  //!the tree reader
    TTree          *fChain = 0;   //!pointer to the analyzed TTree or TChain
 
+   TH1   *h_puweight = 0;
    TH1   *h_muon_pt = 0;
    TH1   *h_muon_corrpt = 0;
 
@@ -76,6 +79,14 @@ public :
    
    Int_t valueSumEvents = 0;
    Int_t valueSumEventsWeighted = 0;
+  
+   bool _isMC;
+   reweight::LumiReWeighting *weighter;
+   TString _outputRoot;
+   TString _outputNameFinal;
+   TString _dataPUfile;
+   TString _mcPUfile;
+
    // Readers to access the data (delete the ones you do not need).
    //   TTreeReaderArray<Muon> 
    TTreeReaderArray<analysis::core::Muon> Muons = {fReader,"Muons"};
@@ -87,13 +98,13 @@ public :
    // TTreeReaderValue<Long64_t> _event = {fReader, "_event"};
    // TTreeReaderValue<Int_t> _bx = {fReader, "_bx"};
    // TTreeReaderValue<Int_t> _orbit = {fReader, "_orbit"};
-   // TTreeReaderValue<Int_t> _nPU = {fReader, "_nPU"};
-  //  TTreeReaderValue<Int_t> _genWeight = {fReader, "_genWeight"};
+   TTreeReaderValue<Int_t> _nPU = {fReader, "_nPU"};
+   TTreeReaderValue<Int_t> _genWeight = {fReader, "_genWeight"};
    TTreeReaderValue<Bool_t> _passedMetFilters = {fReader, "_passedMetFilters"};
    TTreeReaderValue<vector<bool>> _hasHLTFired = {fReader, "_hasHLTFired"};
    // TTreeReaderArray<pair<string,int>> _metFilterBits = {fReader, "_metFilterBits"};
    TTreeReaderValue<Float_t> _pt = {fReader, "_pt"};
-   // TTreeReaderValue<Bool_t> _isMC = {fReader, "_isMC"};
+   //TTreeReaderValue<Bool_t> _isMC = {fReader, "_isMC"};
   
  hmumuSelector(TTree * /*tree*/ =0){ }
    virtual ~hmumuSelector() { }

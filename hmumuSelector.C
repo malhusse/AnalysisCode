@@ -32,7 +32,6 @@
 #include <TMath.h>
 #include <TString.h>
 #include <TNamed.h>
-#include <TParameter.h>
 //std::string _outputName = "results/Run2017B.root";
 
 double const PDG_MASS_Mu = 0.1056583745;
@@ -45,7 +44,6 @@ double _dimuonMinMass = 100.;
 double _dimuonMaxMass = 200.;
 double _JetPt = 30.;
 double _JetEta = 4.7;
-TString _outputNameFinal;
 
 void hmumuSelector::Begin(TTree * /*tree*/)
 {
@@ -54,17 +52,19 @@ void hmumuSelector::Begin(TTree * /*tree*/)
    // The tree argument is deprecated (on PROOF 0 is passed).
 
    TString option = GetOption();
-   TNamed *name = dynamic_cast<TNamed *>(fInput->FindObject("outputName"));
+  TNamed *name = dynamic_cast<TNamed *>(fInput->FindObject("outputName"));
    _outputNameFinal = "results/";
    _outputNameFinal += name ? name->GetTitle() : "outputName.root";  
+   
+   if (fInput->FindObject("getSumEvents") && fInput->FindObject("getSumEventsWeighted"))
+     {
+       TParameter<Int_t> *pSumEvents = dynamic_cast<TParameter<Int_t>*>(fInput->FindObject("getSumEvents"));
+       TParameter<Int_t> *pSumEventsWeighted = dynamic_cast<TParameter<Int_t>*>(fInput->FindObject("getSumEventsWeighted"));
+       valueSumEvents = pSumEvents->GetVal();
+       valueSumEventsWeighted = pSumEventsWeighted->GetVal();
+     }
 
-   if (fInput->FindObject("getSumEvents") && fInput->FindObject("getSumEventsWeighted")){
-     TParameter<Int_t> *pSumEvents = dynamic_cast<TParameter<Int_t>*>(fInput->FindObject("getSumEvents"));
-     TParameter<Int_t> *pSumEventsWeighted = dynamic_cast<TParameter<Int_t>*>(fInput->FindObject("getSumEventsWeighted"));
-     valueSumEvents = pSumEvents->GetVal();
-     valueSumEventsWeighted = pSumEventsWeighted->GetVal();
-   }
-   h_numEventsWeighted = new TH1I("numEventsWeighted","Weighted numEvents Proccessed", 2, 0, 2);
+    h_numEventsWeighted = new TH1I("numEventsWeighted","Weighted numEvents Proccessed", 2, 0, 2);
    h_numEvents = new TH1I("numEvents","numEvents Processed",2,0,2);
    GetOutputList()->Add(h_numEventsWeighted);
    GetOutputList()->Add(h_numEvents);
@@ -77,6 +77,31 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
    // The SlaveBegin() function is called after the Begin() function.
    // When running with PROOF SlaveBegin() is called on each slave server.
    // The tree argument is deprecated (on PROOF 0 is passed).
+    
+  TNamed *name2 = dynamic_cast<TNamed *>(fInput->FindObject("outputName"));
+
+   
+  _outputRoot = name2->GetTitle();
+
+  cout << "out put name  " << _outputRoot << endl;
+
+  _isMC = true;
+  if (_outputRoot.Contains("Run201"))
+     _isMC = false;
+  cout << "is MC ???   " << _isMC << endl;
+
+  if (_isMC)
+  {
+    _dataPUfile = "/uscms_data/d1/malhusse/build/AnalysisCode/pileup/pu_data_2017.root";
+    _mcPUfile = "/uscms_data/d1/malhusse/build/AnalysisCode/pileup/";
+    _mcPUfile += _outputRoot;
+    cout << "pileup   data  "  << _dataPUfile.Data() << endl;
+    cout << "pile up mc   " << _mcPUfile.Data() << endl;
+    weighter = new reweight::LumiReWeighting(_dataPUfile.Data(),_mcPUfile.Data(),"pileup","pileup");
+
+  }
+
+  
 
    TString option = GetOption();
    h_muon_pt = new TH1F("muon_pt", "Muon p_{T};p_{T}  (GeV);Events / bin", 200,0,400);
@@ -100,7 +125,7 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
    h_leadjet_phi = new TH1F("leadjet_phi", "Leading Jet \\phi;\\phi;Events / bin",36,-3.6,3.6);
    h_subjet_pt = new TH1F("subjet_pt","Subleading Jet p_{T};p_{T}  (GeV);Events / bin",250,0,500);
    h_subjet_eta = new TH1F("subjet_eta","Subleading Jet \\eta;\\eta;Events / bin",94,-4.7,4.7);
-   h_subjet_phi = new TH1F("subjet_eta", "Subleading Jet \\phi;\\phi;Events / bin",36,-3.6,3.6);
+   h_subjet_phi = new TH1F("subjet_phi", "Subleading Jet \\phi;\\phi;Events / bin",36,-3.6,3.6);
    h_dijet_pt = new TH1F("dijet_pt","DiJet p_{T};p_{T}  (GeV),Events / bin",500,0,1000);
    h_dijet_mass = new TH1F("dijet_mass","DiJet Mass;M_{jj}  (GeV);Events / bin",500,0,1000);
    h_dijet_eta = new TH1F("dijet_eta", "DiJet \\eta;\\eta;Events / bin",94,-4.7,4.7);
@@ -109,6 +134,7 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
    h_dijet_deta = new TH1F("dijet_deta","DiJet deta;deta;Events / bin",47,0,4.7);
    h_met_pt = new TH1F("met_pt","MET p_{T};p_{T}  (GeV);Events / bin",250,0,500);
    h_num_vertices = new TH1F("num_vertices","Number of Vertices;NPV;Events / bin",50,0,50);
+   h_puweight = new TH1F("pu_weight", "Pileup Weight",99,0,99);
    h_muon_pt->Sumw2();
    h_muon_corrpt->Sumw2();
    h_leadMuon_pt->Sumw2();
@@ -170,7 +196,7 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
    GetOutputList()->Add(h_dijet_dphi);
    GetOutputList()->Add(h_met_pt);
    GetOutputList()->Add(h_num_vertices);
-  
+   GetOutputList()->Add(h_puweight);
 }
 
 Bool_t hmumuSelector::Process(Long64_t entry)
@@ -194,14 +220,15 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    fReader.SetLocalEntry(entry);
 
    // int nVert = Vertices__z.GetSize();
-   if (!passVertex(Vertices))
-      return kFALSE;
+   //   if (!passVertex(Vertices))
+   // return kFALSE;
    if(!(std::any_of(_hasHLTFired->begin(), _hasHLTFired->end(), [](bool v) {return v;})))
       return kFALSE;
    if(!*_passedMetFilters)
       return kFALSE;
 
-
+   
+   
    std::vector<std::pair<analysis::core::Muon, analysis::core::Muon>> muonPairs;
    for(int im = 0, nMuons = Muons.GetSize(); im < nMuons; ++im){
      for(int jm = im+1; jm < nMuons; ++jm){
@@ -242,31 +269,37 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    if (highestPtMuonsP4.M() < _dimuonMinMass || highestPtMuonsP4.M() > _dimuonMaxMass)
      return kFALSE;
   
-   h_num_vertices->Fill(Vertices.GetSize());
-   h_muon_pt->Fill(highestPtMuonPair.first._pt);
-   h_muon_pt->Fill(highestPtMuonPair.second._pt);
-   h_muon_corrpt->Fill(highestPtMuonPair.first._corrPT);
-   h_muon_corrpt->Fill(highestPtMuonPair.second._corrPT);
+   //    cout << "did we get here process??" << endl;
+
+   cout << _isMC << "endl";
+    float puweight = _isMC ? weighter->weight(*_nPU) * *_genWeight : 1.;
+  //  float puweight = 1.0;
+  h_puweight->Fill(puweight);
+    h_num_vertices->Fill(Vertices.GetSize(),puweight);
+   h_muon_pt->Fill(highestPtMuonPair.first._pt,puweight);
+   h_muon_pt->Fill(highestPtMuonPair.second._pt,puweight);
+   h_muon_corrpt->Fill(highestPtMuonPair.first._corrPT,puweight);
+   h_muon_corrpt->Fill(highestPtMuonPair.second._corrPT,puweight);
 
    int lead_muon_id = 0;
    int sub_muon_id = 1;
 
-   h_leadMuon_pt->Fill(highestPtMuonPair.first._corrPT);
-   h_leadMuon_phi->Fill(highestPtMuonPair.first._phi);
-   h_leadMuon_eta->Fill(highestPtMuonPair.first._eta);
+   h_leadMuon_pt->Fill(highestPtMuonPair.first._corrPT,puweight);
+   h_leadMuon_phi->Fill(highestPtMuonPair.first._phi,puweight);
+   h_leadMuon_eta->Fill(highestPtMuonPair.first._eta,puweight);
 
-   h_subMuon_pt->Fill(highestPtMuonPair.second._corrPT);
-   h_subMuon_phi->Fill(highestPtMuonPair.second._phi);
-   h_subMuon_eta->Fill(highestPtMuonPair.second._eta);
+   h_subMuon_pt->Fill(highestPtMuonPair.second._corrPT,puweight);
+   h_subMuon_phi->Fill(highestPtMuonPair.second._phi,puweight);
+   h_subMuon_eta->Fill(highestPtMuonPair.second._eta,puweight);
 
-   h_dimuon_mass->Fill(highestPtMuonsP4.M());
-   h_dimuon_pt->Fill(highestPtMuonsP4.Pt());
-   h_dimuon_eta->Fill(highestPtMuonsP4.Eta());
-   h_dimuon_phi->Fill(highestPtMuonsP4.Phi());
-   h_dimuon_deta->Fill(TMath::Abs(highestPtMuonPair.first._eta - highestPtMuonPair.second._eta));
-   h_dimuon_dphi->Fill(TMath::Abs(highestPtMuonPair.first._phi - highestPtMuonPair.second._phi));
+   h_dimuon_mass->Fill(highestPtMuonsP4.M(),puweight);
+   h_dimuon_pt->Fill(highestPtMuonsP4.Pt(),puweight);
+   h_dimuon_eta->Fill(highestPtMuonsP4.Eta(),puweight);
+   h_dimuon_phi->Fill(highestPtMuonsP4.Phi(),puweight);
+   h_dimuon_deta->Fill(TMath::Abs(highestPtMuonPair.first._eta - highestPtMuonPair.second._eta),puweight);
+   h_dimuon_dphi->Fill(TMath::Abs(highestPtMuonPair.first._phi - highestPtMuonPair.second._phi),puweight);
 
-   h_met_pt->Fill(*_pt);
+   h_met_pt->Fill(*_pt,puweight);
    // Jet Selection
 
    std::vector<TLorentzVector> p4jets;
@@ -285,8 +318,8 @@ Bool_t hmumuSelector::Process(Long64_t entry)
      } 
    }
 
-   h_num_jets->Fill(p4jets.size());
-   h_num_bjets->Fill(_btagJets);
+   h_num_jets->Fill(p4jets.size(),puweight);
+   h_num_bjets->Fill(_btagJets,puweight);
    
    TLorentzVector leadJet, subJet, diJet;
 
@@ -310,21 +343,21 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    
    
    if (leadJet.Pt() > 30){
-     h_leadjet_pt->Fill(leadJet.Pt());
-     h_leadjet_eta->Fill(leadJet.Eta());
-     h_leadjet_phi->Fill(leadJet.Phi());
+     h_leadjet_pt->Fill(leadJet.Pt(),puweight);
+     h_leadjet_eta->Fill(leadJet.Eta(),puweight);
+     h_leadjet_phi->Fill(leadJet.Phi(),puweight);
      if (subJet.Pt() > 30){
-       h_subjet_pt->Fill(subJet.Pt());
-       h_subjet_eta->Fill(subJet.Eta());
-       h_subjet_phi->Fill(subJet.Phi());
+       h_subjet_pt->Fill(subJet.Pt(),puweight);
+       h_subjet_eta->Fill(subJet.Eta(),puweight);
+       h_subjet_phi->Fill(subJet.Phi(),puweight);
        
        if (diJet.M() > 1){
-   h_dijet_pt->Fill(diJet.Pt());
-   h_dijet_mass->Fill(diJet.M());
-   h_dijet_eta->Fill(diJet.Eta());
-   h_dijet_phi->Fill(diJet.Phi());
-   h_dijet_deta->Fill(TMath::Abs(leadJet.Eta()-subJet.Eta()));
-   h_dijet_dphi->Fill(TMath::Abs(leadJet.Phi()-subJet.Phi()));
+	 h_dijet_pt->Fill(diJet.Pt(),puweight);
+	 h_dijet_mass->Fill(diJet.M(),puweight);
+	 h_dijet_eta->Fill(diJet.Eta(),puweight);
+	 h_dijet_phi->Fill(diJet.Phi(),puweight);
+	 h_dijet_deta->Fill(TMath::Abs(leadJet.Eta()-subJet.Eta()),puweight);
+	 h_dijet_dphi->Fill(TMath::Abs(leadJet.Phi()-subJet.Phi()),puweight);
        }
      }
    }

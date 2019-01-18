@@ -2,3 +2,6 @@
 *.d
 *.so
 *.pcm
+*.tar
+.nfs00000042021d5b6300000764
+.ipynb_checkpoints/

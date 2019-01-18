@@ -2,21 +2,12 @@ void quickScript(string inputList, string outputFile)
 {
   cout << "input filelist: "<< inputList << " , output filename: " << outputFile << endl;
 
-
-  TChain *metaChain = new TChain("ntuplemaker_H2DiMuonMaker/Meta");
-  std::ifstream input(inputList);
-  for (std::string line; std::getline(input,line); ){
-    metaChain->Add(TString(line.c_str()));
-  }
-  TProof::Open("workers=8");
+  TProof::Open("workers=2");
   gProof->AddInput(new TNamed("outputName",outputFile));
   gProof->Exec("gSystem->Load(\"/uscms/home/malhusse/nobackup/build/libAnalysisCore.so\")");
-
-  metaChain->SetProof();
-  metaChain->Process("hmumuCount.C+");
-
-  delete metaChain;
-  
+  gProof->Exec("gSystem->Load(\"/uscms/home/malhusse/nobackup/build/libAnalysisAuxTools.so\")");
+  // gProof->Exec("gSystem->Load(\"/uscms/home/malhusse/nobackup/build/AnalysisCode/defineParams.C\")");
+  //  gProof->Load("defineParams.C", kTRUE);
   TString countFile = "count/";
   countFile += outputFile;
 
@@ -28,12 +19,11 @@ void quickScript(string inputList, string outputFile)
 
   cout << sumEvents << endl;
   cout << sumEventsWeighted << endl;
-
-
+ 
   gProof->SetParameter("getSumEvents", sumEvents);
   gProof->SetParameter("getSumEventsWeighted", sumEventsWeighted);
-  
-  
+
+  //  exit(1);
   TChain *eventsChain = new TChain("ntuplemaker_H2DiMuonMaker/Events");
   std::ifstream inputAgain(inputList);
   for (std::string line; std::getline(inputAgain,line); ){
