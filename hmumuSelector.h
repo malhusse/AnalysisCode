@@ -28,58 +28,59 @@
 //#include "interface/MetaHiggs.h"
 #include "interface/Electron.h"
 
-class hmumuSelector : public TSelector {
-public :
-   TTreeReader     fReader;  //!the tree reader
-   TTree          *fChain = 0;   //!pointer to the analyzed TTree or TChain
+class hmumuSelector : public TSelector
+{
+ public:
+   TTreeReader fReader; //!the tree reader
+   TTree *fChain = 0;   //!pointer to the analyzed TTree or TChain
 
-   TH1   *h_puweight = 0;
-   TH1   *h_muon_pt = 0;
-   TH1   *h_muon_corrpt = 0;
+   TH1 *h_puweight = 0;
+   TH1 *h_muon_pt = 0;
+   TH1 *h_muon_corrpt = 0;
 
-   TH1   *h_leadMuon_pt = 0;
-   TH1   *h_leadMuon_phi = 0;
-   TH1   *h_leadMuon_eta = 0;
+   TH1 *h_leadMuon_pt = 0;
+   TH1 *h_leadMuon_phi = 0;
+   TH1 *h_leadMuon_eta = 0;
 
-   TH1   *h_subMuon_pt = 0;
-   TH1   *h_subMuon_phi = 0;
-   TH1   *h_subMuon_eta = 0;
+   TH1 *h_subMuon_pt = 0;
+   TH1 *h_subMuon_phi = 0;
+   TH1 *h_subMuon_eta = 0;
 
-   TH1   *h_dimuon_mass = 0;
-   TH1   *h_dimuon_pt = 0;
-   TH1   *h_dimuon_eta = 0;
-   TH1   *h_dimuon_phi = 0;
-   TH1   *h_dimuon_deta = 0;
-   TH1   *h_dimuon_dphi = 0;
+   TH1 *h_dimuon_mass = 0;
+   TH1 *h_dimuon_pt = 0;
+   TH1 *h_dimuon_eta = 0;
+   TH1 *h_dimuon_phi = 0;
+   TH1 *h_dimuon_deta = 0;
+   TH1 *h_dimuon_dphi = 0;
 
-   TH1   *h_num_jets = 0;
-   TH1   *h_num_bjets = 0;
+   TH1 *h_num_jets = 0;
+   TH1 *h_num_bjets = 0;
 
-   TH1   *h_leadjet_pt = 0;
-   TH1   *h_leadjet_eta = 0;
-   TH1   *h_leadjet_phi = 0;
+   TH1 *h_leadjet_pt = 0;
+   TH1 *h_leadjet_eta = 0;
+   TH1 *h_leadjet_phi = 0;
 
-   TH1   *h_subjet_pt = 0;
-   TH1   *h_subjet_eta = 0;
-   TH1   *h_subjet_phi = 0;
+   TH1 *h_subjet_pt = 0;
+   TH1 *h_subjet_eta = 0;
+   TH1 *h_subjet_phi = 0;
 
-   TH1   *h_dijet_pt = 0;
-   TH1   *h_dijet_mass = 0;
-   TH1   *h_dijet_eta = 0;
-   TH1   *h_dijet_phi = 0;
-   TH1   *h_dijet_deta = 0;
-   TH1   *h_dijet_dphi = 0;
+   TH1 *h_dijet_pt = 0;
+   TH1 *h_dijet_mass = 0;
+   TH1 *h_dijet_eta = 0;
+   TH1 *h_dijet_phi = 0;
+   TH1 *h_dijet_deta = 0;
+   TH1 *h_dijet_dphi = 0;
 
-   TH1   *h_met_pt = 0;
+   TH1 *h_met_pt = 0;
 
-   TH1   *h_num_vertices = 0;
-   
-   TH1   *h_numEventsWeighted = 0;
-   TH1   *h_numEvents = 0;
-   
+   TH1 *h_num_vertices = 0;
+
+   TH1 *h_numEventsWeighted = 0;
+   TH1 *h_numEvents = 0;
+
    Int_t valueSumEvents = 0;
    Int_t valueSumEventsWeighted = 0;
-  
+
    bool _isMC;
    reweight::LumiReWeighting *weighter;
    TString _outputRoot;
@@ -88,51 +89,48 @@ public :
    TString _mcPUfile;
 
    // Readers to access the data (delete the ones you do not need).
-   //   TTreeReaderArray<Muon> 
-   TTreeReaderArray<analysis::core::Muon> Muons = {fReader,"Muons"};
-   TTreeReaderArray<analysis::core::Jet> Jets = {fReader,"Jets"};
-   TTreeReaderArray<analysis::core::Vertex> Vertices = {fReader,"Vertices"};
+   TTreeReaderArray<analysis::core::Muon> Muons = {fReader, "Muons"};
+   TTreeReaderArray<analysis::core::Jet> Jets = {fReader, "Jets"};
+   TTreeReaderArray<analysis::core::Vertex> Vertices = {fReader, "Vertices"};
+   TTreeReaderValue<Int_t> _nPU = {fReader, "_nPU"};
+   TTreeReaderValue<Int_t> _genWeight = {fReader, "_genWeight"};
+   TTreeReaderValue<Bool_t> _passedMetFilters = {fReader, "_passedMetFilters"};
+   TTreeReaderValue<vector<bool>> _hasHLTFired = {fReader, "_hasHLTFired"};
+
+   // This is the MET pt. 
+   TTreeReaderValue<Float_t> _pt = {fReader, "_pt"};
+  
    // TTreeReaderArray<analysis::core::Electron> Electrons = {fReader,"Electrons"};
    // TTreeReaderValue<Int_t> _run = {fReader, "_run"};
    // TTreeReaderValue<Int_t> _lumi = {fReader, "_lumi"};
    // TTreeReaderValue<Long64_t> _event = {fReader, "_event"};
    // TTreeReaderValue<Int_t> _bx = {fReader, "_bx"};
    // TTreeReaderValue<Int_t> _orbit = {fReader, "_orbit"};
-   TTreeReaderValue<Int_t> _nPU = {fReader, "_nPU"};
-   TTreeReaderValue<Int_t> _genWeight = {fReader, "_genWeight"};
-   TTreeReaderValue<Bool_t> _passedMetFilters = {fReader, "_passedMetFilters"};
-   TTreeReaderValue<vector<bool>> _hasHLTFired = {fReader, "_hasHLTFired"};
-   // TTreeReaderArray<pair<string,int>> _metFilterBits = {fReader, "_metFilterBits"};
-   TTreeReaderValue<Float_t> _pt = {fReader, "_pt"};
-   //TTreeReaderValue<Bool_t> _isMC = {fReader, "_isMC"};
-  
- hmumuSelector(TTree * /*tree*/ =0){ }
-   virtual ~hmumuSelector() { }
-   virtual Int_t   Version() const { return 2; }
-   virtual void    Begin(TTree *tree);
-   virtual void    SlaveBegin(TTree *tree);
-   virtual void    Init(TTree *tree);
-   virtual Bool_t  Notify();
-   virtual Bool_t  Process(Long64_t entry);
-   virtual Int_t   GetEntry(Long64_t entry, Int_t getall = 0) { return fChain ? fChain->GetTree()->GetEntry(entry, getall) : 0; }
-   virtual void    SetOption(const char *option) { fOption = option; }
-   virtual void    SetObject(TObject *obj) { fObject = obj; }
-   virtual void    SetInputList(TList *input) { fInput = input; }
-   virtual TList  *GetOutputList() const { return fOutput; }
-   virtual void    SlaveTerminate();
-   virtual void    Terminate();
-   bool passVertex(TTreeReaderArray<analysis::core::Vertex> vertexCol);
+
+   hmumuSelector(TTree * /*tree*/ = 0) {}
+   virtual ~hmumuSelector() {}
+   virtual Int_t Version() const { return 2; }
+   virtual void Begin(TTree *tree);
+   virtual void SlaveBegin(TTree *tree);
+   virtual void Init(TTree *tree);
+   virtual Bool_t Notify();
+   virtual Bool_t Process(Long64_t entry);
+   virtual Int_t GetEntry(Long64_t entry, Int_t getall = 0) { return fChain ? fChain->GetTree()->GetEntry(entry, getall) : 0; }
+   virtual void SetOption(const char *option) { fOption = option; }
+   virtual void SetObject(TObject *obj) { fObject = obj; }
+   virtual void SetInputList(TList *input) { fInput = input; }
+   virtual TList *GetOutputList() const { return fOutput; }
+   virtual void SlaveTerminate();
+   virtual void Terminate();
+   bool passVertex(std::vector<analysis::core::Vertex> vertexCol);
    bool passMuon(analysis::core::Muon const &m);
    bool passMuonHLT(analysis::core::Muon const &m);
    bool passMuons(analysis::core::Muon const &mu1, analysis::core::Muon const &mu2);
    float jetMuondR(float jeta, float jphi, float meta, float mphi);
-   // bool passElectronVeto();
-   // bool passBTaggedJetVeto();
    bool passTightJetID(analysis::core::Jet j);
    bool passLoosePUID(int jetfullID);
 
-   ClassDef(hmumuSelector,0);
-
+   ClassDef(hmumuSelector, 0);
 };
 
 #endif
@@ -160,6 +158,5 @@ Bool_t hmumuSelector::Notify()
 
    return kTRUE;
 }
-
 
 #endif // #ifdef hmumuSelector_cxx
