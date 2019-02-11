@@ -18,6 +18,7 @@
 #include <TLorentzVector.h>
 #include <vector>
 #include "TParameter.h"
+#include <TNtuple.h>
 
 #include "interface/LumiReweightingStandAlone.h"
 #include "interface/Muon.h"
@@ -30,11 +31,13 @@
 
 class hmumuSelector : public TSelector
 {
+ private:
+   TNtuple *ntuple = 0;
  public:
    TTreeReader fReader; //!the tree reader
    TTree *fChain = 0;   //!pointer to the analyzed TTree or TChain
 
-   TH1 *h_puweight = 0;
+   TH1 *h_eweight = 0;
    TH1 *h_muon_pt = 0;
    TH1 *h_muon_corrpt = 0;
 
@@ -80,8 +83,14 @@ class hmumuSelector : public TSelector
 
    Int_t valueSumEvents = 0;
    Int_t valueSumEventsWeighted = 0;
+   Int_t ntupleModeM = -1;
+   Int_t ntupleModeS = -1;
+   Int_t mcLabel = -99;
+   Double_t xsec = 0;
 
-   bool _isMC;
+
+   std::vector<TH1F*> vec_dimuon_mass_jets;
+
    reweight::LumiReWeighting *weighter;
    TString _outputRoot;
    TString _outputNameFinal;
@@ -101,9 +110,9 @@ class hmumuSelector : public TSelector
    TTreeReaderValue<Float_t> _pt = {fReader, "_pt"};
   
    // TTreeReaderArray<analysis::core::Electron> Electrons = {fReader,"Electrons"};
-   // TTreeReaderValue<Int_t> _run = {fReader, "_run"};
-   // TTreeReaderValue<Int_t> _lumi = {fReader, "_lumi"};
-   // TTreeReaderValue<Long64_t> _event = {fReader, "_event"};
+   TTreeReaderValue<Int_t> _run = {fReader, "_run"};
+   TTreeReaderValue<Int_t> _lumi = {fReader, "_lumi"};
+   TTreeReaderValue<Long64_t> _event = {fReader, "_event"};
    // TTreeReaderValue<Int_t> _bx = {fReader, "_bx"};
    // TTreeReaderValue<Int_t> _orbit = {fReader, "_orbit"};
 
