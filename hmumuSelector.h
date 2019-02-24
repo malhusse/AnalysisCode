@@ -90,6 +90,7 @@ class hmumuSelector : public TSelector
 
 
    std::vector<TH1F*> vec_dimuon_mass_jets;
+   std::vector<TH1F*> vec_dimuon_mass_jets_r;
 
    reweight::LumiReWeighting *weighter;
    TString _outputRoot;

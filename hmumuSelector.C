@@ -222,8 +222,14 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
          TString histname = Form("dimuon_mass_jet_%d", i);
          TString histTitle = Form("Dimuon Mass, Jet Mass > %s ;M_{\\mu \\mu}  (Gev);Events / bin", to_string(i).c_str());
          vec_dimuon_mass_jets.push_back(new TH1F(histname, histTitle, 100, 100, 150));
-         //      vec_dimuon_mass_jets.at(i/10) =
+	 vec_dimuon_mass_jets.at(i / 10)->Sumw2();
          GetOutputList()->Add(vec_dimuon_mass_jets.at(i / 10));
+
+         TString histname_r = Form("dimuon_mass_jet_r_%d", i);
+         TString histTitle_r = Form("Dimuon Mass, Jet Mass < %s ;M_{\\mu \\mu}  (Gev);Events / bin", to_string(i).c_str());
+         vec_dimuon_mass_jets_r.push_back(new TH1F(histname_r, histTitle_r, 100, 100, 150));
+	 vec_dimuon_mass_jets_r.at(i / 10)->Sumw2();
+         GetOutputList()->Add(vec_dimuon_mass_jets_r.at(i / 10));
       }
    }
 }
@@ -336,6 +342,7 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    Int_t _btagJets = 0;
    Int_t _ncentJets = 0;
    Int_t _nfwdJets = 0;
+   Int_t _numJets = 0;
 
    for (analysis::core::Jet iJet : Jets)
    {
@@ -355,18 +362,19 @@ Bool_t hmumuSelector::Process(Long64_t entry)
          }
       }
    }
+   _numJets = p4jets.size();
 
    if (!ntupleModeS)
    {
-      h_num_jets->Fill(p4jets.size(), eweight);
+      h_num_jets->Fill(_numJets, eweight);
       h_num_bjets->Fill(_btagJets, eweight);
    }
    TLorentzVector leadJet, subJet, diJet;
 
-   if (p4jets.size() == 1)
+   if (_numJets == 1)
       leadJet = p4jets[0];
 
-   else if (p4jets.size() >= 2)
+   else if (_numJets >= 2)
    {
       for (unsigned int i = 0; i < p4jets.size(); ++i)
       {
@@ -398,14 +406,14 @@ Bool_t hmumuSelector::Process(Long64_t entry)
       {
          for (unsigned int j = i + 1; j < p4jets.size(); ++j)
          {
-            TLorentzVector p4lead = p4jets[i];
-            TLorentzVector p4sub = p4jets[j];
-            TLorentzVector p4dijet = p4lead + p4sub;
-            if (p4dijet.M() > diJet.M())
+            TLorentzVector p4lead2 = p4jets[i];
+            TLorentzVector p4sub2 = p4jets[j];
+            TLorentzVector p4dijet2 = p4lead2 + p4sub2;
+            if (p4dijet2.M() > diJet2.M())
             {
-               leadJet2 = p4lead;
-               subJet2 = p4sub;
-               diJet2 = p4dijet;
+               leadJet2 = p4lead2;
+               subJet2 = p4sub2;
+               diJet2 = p4dijet2;
             }
          }
       }
@@ -425,7 +433,7 @@ Bool_t hmumuSelector::Process(Long64_t entry)
       float mupt_2 = highestPtMuonPair.second._corrPT;
       float mueta_2 = highestPtMuonPair.second._eta;
       float muphi_2 = highestPtMuonPair.second._phi;
-      Int_t njets = p4jets.size();
+      // Int_t njets = p4jets.size();
 
       float jetpt_1 = leadJet.Pt();
       float jetmass_1 = leadJet.M();
@@ -459,7 +467,7 @@ Bool_t hmumuSelector::Process(Long64_t entry)
           mupt_2,
           mueta_2,
           muphi_2,
-          static_cast<float>(njets),
+          static_cast<float>(_numJets),
           static_cast<float>(_ncentJets),
           static_cast<float>(_nfwdJets),
           static_cast<float>(_btagJets),
@@ -507,9 +515,13 @@ Bool_t hmumuSelector::Process(Long64_t entry)
 
       for (Int_t i = 0; i <= 1000; i += 10)
       {
-         if (diJet.M() > 0 && diJet.M() < i)
+         if (diJet.M() > i)
          {
             vec_dimuon_mass_jets.at(i / 10)->Fill(highestPtMuonsP4.M(), eweight);
+         }
+         if (diJet.M() > 0 && diJet.M() < i)
+         {
+            vec_dimuon_mass_jets_r.at(i / 10)->Fill(highestPtMuonsP4.M(), eweight);
          }
       }
    }
