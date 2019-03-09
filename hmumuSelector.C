@@ -443,10 +443,10 @@ Bool_t hmumuSelector::Process(Long64_t entry)
       float jetmass_2 = subJet.M();
       float jeteta_2 = subJet.Pt() ? subJet.Eta() : -5;
 
-      float mjj_1 = diJet.M() ? diJet.M() : -1;
+      float mjj_1 = diJet.M() ? diJet.M() : 0;
       float detajj_1 = diJet.M() ? TMath::Abs(leadJet.Eta() - subJet.Eta()) : -1;
 
-      float mjj_2 = diJet2.M() ? diJet2.M() : -1;
+      float mjj_2 = diJet2.M() ? diJet2.M() : 0;
       float detajj_2 = diJet2.M() ? TMath::Abs(leadJet2.Eta() - subJet2.Eta()) : -1;
 
       float toFill[] = {
