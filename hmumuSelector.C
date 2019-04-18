@@ -217,20 +217,20 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
       GetOutputList()->Add(h_num_vertices);
       GetOutputList()->Add(h_eweight);
 
-      for (Int_t i = 0; i <= 1000; i += 10)
-      {
-         TString histname = Form("dimuon_mass_jet_%d", i);
-         TString histTitle = Form("Dimuon Mass, Jet Mass > %s ;M_{\\mu \\mu}  (Gev);Events / bin", to_string(i).c_str());
-         vec_dimuon_mass_jets.push_back(new TH1F(histname, histTitle, 100, 100, 150));
-	 vec_dimuon_mass_jets.at(i / 10)->Sumw2();
-         GetOutputList()->Add(vec_dimuon_mass_jets.at(i / 10));
+      // for (Int_t i = 0; i <= 1000; i += 10)
+      // {
+      //    TString histname = Form("dimuon_mass_jet_%d", i);
+      //    TString histTitle = Form("Dimuon Mass, Jet Mass > %s ;M_{\\mu \\mu}  (Gev);Events / bin", to_string(i).c_str());
+      //    vec_dimuon_mass_jets.push_back(new TH1F(histname, histTitle, 100, 100, 150));
+      // 	 vec_dimuon_mass_jets.at(i / 10)->Sumw2();
+      //    GetOutputList()->Add(vec_dimuon_mass_jets.at(i / 10));
 
-         TString histname_r = Form("dimuon_mass_jet_r_%d", i);
-         TString histTitle_r = Form("Dimuon Mass, Jet Mass < %s ;M_{\\mu \\mu}  (Gev);Events / bin", to_string(i).c_str());
-         vec_dimuon_mass_jets_r.push_back(new TH1F(histname_r, histTitle_r, 100, 100, 150));
-	 vec_dimuon_mass_jets_r.at(i / 10)->Sumw2();
-         GetOutputList()->Add(vec_dimuon_mass_jets_r.at(i / 10));
-      }
+      //    TString histname_r = Form("dimuon_mass_jet_r_%d", i);
+      //    TString histTitle_r = Form("Dimuon Mass, Jet Mass < %s ;M_{\\mu \\mu}  (Gev);Events / bin", to_string(i).c_str());
+      //    vec_dimuon_mass_jets_r.push_back(new TH1F(histname_r, histTitle_r, 100, 100, 150));
+      // 	 vec_dimuon_mass_jets_r.at(i / 10)->Sumw2();
+      //    GetOutputList()->Add(vec_dimuon_mass_jets_r.at(i / 10));
+      // }
    }
 }
 
@@ -346,7 +346,8 @@ Bool_t hmumuSelector::Process(Long64_t entry)
 
    for (analysis::core::Jet iJet : Jets)
    {
-      if (iJet._pt > _JetPt && TMath::Abs(iJet._eta) < _JetEta && passTightJetID(iJet) && passLoosePUID(iJet._fullid))
+     if (iJet._pt > _JetPt && TMath::Abs(iJet._eta) < _JetEta && passTightJetID(iJet) && passLoosePUID(iJet) && passNoiseJet(iJet))
+       // if (iJet._pt > _JetPt && TMath::Abs(iJet._eta) < _JetEta && passTightJetID(iJet))
       {
          if ((jetMuondR(iJet._eta, iJet._phi, highestPtMuonPair.first._eta, highestPtMuonPair.first._phi) > 0.4) && (jetMuondR(iJet._eta, iJet._phi, highestPtMuonPair.second._eta, highestPtMuonPair.second._phi) > 0.4))
          {
@@ -513,17 +514,17 @@ Bool_t hmumuSelector::Process(Long64_t entry)
          }
       }
 
-      for (Int_t i = 0; i <= 1000; i += 10)
-      {
-         if (diJet.M() > i)
-         {
-            vec_dimuon_mass_jets.at(i / 10)->Fill(highestPtMuonsP4.M(), eweight);
-         }
-         if (diJet.M() > 0 && diJet.M() < i)
-         {
-            vec_dimuon_mass_jets_r.at(i / 10)->Fill(highestPtMuonsP4.M(), eweight);
-         }
-      }
+      // for (Int_t i = 0; i <= 1000; i += 10)
+      //  {
+      //    if (diJet.M() > i)
+      //    {
+      //       vec_dimuon_mass_jets.at(i / 10)->Fill(highestPtMuonsP4.M(), eweight);
+      //    }
+      //    if (diJet.M() > 0 && diJet.M() < i)
+      //    {
+      //       vec_dimuon_mass_jets_r.at(i / 10)->Fill(highestPtMuonsP4.M(), eweight);
+      //    }
+      //  }
    }
 
    return kTRUE;
@@ -650,7 +651,40 @@ bool hmumuSelector::passTightJetID(analysis::core::Jet j)
    return tightID;
 }
 
-bool hmumuSelector::passLoosePUID(int jetfullID)
+bool hmumuSelector::passLoosePUID(analysis::core::Jet j)
 {
-   return bool(jetfullID & (1 << 2));
+  float jeta = TMath::Abs(j._eta);
+  float jpt = j._pt;
+  float jpuid = j._puid;
+
+  if(jeta < 2.5)
+    {
+      if (jpt >=30 and jpt < 50 and jpuid <-0.89)  return false;
+      if (jpt >=10 and jpt < 30 and jpuid <-0.97)  return false;
+    }
+  else if(jeta < 2.75)
+    {
+      if (jpt >=30 and jpt < 50 and jpuid <-0.52)  return false;
+      if (jpt >=10 and jpt < 30 and jpuid <-0.68)  return false;
+    }
+  else if(jeta < 3.0)
+    {
+      if (jpt >=30 and jpt < 50 and jpuid <-0.38)  return false;
+      if (jpt >=10 and jpt < 30 and jpuid <-0.53)  return false;
+    }
+  else if(jeta < 5)
+    {
+      if (jpt >=30 and jpt < 50 and jpuid <-0.30)  return false;
+      if (jpt >=10 and jpt < 30 and jpuid <-0.47)  return false;
+    }
+    return true;
+}
+
+bool hmumuSelector::passNoiseJet(analysis::core::Jet j)
+{
+  float jeta = TMath::Abs(j._eta);
+  float jpt = j._pt;
+
+  if (jeta >= 2.65 and jeta <= 3.139 and jpt < 50) return false;
+  return true;
 }

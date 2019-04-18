@@ -89,8 +89,8 @@ class hmumuSelector : public TSelector
    Double_t xsec = 0;
 
 
-   std::vector<TH1F*> vec_dimuon_mass_jets;
-   std::vector<TH1F*> vec_dimuon_mass_jets_r;
+   /* std::vector<TH1F*> vec_dimuon_mass_jets; */
+   /* std::vector<TH1F*> vec_dimuon_mass_jets_r; */
 
    reweight::LumiReWeighting *weighter;
    TString _outputRoot;
@@ -138,7 +138,8 @@ class hmumuSelector : public TSelector
    bool passMuons(analysis::core::Muon const &mu1, analysis::core::Muon const &mu2);
    float jetMuondR(float jeta, float jphi, float meta, float mphi);
    bool passTightJetID(analysis::core::Jet j);
-   bool passLoosePUID(int jetfullID);
+   bool passLoosePUID(analysis::core::Jet j);
+   bool passNoiseJet(analysis::core::Jet j);
 
    ClassDef(hmumuSelector, 0);
 };
