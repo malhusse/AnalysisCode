@@ -2,7 +2,7 @@
 #define Analysis_Core_Jet_h
 
 #ifndef STANDALONE
-#include "GenJet.h"
+#include "HMuMu/Core/interface/GenJet.h"
 #else
 #include "GenJet.h"
 #endif
@@ -46,14 +46,22 @@ class Jet : public Object
 		_jecf = 0;
 		_jecu = 0;
 		_btag.clear();
+
+		_btag_sf = 1;
+		_btag_sf_up = 0;
+		_btag_sf_down = 0;
+
 		_puid = 0;
 		_fullid = 0;
-		_uncAK5 = 0;
+		
 		_uncAK4 = 0;
-		_pt_upAK5 = 0;
 		_pt_upAK4 = 0;
-		_pt_downAK5 = 0;
 		_pt_downAK4 = 0;
+
+		_jer = 0;
+		_jerSF = 0;
+		_jerSF_up = 0;
+		_jerSF_down = 0;
 
 		_genjet.reset();
 		_genMatched = 0;
@@ -93,15 +101,22 @@ class Jet : public Object
 	float _jecf;
 	float _jecu;
 	std::vector<float> _btag;
+	
+	double _btag_sf;
+	double _btag_sf_up;
+	double _btag_sf_down;
+
 	float _puid;
 	int _fullid;
 
-	double _uncAK5;
 	double _uncAK4;
-	double _pt_upAK5;
 	double _pt_upAK4;
-	double _pt_downAK5;
 	double _pt_downAK4;
+
+	float _jer;
+	float _jerSF;
+	float _jerSF_up;
+	float _jerSF_down;
 
 	//
 	GenJet _genjet;

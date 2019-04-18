@@ -2,7 +2,7 @@
 #define Analysis_Core_Event_h
 
 #ifndef STANDALONE
-#include "Object.h"
+#include "HMuMu/Core/interface/Object.h"
 #else
 #include "Object.h"
 #endif
@@ -46,17 +46,49 @@ class EventAuxiliary : public Object
 	virtual void reset()
 	{
 		_nPU = 0;
-		_genWeight = 0;
+		_bareMCWeight = 1;
+		_genWeight = 1;
 		_hasHLTFired.clear();
 		_metFilterBits.clear();
 		_passedMetFilters = true;
-	}
+		_prefiringweight = 1;
+		_prefiringweightup = 1;
+		_prefiringweightdown = 1;
+		_trigEffSF = 1;
+		_trigEffSF_up = 1;
+		_trigEffSF_down = 1;
+		_idSF = 1;
+		_idSF_up = 1;
+		_idSF_down = 1;
+		_isoSF = 1;
+		_isoSF_up = 1;
+		_isoSF_down = 1;
+		_btagSF = 1;
+	}	
 
 	int _nPU;
+	int _nvtx;
+	float _bareMCWeight;
 	int _genWeight;
 	bool _passedMetFilters;
+	double _prefiringweight;
+	double _prefiringweightup;
+	double _prefiringweightdown;
+	float _trigEffSF;
+	float _trigEffSF_up;
+	float _trigEffSF_down;
+	float _idSF;
+	float _idSF_up;
+	float _idSF_down;
+	float _isoSF;
+	float _isoSF_up;
+	float _isoSF_down;
+	float _btagSF;
+
 	std::vector<bool> _hasHLTFired;
 	std::map<string, int> _metFilterBits;
+
+
 
 #ifdef STANDALONE
 	ClassDef(EventAuxiliary, 1)

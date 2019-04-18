@@ -1,8 +1,9 @@
 #ifndef Analysis_Core_Muon_h
 #define Analysis_Core_Muon_h
 
+#include "TLorentzVector.h"
 #ifndef STANDALONE
-#include "Track.h"
+#include "HMuMu/Core/interface/Track.h"
 #else
 #include "Track.h"
 #endif
@@ -26,6 +27,20 @@ class Muon : public Track
 		_isLoose = 0;
 
 		_isPF = 0;
+
+		_pt_kinfit = 0; 
+		_ptErr_kinfit = 0;
+		_d0PV_kinfit = 0;
+		_dzPV_kinfit = 0;
+		_chi2_kinfit = 0;
+		_ndf_kinfit = 0;
+
+		fsrP4.SetPxPyPzE(0,0,0,0);
+
+		_pt_PF = 0;
+		_pterr_PF = 0;
+		_eta_PF = 0;
+		_phi_PF = 0;
 
 		_normChi2 = 0;
 		_d0BS = 0;
@@ -81,12 +96,14 @@ class Muon : public Track
 	bool _isLoose;
 
 	bool _isPF;
+	
 
 	float _normChi2;
 	float _d0BS;
 	float _dzBS;
 	float _d0PV;
 	float _dzPV;
+
 
 	int _nPLs;
 	int _nTLs;
@@ -122,8 +139,22 @@ class Muon : public Track
 	float _sumNeutralHadronEtR04;
 	float _sumPhotonEtR04;
 	float _sumPUPtR04;
-	float _SF;
+	float _roccCor;
 	float _corrPT;
+
+	float _d0PV_kinfit;
+	float _dzPV_kinfit;
+	double _pt_kinfit; 
+	double _ptErr_kinfit; 
+	float _chi2_kinfit;
+	int _ndf_kinfit;
+
+	double _pt_PF;
+	double _pterr_PF;
+	double _eta_PF;
+	double _phi_PF;
+
+	TLorentzVector fsrP4;
 
 #ifdef STANDALONE
 	ClassDef(Muon, 1)

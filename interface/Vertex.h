@@ -2,7 +2,7 @@
 #define Analysis_Core_Vertex_h
 
 #ifndef STANDALONE
-#include "Object.h"
+#include "HMuMu/Core/interface/Object.h"
 #else
 #include "Object.h"
 #endif
