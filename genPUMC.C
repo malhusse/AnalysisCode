@@ -39,7 +39,12 @@ void genPUMC::Begin(TTree * /*tree*/)
 
    TString option = GetOption();
    TNamed *name = dynamic_cast<TNamed *>(fInput->FindObject("outputName"));
-   _outputName = "pileup/";
+   TParameter<Int_t> *pYear = dynamic_cast<TParameter<Int_t>*>(fInput->FindObject("getYear"));
+   year = pYear->GetVal();
+
+   _outputName = "data/pileup/";
+   _outputName += std::to_string(year);
+   _outputName += "/";
    _outputName += name ? name->GetTitle() : "outputName.root";  
 }
 

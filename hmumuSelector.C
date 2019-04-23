@@ -4,6 +4,7 @@
 // from the ROOT class TSelector. For more information on the TSelector
 // framework see $ROOTSYS/README/README.SELECTOR or the ROOT User Manual.
 
+
 // The following methods are defined in this file:
 //    Begin():        called every time a loop on the tree starts,
 //                    a convenient place to create your histograms.
@@ -23,6 +24,7 @@
 // root> T->Process("hmumuSelector.C+")
 //
 
+
 #include "hmumuSelector.h"
 #include <TH2.h>
 #include <TStyle.h>
@@ -37,7 +39,7 @@ double _muonMatchedEta = 2.4;
 double _muonPt = 20.;
 double _muonEta = 2.4;
 double _muonIso = 0.25;
-double _dimuonMinMass = 100.;
+double _dimuonMinMass = 50.;
 double _dimuonMaxMass = 200.;
 double _JetPt = 30.;
 double _JetEta = 4.7;
@@ -51,28 +53,12 @@ void hmumuSelector::Begin(TTree * /*tree*/)
    TString option = GetOption();
    TNamed *name = dynamic_cast<TNamed *>(fInput->FindObject("outputName"));
 
-   TParameter<Int_t> *pNtupleMode = dynamic_cast<TParameter<Int_t> *>(fInput->FindObject("getNtupleMode"));
-   ntupleModeM = pNtupleMode->GetVal();
+   TParameter<Int_t> *pYearM = dynamic_cast<TParameter<Int_t>*>(fInput->FindObject("getYear"));
+   yearM = pYearM->GetVal();
 
-   TParameter<Int_t> *pSumEvents = dynamic_cast<TParameter<Int_t> *>(fInput->FindObject("getSumEvents"));
-   TParameter<Int_t> *pSumEventsWeighted = dynamic_cast<TParameter<Int_t> *>(fInput->FindObject("getSumEventsWeighted"));
-   valueSumEvents = pSumEvents->GetVal();
-   valueSumEventsWeighted = pSumEventsWeighted->GetVal();
-
-   if (ntupleModeM)
-   {
-      _outputNameFinal = "ntupleFiles/";
-   }
-   else
-   {
-      _outputNameFinal = "histoFiles/";
-      h_numEventsWeighted = new TH1I("numEventsWeighted", "Weighted numEvents Proccessed", 2, 0, 2);
-      h_numEvents = new TH1I("numEvents", "numEvents Processed", 2, 0, 2);
-      GetOutputList()->Add(h_numEventsWeighted);
-      GetOutputList()->Add(h_numEvents);
-      h_numEventsWeighted->Fill(1, valueSumEventsWeighted);
-      h_numEvents->Fill(1, valueSumEvents);
-   }
+   _outputNameFinal = "ntupleFiles/";
+   _outputNameFinal += std::to_string(yearM);
+   _outputNameFinal += "/";
    _outputNameFinal += name ? name->GetTitle() : "outputName.root";
 }
 
@@ -81,157 +67,55 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
    // The SlaveBegin() function is called after the Begin() function.
    // When running with PROOF SlaveBegin() is called on each slave server.
    // The tree argument is deprecated (on PROOF 0 is passed).
+
+   TString option = GetOption();
+
    TNamed *name2 = dynamic_cast<TNamed *>(fInput->FindObject("outputName"));
    _outputRoot = name2->GetTitle();
 
-   TParameter<Int_t> *pSumEventsWeightedAgain = dynamic_cast<TParameter<Int_t> *>(fInput->FindObject("getSumEventsWeighted"));
-   valueSumEventsWeighted = pSumEventsWeightedAgain->GetVal();
+   TParameter<Int_t> *pSumEvents = dynamic_cast<TParameter<Int_t> *>(fInput->FindObject("getSumEvents"));
+   TParameter<Int_t> *pSumEventsWeighted = dynamic_cast<TParameter<Int_t> *>(fInput->FindObject("getSumEventsWeighted"));
 
-   TParameter<Int_t> *pNtupleModeAgain = dynamic_cast<TParameter<Int_t> *>(fInput->FindObject("getNtupleMode"));
+   valueSumEvents = pSumEvents->GetVal();
+   valueSumEventsWeighted = pSumEventsWeighted->GetVal();
+
    TParameter<Double_t> *pxsec = dynamic_cast<TParameter<Double_t> *>(fInput->FindObject("getxsec"));
    TParameter<Int_t> *pmcLabel = dynamic_cast<TParameter<Int_t> *>(fInput->FindObject("getmcLabel"));
+   TParameter<Int_t> *pYearS = dynamic_cast<TParameter<Int_t>*>(fInput->FindObject("getYear"));
 
-   // ntupleMode = 0 or 1
-   // let 0 be histogram creation
-   // and 1 be TNtuple creation
-   ntupleModeS = pNtupleModeAgain->GetVal();
    mcLabel = pmcLabel->GetVal();
    xsec = static_cast<Float_t>(pxsec->GetVal());
+   yearS = pYearS->GetVal();
 
-   // _isMC = true;
-   // if (mcLabel)
-   // _isMC = false;
-
-   // mcLabel should be 0 for data, so this is true only for mc!
+      // mcLabel should be 0 for data, so this is true only for mc!
    if (mcLabel)
    {
-      _dataPUfile = "/uscms_data/d1/malhusse/build/AnalysisCode/pileup/pu_data_2017.root";
-      _mcPUfile = "/uscms_data/d1/malhusse/build/AnalysisCode/pileup/";
+      _dataPUfile = "/uscms_data/d1/malhusse/analysis/AnalysisCode/data/pileup/pu_data_";
+      _dataPUfile += std::to_string(yearS);
+      _dataPUfile += ".root";
+      // _dataPUfile = "/uscms_data/d1/malhusse/build/AnalysisCode/pileup/pu_data_2017.root";
+      _mcPUfile = "/uscms_data/d1/malhusse/analysis/AnalysisCode/data/pileup/";
+      _mcPUfile += std::to_string(yearS);
       _mcPUfile += _outputRoot;
 
       weighter = new reweight::LumiReWeighting(_mcPUfile.Data(), _dataPUfile.Data(), "pileup", "pileup");
    }
+               //   "muRoch_1:muRoch_2:mu_kinfit_pt_1:mu_kinfit_pt_2"
+               //   "fsrPt_1:fsrEta_1:fsrPhi_1:fsrPt_2:fsrEta_2:fsrPhi_2"
+               //   "muPt_1:muEta_1:muPhi_1:muPt_2:muEta_2:muPhi_2:"
 
-   TString option = GetOption();
-
-   if (ntupleModeS)
-   {
-      // TODO: split this over multiple lines (cleaner code)
-      string vars = "run:lumi:event:mclabel:eweight:h_mass:h_pt:h_eta:h_phi:h_deta:h_dphi:mupt_1:mueta_1:muphi_1:mupt_2:mueta_2:muphi_2:njets:ncentJets:nfwdJets:nbtagJets:jetpt_1:jetmass_1:jeteta_1:jetpt_2:jetmass_2:jeteta_2:mjj_1:detajj_1:mjj_2:detajj_2:metpt";
-      ntuple = new TNtuple("ntupledData", "Data TNtuple", vars.c_str());
-      GetOutputList()->Add(ntuple);
-   }
-   else
-   {
-      h_muon_pt = new TH1F("muon_pt", "Muon p_{T};p_{T}  (GeV);Events ", 200, 0, 400);
-      h_muon_corrpt = new TH1F("muon_corrpt", "Muon corrected p_{T};p_{T}  (GeV);Events ", 200, 0, 400);
-      h_leadMuon_pt = new TH1F("lead_muon_pt", "Leading Muon p_{T};p_{T}  (GeV);Events ", 100, 0, 200);
-      h_leadMuon_eta = new TH1F("lead_muon_eta", "Leading Muon \\eta;\\eta;Events ", 50, -2.5, 2.5);
-      h_leadMuon_phi = new TH1F("lead_muon_phi", "Leading Muon \\phi;\\phi;Events ", 36, -3.6, 3.6);
-      h_subMuon_pt = new TH1F("sub_muon_pt", "Subleading Muon p_{T};p_{T}  (GeV);Events ", 100, 0, 200);
-      h_subMuon_eta = new TH1F("sub_muon_eta", "Subleading Muon eta;\\eta;Events ", 50, -2.5, 2.5);
-      h_subMuon_phi = new TH1F("sub_muon_phi", "Subleading Muon \\phi;\\phi;Events ", 36, -3.6, 3.6);
-      h_dimuon_mass = new TH1F("dimuon_mass", "Dimuon Mass;M_{\\mu \\mu}  (Gev);Events ", 100, 100, 200);
-      h_dimuon_pt = new TH1F("dimuon_pt", "Dimuon p_{T};p_{T}  (GeV);Events ", 200, 0, 400);
-      h_dimuon_eta = new TH1F("dimuon_eta", "Dimuon \\eta;\\eta;Events ", 100, -5.0, 5.0);
-      h_dimuon_phi = new TH1F("dimuon_phi", "Dimuon \\phi;\\phi;Events ", 36, -3.6, 3.6);
-      h_dimuon_deta = new TH1F("dimuon_deta", "Dimuon deta;deta;Events ", 100, -5.0, 5.0);
-      h_dimuon_dphi = new TH1F("dimuon_dphi", "Dimuon dphi;dphi;Events ", 36, -3.6, 3.6);
-      h_num_jets = new TH1F("num_jets", "Number of Jets;nJets;Events ", 10, 0, 10);
-      h_num_bjets = new TH1F("num_bjets", "Number of B Jets;nBJets;Events ", 10, 0, 10);
-      h_leadjet_pt = new TH1F("leadjet_pt", "Leading Jet p_{T};p_{T}  (GeV);Events ", 500, 0, 500);
-      h_leadjet_eta = new TH1F("leadjet_eta", "Leading Jet \\eta;\\eta;Events ", 94, -4.7, 4.7);
-      h_leadjet_phi = new TH1F("leadjet_phi", "Leading Jet \\phi;\\phi;Events ", 36, -3.6, 3.6);
-      h_subjet_pt = new TH1F("subjet_pt", "Subleading Jet p_{T};p_{T}  (GeV);Events ", 500, 0, 500);
-      h_subjet_eta = new TH1F("subjet_eta", "Subleading Jet \\eta;\\eta;Events ", 94, -4.7, 4.7);
-      h_subjet_phi = new TH1F("subjet_phi", "Subleading Jet \\phi;\\phi;Events ", 36, -3.6, 3.6);
-      h_dijet_pt = new TH1F("dijet_pt", "DiJet p_{T};p_{T}  (GeV),Events ", 1000, 0, 1000);
-      h_dijet_mass = new TH1F("dijet_mass", "DiJet Mass;M_{jj}  (GeV);Events ", 1000, 0, 1000);
-      h_dijet_eta = new TH1F("dijet_eta", "DiJet \\eta;\\eta;Events ", 188, -9.4, 9.4);
-      h_dijet_phi = new TH1F("dijet_phi", "DiJet \\phi;\\phi;Events ", 36, -3.6, 3.6);
-      h_dijet_dphi = new TH1F("dijet_dphi", "DiJet dphi;dphi;Events ", 36, -3.6, 3.6);
-      h_dijet_deta = new TH1F("dijet_deta", "DiJet deta;deta;Events ", 188, -9.4, 9.4);
-      h_met_pt = new TH1F("met_pt", "MET p_{T};p_{T}  (GeV);Events ", 250, 0, 500);
-      h_num_vertices = new TH1F("num_vertices", "Number of Vertices;NPV;Events ", 50, 0, 50);
-      h_eweight = new TH1F("pu_weight", "Pileup Weight", 99, 0, 99);
-      h_muon_pt->Sumw2();
-      h_muon_corrpt->Sumw2();
-      h_leadMuon_pt->Sumw2();
-      h_leadMuon_eta->Sumw2();
-      h_leadMuon_phi->Sumw2();
-      h_subMuon_pt->Sumw2();
-      h_subMuon_eta->Sumw2();
-      h_subMuon_phi->Sumw2();
-      h_dimuon_mass->Sumw2();
-      h_dimuon_pt->Sumw2();
-      h_dimuon_eta->Sumw2();
-      h_dimuon_phi->Sumw2();
-      h_dimuon_deta->Sumw2();
-      h_dimuon_dphi->Sumw2();
-      h_num_jets->Sumw2();
-      h_num_bjets->Sumw2();
-      h_leadjet_pt->Sumw2();
-      h_leadjet_eta->Sumw2();
-      h_leadjet_phi->Sumw2();
-      h_subjet_pt->Sumw2();
-      h_subjet_eta->Sumw2();
-      h_subjet_phi->Sumw2();
-      h_dijet_pt->Sumw2();
-      h_dijet_mass->Sumw2();
-      h_dijet_eta->Sumw2();
-      h_dijet_phi->Sumw2();
-      h_dijet_dphi->Sumw2();
-      h_dijet_deta->Sumw2();
-      h_met_pt->Sumw2();
-      h_num_vertices->Sumw2();
-
-      GetOutputList()->Add(h_muon_pt);
-      GetOutputList()->Add(h_muon_corrpt);
-      GetOutputList()->Add(h_leadMuon_pt);
-      GetOutputList()->Add(h_leadMuon_eta);
-      GetOutputList()->Add(h_leadMuon_phi);
-      GetOutputList()->Add(h_subMuon_pt);
-      GetOutputList()->Add(h_subMuon_eta);
-      GetOutputList()->Add(h_subMuon_phi);
-      GetOutputList()->Add(h_dimuon_mass);
-      GetOutputList()->Add(h_dimuon_pt);
-      GetOutputList()->Add(h_dimuon_eta);
-      GetOutputList()->Add(h_dimuon_phi);
-      GetOutputList()->Add(h_dimuon_deta);
-      GetOutputList()->Add(h_dimuon_dphi);
-      GetOutputList()->Add(h_num_jets);
-      GetOutputList()->Add(h_num_bjets);
-      GetOutputList()->Add(h_leadjet_pt);
-      GetOutputList()->Add(h_leadjet_eta);
-      GetOutputList()->Add(h_leadjet_phi);
-      GetOutputList()->Add(h_subjet_pt);
-      GetOutputList()->Add(h_subjet_eta);
-      GetOutputList()->Add(h_subjet_phi);
-      GetOutputList()->Add(h_dijet_pt);
-      GetOutputList()->Add(h_dijet_mass);
-      GetOutputList()->Add(h_dijet_eta);
-      GetOutputList()->Add(h_dijet_phi);
-      GetOutputList()->Add(h_dijet_deta);
-      GetOutputList()->Add(h_dijet_dphi);
-      GetOutputList()->Add(h_met_pt);
-      GetOutputList()->Add(h_num_vertices);
-      GetOutputList()->Add(h_eweight);
-
-      // for (Int_t i = 0; i <= 1000; i += 10)
-      // {
-      //    TString histname = Form("dimuon_mass_jet_%d", i);
-      //    TString histTitle = Form("Dimuon Mass, Jet Mass > %s ;M_{\\mu \\mu}  (Gev);Events / bin", to_string(i).c_str());
-      //    vec_dimuon_mass_jets.push_back(new TH1F(histname, histTitle, 100, 100, 150));
-      // 	 vec_dimuon_mass_jets.at(i / 10)->Sumw2();
-      //    GetOutputList()->Add(vec_dimuon_mass_jets.at(i / 10));
-
-      //    TString histname_r = Form("dimuon_mass_jet_r_%d", i);
-      //    TString histTitle_r = Form("Dimuon Mass, Jet Mass < %s ;M_{\\mu \\mu}  (Gev);Events / bin", to_string(i).c_str());
-      //    vec_dimuon_mass_jets_r.push_back(new TH1F(histname_r, histTitle_r, 100, 100, 150));
-      // 	 vec_dimuon_mass_jets_r.at(i / 10)->Sumw2();
-      //    GetOutputList()->Add(vec_dimuon_mass_jets_r.at(i / 10));
-      // }
-   }
+   string vars = "year:run:lumi:event:mclabel:genWeight:numGen:xsec:puWeight"
+                 "idSF:isoSF:btagSF:trigSF:prefireSF:totalSF:eWeight:totalWeight"
+                 "muPtC_1:muEtaC_1:muPhiC_1"
+                 "muPtC_2:muEtaC_2:muPhiC_2"
+                 "h_mass:h_pt:h_eta:h_phi:h_deta:h_dphi:"
+                 "njets:ncentJets:nfwdJets:nbtagJets:maxbdisc"
+                 "jetpt_1:jetmass_1:jeteta_1:jetpt_2:jetmass_2:jeteta_2:"
+                 "mjj_1:detajj_1:mjj_2:detajj_2:"
+                 "metpt";
+   
+   ntuple = new TNtuple("ntupledData", "Data TNtuple", vars.c_str());
+   GetOutputList()->Add(ntuple);
 }
 
 Bool_t hmumuSelector::Process(Long64_t entry)
@@ -255,16 +139,36 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    fReader.SetLocalEntry(entry);
 
    std::vector<analysis::core::Vertex> vecVertices;
+   std::vector<std::pair<string,int>> metFilterBits;
+
    for (int iVer = 0, nVer = Vertices.GetSize(); iVer < nVer; ++iVer)
    {
       vecVertices.push_back(Vertices[iVer]);
    }
+   
+   for (int iBit = 0, nBits = _metFilterBits.GetSize(); iBit < nBits; ++iBit)
+   {
+      metFilterBits.push_back(_metFilterBits[iBit]);
+   }
+
    if (!passVertex(vecVertices))
       return kFALSE;
    if (!(std::any_of(_hasHLTFired->begin(), _hasHLTFired->end(), [](bool v) { return v; })))
       return kFALSE;
-   if (!*_passedMetFilters)
+   if (!passMetFilters(metFilterBits))
       return kFALSE;
+
+   // correct Muons using kinfit pt * rochester factor + fsr photon
+   for (int iMu = 0, nMu = Muons.GetSize(); iMu < nMu; ++iMu)
+   {
+      TLorentzVector p4mu, p4pho;
+      p4mu.SetPtEtaPhiM((Muons[iMu]._pt_kinfit * Muons[iMu]._roccCor), Muons[iMu]._eta,Muons[iMu]._phi,PDG_MASS_Mu);
+      p4pho = Muons[iMu].fsrP4;
+      p4mu += p4pho;
+      Muons[iMu]._pt = p4mu.Pt();
+      Muons[iMu]._eta = p4mu.Eta();
+      Muons[iMu]._phi = p4mu.Phi();
+   }
 
    std::vector<std::pair<analysis::core::Muon, analysis::core::Muon>> muonPairs;
    for (int im = 0, nMuons = Muons.GetSize(); im < nMuons; ++im)
@@ -286,8 +190,8 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    for (const std::pair<analysis::core::Muon, analysis::core::Muon> &twoMuons : muonPairs)
    {
       TLorentzVector p4m1, p4m2;
-      p4m1.SetPtEtaPhiM(twoMuons.first._corrPT, twoMuons.first._eta, twoMuons.first._phi, PDG_MASS_Mu);
-      p4m2.SetPtEtaPhiM(twoMuons.second._corrPT, twoMuons.second._eta, twoMuons.second._phi, PDG_MASS_Mu);
+      p4m1.SetPtEtaPhiM(twoMuons.first._pt, twoMuons.first._eta, twoMuons.first._phi, PDG_MASS_Mu);
+      p4m2.SetPtEtaPhiM(twoMuons.second._pt, twoMuons.second._eta, twoMuons.second._phi, PDG_MASS_Mu);
       TLorentzVector p4dimuon = p4m1 + p4m2;
 
       if (p4dimuon.Pt() > highestPtSum)
@@ -300,59 +204,34 @@ Bool_t hmumuSelector::Process(Long64_t entry)
 
    if (highestPtMuonsP4.M() < _dimuonMinMass || highestPtMuonsP4.M() > _dimuonMaxMass)
       return kFALSE;
-
-   float eweight = 1;
-
-   if (mcLabel)
-   {
-      eweight = ((weighter->weight(*_nPU)) * (*_genWeight) * xsec / valueSumEventsWeighted);
-   }
-
-   if (!ntupleModeS)
-   {
-      h_eweight->Fill(eweight);
-      h_num_vertices->Fill(Vertices.GetSize(), eweight);
-      h_muon_pt->Fill(highestPtMuonPair.first._pt, eweight);
-      h_muon_pt->Fill(highestPtMuonPair.second._pt, eweight);
-      h_muon_corrpt->Fill(highestPtMuonPair.first._corrPT, eweight);
-      h_muon_corrpt->Fill(highestPtMuonPair.second._corrPT, eweight);
-
-      h_leadMuon_pt->Fill(highestPtMuonPair.first._corrPT, eweight);
-      h_leadMuon_phi->Fill(highestPtMuonPair.first._phi, eweight);
-      h_leadMuon_eta->Fill(highestPtMuonPair.first._eta, eweight);
-
-      h_subMuon_pt->Fill(highestPtMuonPair.second._corrPT, eweight);
-      h_subMuon_phi->Fill(highestPtMuonPair.second._phi, eweight);
-      h_subMuon_eta->Fill(highestPtMuonPair.second._eta, eweight);
-
-      h_dimuon_mass->Fill(highestPtMuonsP4.M(), eweight);
-      h_dimuon_pt->Fill(highestPtMuonsP4.Pt(), eweight);
-      h_dimuon_eta->Fill(highestPtMuonsP4.Eta(), eweight);
-      h_dimuon_phi->Fill(highestPtMuonsP4.Phi(), eweight);
-      h_dimuon_deta->Fill(highestPtMuonPair.first._eta - highestPtMuonPair.second._eta, eweight);
-      h_dimuon_dphi->Fill(highestPtMuonPair.first._phi - highestPtMuonPair.second._phi, eweight);
-
-      h_met_pt->Fill(*_pt, eweight);
-   }
-
-   // Jet Selection
+   
+   // Jets
 
    std::vector<TLorentzVector> p4jets;
 
-   Int_t _btagJets = 0;
-   Int_t _ncentJets = 0;
-   Int_t _nfwdJets = 0;
-   Int_t _numJets = 0;
+   int _btagJets = 0;
+   int _ncentJets = 0;
+   int _nfwdJets = 0;
+   int _numJets = 0;
+
+   float maxBDisc = 0.0;
+   float btagSF = 1.0;
 
    for (analysis::core::Jet iJet : Jets)
    {
+   
+     if (iJet._btag_sf != 0) btagSF*= iJet._btag_sf;
+
      if (iJet._pt > _JetPt && TMath::Abs(iJet._eta) < _JetEta && passTightJetID(iJet) && passLoosePUID(iJet) && passNoiseJet(iJet))
        // if (iJet._pt > _JetPt && TMath::Abs(iJet._eta) < _JetEta && passTightJetID(iJet))
       {
          if ((jetMuondR(iJet._eta, iJet._phi, highestPtMuonPair.first._eta, highestPtMuonPair.first._phi) > 0.4) && (jetMuondR(iJet._eta, iJet._phi, highestPtMuonPair.second._eta, highestPtMuonPair.second._phi) > 0.4))
          {
-            if (iJet._btag[0] > 0.4941)
+            float ibtagD = iJet._btag[0];
+            if (ibtagD > 0.4941)
                _btagJets++;
+               if (ibtagD > maxBDisc)
+                  maxBDisc = ibtagD;
             if (TMath::Abs(iJet._eta) <= 2.4)
                _ncentJets++;
             else
@@ -365,11 +244,7 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    }
    _numJets = p4jets.size();
 
-   if (!ntupleModeS)
-   {
-      h_num_jets->Fill(_numJets, eweight);
-      h_num_bjets->Fill(_btagJets, eweight);
-   }
+
    TLorentzVector leadJet, subJet, diJet;
 
    if (_numJets == 1)
@@ -399,8 +274,7 @@ Bool_t hmumuSelector::Process(Long64_t entry)
 
    TLorentzVector leadJet2, subJet2, diJet2;
    // look for next highest mass dijet pair, save as leadJet2, subJet2 and diJet2
-   // First jet should be deleted by now!
-   // TO DO: Create Histograms for the second jet pair
+   // First jet pair should be deleted by now!
    if (p4jets.size() >= 2)
    {
       for (unsigned int i = 0; i < p4jets.size(); ++i)
@@ -420,113 +294,96 @@ Bool_t hmumuSelector::Process(Long64_t entry)
       }
    }
 
-   if (ntupleModeS)
+   //event weight stuff goes here?
+   float pileupWeight = 1.0;
+   float totalSF = 1.0;
+   float eWeight = 1.0;
+   float totalWeight = 1.0;
+   if (mcLabel)
    {
-      float h_mass = highestPtMuonsP4.M();
-      float h_pt = highestPtMuonsP4.Pt();
-      float h_eta = highestPtMuonsP4.Eta();
-      float h_phi = highestPtMuonsP4.Phi();
-      float h_deta = TMath::Abs(highestPtMuonPair.first._eta - highestPtMuonPair.second._eta);
-      float h_dphi = TMath::Abs(highestPtMuonPair.first._phi - highestPtMuonPair.second._phi);
-      float mupt_1 = highestPtMuonPair.first._corrPT;
-      float mueta_1 = highestPtMuonPair.first._eta;
-      float muphi_1 = highestPtMuonPair.first._phi;
-      float mupt_2 = highestPtMuonPair.second._corrPT;
-      float mueta_2 = highestPtMuonPair.second._eta;
-      float muphi_2 = highestPtMuonPair.second._phi;
-      // Int_t njets = p4jets.size();
-
-      float jetpt_1 = leadJet.Pt();
-      float jetmass_1 = leadJet.M();
-      float jeteta_1 = leadJet.Pt() ? leadJet.Eta() : -5;
-
-      float jetpt_2 = subJet.Pt();
-      float jetmass_2 = subJet.M();
-      float jeteta_2 = subJet.Pt() ? subJet.Eta() : -5;
-
-      float mjj_1 = diJet.M() ? diJet.M() : 0;
-      float detajj_1 = diJet.M() ? TMath::Abs(leadJet.Eta() - subJet.Eta()) : -1;
-
-      float mjj_2 = diJet2.M() ? diJet2.M() : 0;
-      float detajj_2 = diJet2.M() ? TMath::Abs(leadJet2.Eta() - subJet2.Eta()) : -1;
-
-      float toFill[] = {
-          static_cast<float>(*_run),
-          static_cast<float>(*_lumi),
-          static_cast<float>(*_event),
-          static_cast<float>(mcLabel),
-          eweight,
-          h_mass,
-          h_pt,
-          h_eta,
-          h_phi,
-          h_deta,
-          h_dphi,
-          mupt_1,
-          mueta_1,
-          muphi_1,
-          mupt_2,
-          mueta_2,
-          muphi_2,
-          static_cast<float>(_numJets),
-          static_cast<float>(_ncentJets),
-          static_cast<float>(_nfwdJets),
-          static_cast<float>(_btagJets),
-          jetpt_1,
-          jetmass_1,
-          jeteta_1,
-          jetpt_2,
-          jetmass_2,
-          jeteta_2,
-          mjj_1,
-          detajj_1,
-          mjj_2,
-          detajj_2,
-          *_pt};
-
-      ntuple->Fill(toFill);
+      pileupWeight = weighter->weight(*_nPU);
+      totalSF = (*_idSF) * (*_isoSF) * btagSF * (*_trigEffSF) * (*_prefiringweight);
+      eWeight = pileupWeight * (*_genWeight) * xsec / valueSumEventsWeighted;
+      totalWeight = totalSF * eWeight;
    }
 
-   if (!ntupleModeS)
-   {
-      // make sure the jets are not 0 (so they exist)
-      // can just do jet.Pt() to know it exists as well
-      if (leadJet.Pt())
-      {
-         h_leadjet_pt->Fill(leadJet.Pt(), eweight);
-         h_leadjet_eta->Fill(leadJet.Eta(), eweight);
-         h_leadjet_phi->Fill(leadJet.Phi(), eweight);
-         if (subJet.Pt())
-         {
-            h_subjet_pt->Fill(subJet.Pt(), eweight);
-            h_subjet_eta->Fill(subJet.Eta(), eweight);
-            h_subjet_phi->Fill(subJet.Phi(), eweight);
+   float h_mass = highestPtMuonsP4.M();
+   float h_pt = highestPtMuonsP4.Pt();
+   float h_eta = highestPtMuonsP4.Eta();
+   float h_phi = highestPtMuonsP4.Phi();
+   float h_deta = TMath::Abs(highestPtMuonPair.first._eta - highestPtMuonPair.second._eta);
+   float h_dphi = TMath::Abs(highestPtMuonPair.first._phi - highestPtMuonPair.second._phi);
+   
+   float mupt_1 = highestPtMuonPair.first._pt;
+   float mueta_1 = highestPtMuonPair.first._eta;
+   float muphi_1 = highestPtMuonPair.first._phi;
+   float mupt_2 = highestPtMuonPair.second._pt;
+   float mueta_2 = highestPtMuonPair.second._eta;
+   float muphi_2 = highestPtMuonPair.second._phi;
 
-            if (diJet.M() > 0)
-            {
-               h_dijet_pt->Fill(diJet.Pt(), eweight);
-               h_dijet_mass->Fill(diJet.M(), eweight);
-               h_dijet_eta->Fill(diJet.Eta(), eweight);
-               h_dijet_phi->Fill(diJet.Phi(), eweight);
-               h_dijet_deta->Fill(leadJet.Eta() - subJet.Eta(), eweight);
-               h_dijet_dphi->Fill(leadJet.Phi() - subJet.Phi(), eweight);
-            }
-         }
-      }
+   float jetpt_1 = leadJet.Pt();
+   float jetmass_1 = leadJet.M();
+   float jeteta_1 = leadJet.Pt() ? leadJet.Eta() : -5;
 
-      // for (Int_t i = 0; i <= 1000; i += 10)
-      //  {
-      //    if (diJet.M() > i)
-      //    {
-      //       vec_dimuon_mass_jets.at(i / 10)->Fill(highestPtMuonsP4.M(), eweight);
-      //    }
-      //    if (diJet.M() > 0 && diJet.M() < i)
-      //    {
-      //       vec_dimuon_mass_jets_r.at(i / 10)->Fill(highestPtMuonsP4.M(), eweight);
-      //    }
-      //  }
-   }
+   float jetpt_2 = subJet.Pt();
+   float jetmass_2 = subJet.M();
+   float jeteta_2 = subJet.Pt() ? subJet.Eta() : -5;
 
+   float mjj_1 = diJet.M() ? diJet.M() : 0;
+   float detajj_1 = diJet.M() ? TMath::Abs(leadJet.Eta() - subJet.Eta()) : -1;
+
+   float mjj_2 = diJet2.M() ? diJet2.M() : 0;
+   float detajj_2 = diJet2.M() ? TMath::Abs(leadJet2.Eta() - subJet2.Eta()) : -1;
+
+   float toFill[] = {
+         static_cast<float>(yearS),
+         static_cast<float>(*_run),
+         static_cast<float>(*_lumi),
+         static_cast<float>(*_event),
+         static_cast<float>(mcLabel),
+         static_cast<float>(*_genWeight),
+         static_cast<float>(valueSumEventsWeighted),
+         static_cast<float>(xsec),
+         pileupWeight,
+         *_idSF,
+         *_isoSF,
+         btagSF,
+         *_trigEffSF,
+         static_cast<float>(*_prefiringweight),
+         totalSF,
+         eWeight,
+         totalWeight,
+         mupt_1,
+         mueta_1,
+         muphi_1,
+         mupt_2,
+         mueta_2,
+         muphi_2,
+         h_mass,
+         h_pt,
+         h_eta,
+         h_phi,
+         h_deta,
+         h_dphi,
+         static_cast<float>(_numJets),
+         static_cast<float>(_ncentJets),
+         static_cast<float>(_nfwdJets),
+         static_cast<float>(_btagJets),
+         maxBDisc,
+         jetpt_1,
+         jetmass_1,
+         jeteta_1,
+         jetpt_2,
+         jetmass_2,
+         jeteta_2,
+         mjj_1,
+         detajj_1,
+         mjj_2,
+         detajj_2,
+         *_pt};
+
+   ntuple->Fill(toFill);
+      
    return kTRUE;
 }
 
@@ -535,6 +392,7 @@ void hmumuSelector::SlaveTerminate()
    // The SlaveTerminate() function is called after all entries or objects
    // have been processed. When running with PROOF SlaveTerminate() is called
    // on each slave server.
+
 }
 
 void hmumuSelector::Terminate()
@@ -542,24 +400,12 @@ void hmumuSelector::Terminate()
    // The Terminate() function is the last function to be called during
    // a query. It always runs on the client, it can be used to present
    // the results graphically or save the results to file.
-   TFile fout(_outputNameFinal, "recreate");
 
-   if (ntupleModeM)
+   TFile fout(_outputNameFinal, "recreate");
+   ntuple = dynamic_cast<TNtuple *>(fOutput->FindObject("ntupledData"));
+   if (ntuple)
    {
-      ntuple = dynamic_cast<TNtuple *>(fOutput->FindObject("ntupledData"));
-      if (ntuple)
-      {
-         ntuple->Write();
-      }
-   }
-   else
-   {
-      TList *output_list = (TList *)GetOutputList();
-      for (const auto &&obj : *output_list)
-      {
-         if (obj->IsA()->InheritsFrom("TH1"))
-            obj->Write();
-      }
+      ntuple->Write();
    }
 
    fout.Close();
@@ -581,10 +427,10 @@ bool hmumuSelector::passVertex(std::vector<analysis::core::Vertex> vertexCol)
 
 bool hmumuSelector::passMuon(analysis::core::Muon const &m)
 {
-   double muonIsolation = (m._sumChargedHadronPtR04 + std::max(0., m._sumNeutralHadronEtR04 + m._sumPhotonEtR04 - 0.5 * m._sumPUPtR04)) / m._corrPT;
+   double muonIsolation = (m._sumChargedHadronPtR04 + std::max(0., m._sumNeutralHadronEtR04 + m._sumPhotonEtR04 - 0.5 * m._sumPUPtR04)) / m._pt;
 
    if (m._isGlobal && m._isTracker &&
-       m._corrPT > _muonPt && TMath::Abs(m._eta) < _muonEta &&
+       m._pt > _muonPt && TMath::Abs(m._eta) < _muonEta &&
        m._isMedium && muonIsolation < _muonIso)
       return true;
    return false;
@@ -592,7 +438,7 @@ bool hmumuSelector::passMuon(analysis::core::Muon const &m)
 
 bool hmumuSelector::passMuonHLT(analysis::core::Muon const &m)
 {
-   if ((m._isHLTMatched[1] || m._isHLTMatched[0]) && m._corrPT > _muonMatchedPt && TMath::Abs(m._eta) < _muonMatchedEta)
+   if ((m._isHLTMatched[1] || m._isHLTMatched[0]) && m._pt > _muonMatchedPt && TMath::Abs(m._eta) < _muonMatchedEta)
       return true;
 
    return false;
@@ -687,4 +533,17 @@ bool hmumuSelector::passNoiseJet(analysis::core::Jet j)
 
   if (jeta >= 2.65 and jeta <= 3.139 and jpt < 50) return false;
   return true;
+}
+
+bool hmumuSelector::passMetFilters(std::vector<std::pair<string,int>> filterBits)
+{
+   bool pass = true;
+   for (const std::pair<string,int> &bit : filterBits)
+   {
+      if (bit.first.compare("Flag_BadChargedCandidateFilter")) // 0 if equal, so gets skipped!
+      {
+         pass = pass && bit.second;
+      }
+   }
+   return pass;
 }

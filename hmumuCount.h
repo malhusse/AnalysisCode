@@ -25,6 +25,7 @@ public :
    TTreeReader     fReader;  //!the tree reader
    TTree          *fChain = 0;   //!pointer to the analyzed TTree or TChain
    
+   Int_t year = 0;
    TH1 *hc_numEventsWeighted = 0;
    TH1 *hc_numEvents = 0;
 

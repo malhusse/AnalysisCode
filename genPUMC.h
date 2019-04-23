@@ -32,7 +32,7 @@ public :
    TTreeReader     fReader;  //!the tree reader
    TTree          *fChain = 0;   //!pointer to the analyzed TTree or TChain
 
-
+   Int_t year = 0;
    TH1 *h_pileup = 0;
    
    // Readers to access the data (delete the ones you do not need).

@@ -1,17 +1,24 @@
-void quickPUMC(string inputList, string outputFile)
+void quickPUMC(string inputList, string outputFile, Int_t year)
 {
   cout << "input filelist: "<< inputList << " , output filename: " << outputFile << endl;
   cout << "loading count chain" << endl;
 
+  std::string fileList = "filelists/";
+  fileList += std::to_string(year);
+  fileList += "/";
+  fileList += inputList;
+  fileList += ".files";
+
   TChain *eventsChain = new TChain("ntuplemaker_H2DiMuonMaker/Events");
-  std::ifstream inputAgain(inputList);
+  std::ifstream inputAgain(fileList);
   for (std::string line; std::getline(inputAgain,line); ){
     eventsChain->Add(TString(line.c_str()));
   }
 
-  TProof::Open("workers=8");
+  TProof::Open("workers=4");
   gProof->AddInput(new TNamed("outputName",outputFile));
-  gProof->Exec("gSystem->Load(\"/uscms/home/malhusse/nobackup/build/libAnalysisCore.so\")");
+  gProof->Exec("gSystem->Load(\"/uscms_data/d1/malhusse/analysis/libAnalysisCore.so\")");
+  gProof->SetParameter("getYear", year);
 
   eventsChain->SetProof();
   eventsChain->Process("genPUMC.C+");
