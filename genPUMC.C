@@ -28,6 +28,10 @@
 #include "genPUMC.h"
 #include <TH2.h>
 #include <TStyle.h>
+#include <TString.h>
+#include <TNamed.h>
+#include <TParameter.h>
+#include <TList.h>
 
 TString _outputName;
 

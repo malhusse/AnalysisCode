@@ -37,12 +37,7 @@ public :
    
    // Readers to access the data (delete the ones you do not need).
    TTreeReaderValue<Int_t> _nPU = {fReader, "_nPU"};
-   // TTreeReaderValue<Int_t> _nvtx = {fReader, "_nvtx"};
    TTreeReaderValue<Int_t> _genWeight = {fReader, "_genWeight"};
-   // TTreeReaderValue<Bool_t> _passedMetFilters = {fReader, "_passedMetFilters"};
-   // TTreeReaderValue<vector<bool>> _hasHLTFired = {fReader, "_hasHLTFired"};
-   // TTreeReaderArray<pair<string,int>> _metFilterBits = {fReader, "_metFilterBits"};
-
 
    genPUMC(TTree * /*tree*/ =0) { }
    virtual ~genPUMC() { }
