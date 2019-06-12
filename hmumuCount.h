@@ -32,33 +32,6 @@ public :
    // Readers to access the data (delete the ones you do not need).
    TTreeReaderValue<Int_t> _nEventsProcessed = {fReader, "_nEventsProcessed"};
    TTreeReaderValue<Int_t> _sumEventWeights = {fReader, "_sumEventWeights"};
-   /* TTreeReaderValue<Bool_t> _isMC = {fReader, "_isMC"}; */
-   /* TTreeReaderArray<string> _triggerNames = {fReader, "_triggerNames"}; */
-   /* TTreeReaderArray<string> _btagNames = {fReader, "_btagNames"}; */
-   /* TTreeReaderArray<string> _tauIDNames = {fReader, "_tauIDNames"}; */
-   /* TTreeReaderArray<string> _metFilterNames = {fReader, "_metFilterNames"}; */
-   /* TTreeReaderValue<unsigned int> _nMuons = {fReader, "_nMuons"}; */
-   /* TTreeReaderValue<Bool_t> _checkTrigger = {fReader, "_checkTrigger"}; */
-   /* TTreeReaderValue<Bool_t> _isGlobalMuon = {fReader, "_isGlobalMuon"}; */
-   /* TTreeReaderValue<Bool_t> _isTrackerMuon = {fReader, "_isTrackerMuon"}; */
-   /* TTreeReaderValue<Bool_t> _isStandAloneMuon = {fReader, "_isStandAloneMuon"}; */
-   /* TTreeReaderValue<Float_t> _minPt = {fReader, "_minPt"}; */
-   /* TTreeReaderValue<Float_t> _maxeta = {fReader, "_maxeta"}; */
-   /* TTreeReaderValue<Float_t> _maxNormChi2 = {fReader, "_maxNormChi2"}; */
-   /* TTreeReaderValue<Int_t> _minMuonHits = {fReader, "_minMuonHits"}; */
-   /* TTreeReaderValue<Int_t> _minPixelHits = {fReader, "_minPixelHits"}; */
-   /* TTreeReaderValue<Int_t> _minStripHits = {fReader, "_minStripHits"}; */
-   /* TTreeReaderValue<Int_t> _minTrackerHits = {fReader, "_minTrackerHits"}; */
-   /* TTreeReaderValue<Int_t> _minSegmentMatches = {fReader, "_minSegmentMatches"}; */
-   /* TTreeReaderValue<Int_t> _minMatchedStations = {fReader, "_minMatchedStations"}; */
-   /* TTreeReaderValue<Int_t> _minPixelLayers = {fReader, "_minPixelLayers"}; */
-   /* TTreeReaderValue<Int_t> _minTrackerLayers = {fReader, "_minTrackerLayers"}; */
-   /* TTreeReaderValue<Int_t> _minStripLayers = {fReader, "_minStripLayers"}; */
-   /* TTreeReaderValue<Float_t> _minValidFractionTracker = {fReader, "_minValidFractionTracker"}; */
-   /* TTreeReaderValue<Float_t> _maxd0 = {fReader, "_maxd0"}; */
-   /* TTreeReaderValue<Float_t> _maxTrackIsoSumPt = {fReader, "_maxTrackIsoSumPt"}; */
-   /* TTreeReaderValue<Float_t> _maxRelCombIso = {fReader, "_maxRelCombIso"}; */
-
 
    hmumuCount(TTree * /*tree*/ =0) { }
    virtual ~hmumuCount() { }
