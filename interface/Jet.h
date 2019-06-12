@@ -45,7 +45,10 @@ class Jet : public Object
 		_hfem = 0;
 		_jecf = 0;
 		_jecu = 0;
-		_btag.clear();
+		_btag = 0;
+		_dscvLoose = false;
+		_dcsvMedium = false;
+		_dcsvTight = false;
 
 		_btag_sf = 1;
 		_btag_sf_up = 0;
@@ -53,6 +56,7 @@ class Jet : public Object
 
 		_puid = 0;
 		_fullid = 0;
+		_qgLikelihood = 0;
 		
 		_uncAK4 = 0;
 		_pt_upAK4 = 0;
@@ -100,14 +104,18 @@ class Jet : public Object
 	float _hfem;
 	float _jecf;
 	float _jecu;
-	std::vector<float> _btag;
-	
+	float _btag;
+	bool _dscvLoose;
+	bool _dcsvMedium;
+	bool _dcsvTight;
+
 	double _btag_sf;
 	double _btag_sf_up;
 	double _btag_sf_down;
 
 	float _puid;
 	int _fullid;
+	float _qgLikelihood;
 
 	double _uncAK4;
 	double _pt_upAK4;
@@ -126,6 +134,15 @@ class Jet : public Object
 	float _geninvf;
 	float _genauxf;
 
+	bool operator==(const Jet& j2)
+	{
+		return (fabs(this->_pt - j2._pt) < this->_pt * .0001 && 
+				fabs(this->_eta - j2._eta) < this->_eta * .0001 && 
+				fabs(this->_phi - j2._phi) < this->_phi * .0001 && 
+				fabs(this->_charge - j2._charge) < this->_charge * .0001 &&
+				fabs(this->_mass - j2._mass) < this->_mass * .0001);
+	}
+	
 #ifdef STANDALONE
 	ClassDef(Jet, 1)
 #endif

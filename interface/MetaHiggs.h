@@ -55,6 +55,10 @@ class MetaHiggs : public analysis::core::Object
 		_nMuons = 0;
 		_checkTrigger = 0;
 
+		_deepLooseWP = 0;
+		_deepMediumWP = 0;
+		_deepTightWP = 0;
+		
 		//	cuts used at ntuple production stage
 		_isGlobalMuon = 0;
 		_isTrackerMuon = 0;
@@ -86,6 +90,10 @@ class MetaHiggs : public analysis::core::Object
 	std::vector<std::string> _metFilterNames;
 	uint32_t _nMuons;
 	bool _checkTrigger;
+
+	float _deepLooseWP;
+	float _deepMediumWP;
+	float _deepTightWP;
 
 	//	cuts used at ntuple production stage
 	bool _isGlobalMuon;

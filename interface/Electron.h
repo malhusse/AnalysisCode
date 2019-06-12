@@ -19,26 +19,50 @@ class Electron : public Track
     virtual void reset()
     {
         Track::reset();
-        _ids.clear();
         _sumChargedHadronPt = 0;
         _sumNeutralHadronEt = 0;
         _sumPhotonEt = 0;
         _sumPUPt = 0;
         _sumChargedParticlePt = 0;
-        _dz = 0;
+
+        _dzPV = 0;
+        _d0PV = 0;
+        _ip3d = 0;
+        _sip3d = 0;
+
+        // _relCombIso = 0;
+		_miniIso = 0;
+
         _isPF = false;
         _convVeto = false;
+
+        _isTight = 0;
+	    _isMedium = 0;
+	    _isLoose = 0;
+        _isVeto = 0;
     }
 
-    std::vector<bool> _ids;
     float _sumChargedHadronPt;
     float _sumNeutralHadronEt;
     float _sumPhotonEt;
     float _sumPUPt;
     float _sumChargedParticlePt;
-    double _dz;
+
+    float _dzPV;
+    float _d0PV;
+    float _ip3d;
+    float _sip3d;
+
+	// float _relCombIso;
+	float _miniIso;
+    
     bool _isPF;
     bool _convVeto;
+
+    bool _isTight;
+	bool _isMedium;
+	bool _isLoose;
+    bool _isVeto;
 
 #ifdef STANDALONE
     ClassDef(Electron, 1)
