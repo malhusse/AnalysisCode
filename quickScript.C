@@ -28,14 +28,14 @@ void quickScript(string inputList, string outputFile, Int_t year)
    std::cout << "input filelist: " << fileList << " , output filename: " << outputFile << endl;
    std::cout << _xsecJson.get<double>(inputDataset) << std::endl;
    std::cout << _labelJson.get<int>(inputDataset) << std::endl;
-
    double xsec = _xsecJson.get<double>(inputDataset);
    int mcLabel = _labelJson.get<int>(inputDataset);
 
+   gSystem->Load("/uscms_data/d1/malhusse/analysis/libAnalysisCore.so");
    TProof::Open("workers=4");
    gProof->AddInput(new TNamed("outputName", outputFile));
    gProof->Exec("gSystem->Load(\"/uscms_data/d1/malhusse/analysis/libAnalysisCore.so\")");
-   gProof->Exec("gSystem->Load(\"/uscms_data/d1/malhusse/analysis/libAnalysisAuxTools.so\")");
+   //   gProof->Exec("gSystem->Load(\"/uscms_data/d1/malhusse/analysis/libAnalysisAuxTools.so\")");
 
    TString countFile = "data/count/";
    countFile += std::to_string(year);

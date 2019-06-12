@@ -3,6 +3,8 @@ void quickPUMC(string inputList, string outputFile, Int_t year)
   cout << "input filelist: "<< inputList << " , output filename: " << outputFile << endl;
   cout << "loading count chain" << endl;
 
+  gSystem->Load("/uscms_data/d1/malhusse/analysis/libAnalysisCore.so");
+
   std::string fileList = "filelists/";
   fileList += std::to_string(year);
   fileList += "/";

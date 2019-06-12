@@ -1,6 +1,7 @@
 void quickCount(string inputList, string outputFile, Int_t year)
 {
 
+  gSystem->Load("/uscms_data/d1/malhusse/analysis/libAnalysisCore.so");
   cout << "input filelist: "<< inputList << " , output filename: " << outputFile << endl;
   cout << "loading count chain" << endl;
 
