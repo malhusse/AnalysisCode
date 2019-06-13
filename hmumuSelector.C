@@ -558,7 +558,7 @@ Bool_t hmumuSelector::Process(Long64_t entry)
       category = 4; // ttH Hadronic Tight
    }
    
-   if (!category && _btagJetsM > 0 && _numJets > 2)
+   if (!category && _btagJetsM > 0 && _numJets >= 2)
    {
       category = 6; // ttH Hadronic Loose
    }
