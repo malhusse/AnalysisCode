@@ -61,6 +61,9 @@ public:
    TH1 *h_bdtScore01jet = 0;
    TH1 *h_bdtScore2jet = 0;
 
+   TH1 *h_dimuon_01jet = 0;
+   TH1 *h_dimuon_2jet = 0;
+   
    TString _outputName;
    Int_t collectionYear;
 

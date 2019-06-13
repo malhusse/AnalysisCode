@@ -87,6 +87,9 @@ void plotSelec::SlaveBegin(TTree * /*tree*/)
    h_bdtScore01jet = new TH1F("h_bdtScore01jet", "; ; ", 20, -1, 1);
    h_bdtScore2jet = new TH1F("h_bdtScore2jet", ";;", 20, -1, 1);
 
+   h_dimuon_01jet = new TH1F("dimuon_mass_01", " 01 jet category ; dimuon mass (GeV); Events", 100, 100, 150);
+   h_dimuon_2jet = new TH1F("dimuon_mass_2", " 2 jet category ; dimuon mass (GeV); Events", 100, 100, 150);
+
    h_leadMuon_pt->Sumw2();
    h_leadMuon_eta->Sumw2();
    h_subMuon_pt->Sumw2();
@@ -112,6 +115,8 @@ void plotSelec::SlaveBegin(TTree * /*tree*/)
    h_csPhi->Sumw2();
    h_bdtScore01jet->Sumw2();
    h_bdtScore2jet->Sumw2();
+   h_dimuon_01jet->Sumw2();
+   h_dimuon_2jet->Sumw2();
 
    GetOutputList()->Add(h_leadMuon_pt);
    GetOutputList()->Add(h_leadMuon_eta);
@@ -138,6 +143,8 @@ void plotSelec::SlaveBegin(TTree * /*tree*/)
    GetOutputList()->Add(h_csPhi);
    GetOutputList()->Add(h_bdtScore01jet);
    GetOutputList()->Add(h_bdtScore2jet);
+   GetOutputList()->Add(h_dimuon_01jet);
+   GetOutputList()->Add(h_dimuon_2jet);
 }
 
 Bool_t plotSelec::Process(Long64_t entry)
@@ -189,18 +196,24 @@ Bool_t plotSelec::Process(Long64_t entry)
    h_dijet_deta->Fill(*detajj_1, weight);
 
    h_met_pt->Fill(*metpt, weight);
-   h_mindrmj->Fill(*mindrmj,weight);
-   h_zeppen->Fill(*zeppen,weight);
-   h_csTheta->Fill(*csTheta,weight);
-   h_csPhi->Fill(*csPhi,weight);
+   h_mindrmj->Fill(*mindrmj, weight);
+   h_zeppen->Fill(*zeppen, weight);
+   h_csTheta->Fill(*csTheta, weight);
+   h_csPhi->Fill(*csPhi, weight);
 
    // insert if here for different event category!
 
-   if (*category == 3)
-      h_bdtScore01jet->Fill(*bdtScore,weight);
-   if (*category == 13)
-      h_bdtScore2jet->Fill(*bdtScore,weight);
-      
+   if (*category == 16)
+   {
+      h_bdtScore01jet->Fill(*bdtScore, weight);
+      h_dimuon_01jet->Fill(*h_mass, weight);
+   }
+   if (*category == 18)
+   {
+      h_bdtScore2jet->Fill(*bdtScore, weight);
+      h_dimuon_2jet->Fill(*h_mass, weight);
+   }
+
    return kTRUE;
 }
 
