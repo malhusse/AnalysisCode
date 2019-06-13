@@ -1,5 +1,6 @@
 import glob
 import sys
+import os
 
 year = sys.argv[1]
 
@@ -17,6 +18,7 @@ for k,v in dic.items():
     line = "root -l -b -q 'quickCount.C(\"{}\",\"{}\",{})'\n".format(k,v,year)
     f.write(line)
 f.close()
+os.system("chmod 755 {}".format("runCount{}.sh".format(year)))
 
 f = open("runPUMC{}.sh".format(year),"w")
 f.write("#!/bin/bash\n")
@@ -25,6 +27,7 @@ for k,v in dic.items():
         line = "root -l -b -q 'quickPUMC.C(\"{}\",\"{}\",{})'\n".format(k,v,year)
         f.write(line)
 f.close()
+os.system("chmod 755 {}".format("runPUMC{}.sh".format(year)))
 
 f = open("runSelector{}.sh".format(year),"w")
 f.write("#!/bin/bash\n")
@@ -36,3 +39,15 @@ for k,v in dic.items():
     f.write(line)
     f.write(line2)
 f.close()
+os.system("chmod 755 {}".format("runSelector{}.sh".format(year)))
+
+f = open("runHistos{}.sh".format(year),"w")
+f.write("#!/bin/bash\n")
+for k,v in dic.items():
+    line = "root -l -b -q 'histoScript.C(\"{}\",{})'\n".format(v,year)
+    f.write(line)
+f.write("mkdir histoFiles/{}/data\n".format(year))
+f.write("mv histoFiles/{}/SingleMuon*.root histoFiles/{}/data/\n".format(year,year))
+f.write("hadd histoFiles/{}/allData{}.root histoFiles/{}/data/*.root\n".format(year,year,year))
+f.close()
+os.system("chmod 755 {}".format("runHistos{}.sh".format(year)))
