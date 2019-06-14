@@ -218,7 +218,7 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
    //
    // define output TNtuples..
    //
-   string vars = "mclabel:totalSF:eWeight:totalWeight:zptWeight:"
+   string vars = "mclabel:totalSF:eWeight:totalWeight:"
                  "muPtC_1:muEtaC_1:"
                  "muPtC_2:muEtaC_2:"
                  "h_mass:h_pt:h_eta:h_phi:h_deta:h_dphi:"
@@ -573,12 +573,12 @@ Bool_t hmumuSelector::Process(Long64_t entry)
       category = 2; // ttH Leptonic
    }
 
-   if (!category && _btagJetsM > 1 && _numJets > 5)
+   if (!category && _btagJetsL > 1 && _numJets > 5)
    {
       category = 4; // ttH Hadronic Tight
    }
    
-   if (!category && _btagJetsM > 0 && _numJets >= 2)
+   if (!category && _btagJetsL > 0 && _numJets > 2)
    {
       category = 6; // ttH Hadronic Loose
    }
@@ -614,7 +614,7 @@ Bool_t hmumuSelector::Process(Long64_t entry)
       category = 16; // 01 jet inclusive
    }
 
-   if (!category && njets >= 2 && nbjets == 0)
+   if (!category && njets == 2 && _btagJetsL == 0)
    {
       bdtScore = reader_2jet->EvaluateMVA("BDT2jets");
       category = 18; // 02 jet inclusive
@@ -629,7 +629,6 @@ Bool_t hmumuSelector::Process(Long64_t entry)
        totalSF,
        eWeight,
        totalWeight,
-       zptWeight,
        mupt_1,
        mueta_1,
        mupt_2,
