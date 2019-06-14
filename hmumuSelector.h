@@ -23,6 +23,7 @@
 #include <TMVA/Reader.h>
 
 #include "interface/LumiReweightingStandAlone.h"
+#include "interface/ZptReWeighting.h"
 #include "interface/Muon.h"
 #include "interface/Jet.h"
 #include "interface/Vertex.h"
@@ -50,6 +51,12 @@ public :
    TProofOutputFile *fProofFile;
    
    reweight::LumiReWeighting *weighter;
+
+   ZptReWeighting *zptweighter = 0;
+
+   TString _dataZptFile;
+   TString _mcZptFile;
+
    TString _outputRoot;
    TString _outputNameFinal;
    TString _dataPUfile;

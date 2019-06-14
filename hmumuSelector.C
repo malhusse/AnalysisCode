@@ -113,7 +113,22 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
 
       weighter = new reweight::LumiReWeighting(_mcPUfile.Data(), _dataPUfile.Data(), "pileup", "pileup");
    }
+   if ( ((string) _outputRoot.Data()).find("DY") != string::npos ) //is Drell-Yan Sample
+   {
+      _dataZptFile = "/uscms_data/d1/malhusse/analysis/AnalysisCode/data/zpt/" ;
+      _dataZptFile += std::to_string(year);
+      _dataZptFile += "/";
+      _dataZptFile += "allData";
+      _dataZptFile += std::to_string(year);
+      _dataZptFile += ".root";
 
+      _mcZptFile = "/uscms_data/d1/malhusse/analysis/AnalysisCode/data/zpt/";
+      _mcZptFile += std::to_string(year);
+      _mcZptFile += "/";
+      _mcZptFile += _outputRoot;
+
+      zptweighter = new ZptReWeighting(_mcZptFile.Data(), _dataZptFile.Data(), "zpt", "zpt");
+   }
    // construct readers
    reader_01jet = new TMVA::Reader();
    reader_2jet = new TMVA::Reader();
@@ -203,7 +218,7 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
    //
    // define output TNtuples..
    //
-   string vars = "mclabel:totalSF:eWeight:totalWeight:"
+   string vars = "mclabel:totalSF:eWeight:totalWeight:zptWeight:"
                  "muPtC_1:muEtaC_1:"
                  "muPtC_2:muEtaC_2:"
                  "h_mass:h_pt:h_eta:h_phi:h_deta:h_dphi:"
@@ -471,27 +486,32 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    //       }
    //    }
    // }
-
-   // //event weight stuff goes here?
-   float pileupWeight = 1.0;
-   float totalSF = 1.0;
-   float eWeight = 1.0;
-   float totalWeight = 1.0;
-
-   if (mcLabel)
-   {
-      pileupWeight = weighter->weight(*_nPU);
-      totalSF = (*_idSF) * (*_isoSF) * (*_trigEffSF) * (*_prefiringweight) * rebtagSF;
-      eWeight = pileupWeight * (*_genWeight) * xsec / valueSumEventsWeighted;
-      totalWeight = totalSF * eWeight;
-   }
-
    float h_mass = higgsCandidate.M();
    float h_pt = higgsCandidate.Pt();
    float h_eta = higgsCandidate.Eta();
    float h_phi = higgsCandidate.Phi();
    float h_deta = TMath::Abs(leadMuon._eta - subMuon._eta);
    float h_dphi = TMath::Abs(leadMuon._phi - subMuon._phi);
+
+   // //event weight stuff goes here?
+   float pileupWeight = 1.0;
+   float totalSF = 1.0;
+   float eWeight = 1.0;
+   float totalWeight = 1.0;
+   float zptWeight = 1.0;
+
+   if (((string) _outputRoot.Data()).find("DY") != string::npos ) //is Drell-Yan Sample
+   {
+      zptWeight = zptweighter->weight(h_pt);
+   }
+
+   if (mcLabel)
+   {
+      pileupWeight = weighter->weight(*_nPU);
+      totalSF = (*_idSF) * (*_isoSF) * (*_trigEffSF) * (*_prefiringweight) * rebtagSF * zptWeight;
+      eWeight = pileupWeight * (*_genWeight) * xsec / valueSumEventsWeighted;
+      totalWeight = totalSF * eWeight;
+   }
 
    float mupt_1 = leadMuon._pt;
    float mueta_1 = leadMuon._eta;
@@ -609,6 +629,7 @@ Bool_t hmumuSelector::Process(Long64_t entry)
        totalSF,
        eWeight,
        totalWeight,
+       zptWeight,
        mupt_1,
        mueta_1,
        mupt_2,
