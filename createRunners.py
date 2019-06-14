@@ -51,3 +51,15 @@ f.write("mv histoFiles/{}/SingleMuon*.root histoFiles/{}/data/\n".format(year,ye
 f.write("hadd histoFiles/{}/allData{}.root histoFiles/{}/data/*.root\n".format(year,year,year))
 f.close()
 os.system("chmod 755 {}".format("runHistos{}.sh".format(year)))
+
+f = open("runZPT{}.sh".format(year),"w")
+f.write("#!/bin/bash\n")
+for k,v in dic.items():
+    if "SingleMuon" in k or "DY" in k:
+        line = "root -l -b -q 'quickZPT.C(\"{}\",\"{}\",{})'\n".format(k,v,year)
+        f.write(line)
+f.write("mkdir data/zpt/{}/data\n".format(year))
+f.write("mv data/zpt/{}/SingleMuon*.root data/zpt/{}/data/\n".format(year,year))
+f.write("hadd data/zpt/{}/allData{}.root data/zpt/{}/data/*.root\n".format(year,year,year))
+f.close()
+os.system("chmod 755 {}".format("runZPT{}.sh".format(year)))
