@@ -48,6 +48,7 @@ class MetaHiggs : public analysis::core::Object
 		_nEventsProcessed = 0;
 		_sumEventWeights = 0;
 		_isMC = 0;
+		_year = 0;
 		_triggerNames.clear();
 		_btagNames.clear();
 		_tauIDNames.clear();
@@ -89,6 +90,7 @@ class MetaHiggs : public analysis::core::Object
 	std::vector<std::string> _tauIDNames;
 	std::vector<std::string> _metFilterNames;
 	uint32_t _nMuons;
+	int _year;
 	bool _checkTrigger;
 
 	float _deepLooseWP;

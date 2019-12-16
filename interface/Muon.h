@@ -8,6 +8,8 @@
 #include "Track.h"
 #endif
 
+#include <math.h>       /* fabs */
+
 namespace analysis
 {
 namespace core
@@ -28,12 +30,12 @@ class Muon : public Track
 
 		_isPF = 0;
 
-		_pt_kinfit = 0; 
-		_ptErr_kinfit = 0;
-		_d0PV_kinfit = 0;
-		_dzPV_kinfit = 0;
-		_chi2_kinfit = 0;
-		_ndf_kinfit = 0;
+		// _pt_kinfit = 0; 
+		// _ptErr_kinfit = 0;
+		// _d0PV_kinfit = 0;
+		// _dzPV_kinfit = 0;
+		// _chi2_kinfit = 0;
+		// _ndf_kinfit = 0;
 
 		fsrP4.SetPxPyPzE(0,0,0,0);
 
@@ -89,6 +91,10 @@ class Muon : public Track
 		_sumNeutralHadronEtR04 = 0;
 		_sumPhotonEtR04 = 0;
 		_sumPUPtR04 = 0;
+		_roccCor = 0;
+		_corrPT = 0;
+		_geoPT = 0;
+		
 	}
 	virtual ~Muon() {}
 
@@ -151,13 +157,14 @@ class Muon : public Track
 	float _sumPUPtR04;
 	float _roccCor;
 	float _corrPT;
+	float _geoPT;
 
-	float _d0PV_kinfit;
-	float _dzPV_kinfit;
-	double _pt_kinfit; 
-	double _ptErr_kinfit; 
-	float _chi2_kinfit;
-	int _ndf_kinfit;
+	// float _d0PV_kinfit;
+	// float _dzPV_kinfit;
+	// double _pt_kinfit; 
+	// double _ptErr_kinfit; 
+	// float _chi2_kinfit;
+	// int _ndf_kinfit;
 
 	double _pt_PF;
 	double _pterr_PF;
@@ -168,10 +175,10 @@ class Muon : public Track
 
 	bool operator==(const Muon& m2)
 	{
-		return (fabs(this->_pt - m2._pt) < this->_pt * .001 && 
-				fabs(this->_eta == m2._eta) < this->_eta * .001 && 
-				fabs(this->_phi == m2._phi) < this->_phi * .001 && 
-				fabs(this->_charge == m2._charge) < this->_charge * .001);
+		return (fabs(this->_pt - m2._pt) < this->_pt * .0001 && 
+				fabs(this->_eta - m2._eta) < this->_eta * .0001 && 
+				fabs(this->_phi - m2._phi) < this->_phi * .0001 && 
+				fabs(this->_charge - m2._charge) < this->_charge * .0001);
 	}
 
 #ifdef STANDALONE

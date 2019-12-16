@@ -63,7 +63,6 @@ class EventAuxiliary : public Object
 		_isoSF = 1;
 		_isoSF_up = 1;
 		_isoSF_down = 1;
-		_btagSF = 1;
 	}	
 
 	int _nPU;
@@ -83,7 +82,6 @@ class EventAuxiliary : public Object
 	float _isoSF;
 	float _isoSF_up;
 	float _isoSF_down;
-	float _btagSF;
 
 	std::vector<bool> _hasHLTFired;
 	std::map<string, int> _metFilterBits;
