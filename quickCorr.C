@@ -1,4 +1,4 @@
-void quickPUMC(string inputList, string outputFile, Int_t year)
+void quickCorr(string inputList, string outputFile, Int_t year)
 {
   cout << "input filelist: "<< inputList << " , output filename: " << outputFile << endl;
   cout << "loading count chain" << endl;
@@ -23,5 +23,5 @@ void quickPUMC(string inputList, string outputFile, Int_t year)
   gProof->SetParameter("getYear", year);
 
   eventsChain->SetProof();
-  eventsChain->Process("genPUMC.C+");
+  eventsChain->Process("genCorr.C+");
 }

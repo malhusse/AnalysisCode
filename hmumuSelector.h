@@ -21,9 +21,11 @@
 #include <TNtuple.h>
 #include <TProofOutputFile.h>
 #include <TMVA/Reader.h>
+#include <TF1.h>
 
 #include "interface/LumiReweightingStandAlone.h"
 #include "interface/ZptReWeighting.h"
+#include "interface/NvtxReWeighting.h"
 #include "interface/Muon.h"
 #include "interface/Jet.h"
 #include "interface/Vertex.h"
@@ -46,6 +48,8 @@ public :
    // Int_t yearS = 0;
    Int_t mcLabel = -99;
    Double_t xsec = 0;
+  
+   const TF1 *nvtxFunc = 0;
 
    TFile *fFile;
    TProofOutputFile *fProofFile;
@@ -53,9 +57,9 @@ public :
    reweight::LumiReWeighting *weighter;
 
    ZptReWeighting *zptweighter = 0;
-
-   TString _dataZptFile;
-   TString _mcZptFile;
+   
+   TString _dataCorrFile;
+   TString _mcCorrFile;
 
    TString _outputRoot;
    TString _outputNameFinal;

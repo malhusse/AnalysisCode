@@ -46,7 +46,7 @@ void hmumuCount::Begin(TTree * /*tree*/)
    TParameter<Int_t> *pYear = dynamic_cast<TParameter<Int_t>*>(fInput->FindObject("getYear"));
    year = pYear->GetVal();
 
-   _outputName = "data/count/";
+   _outputName = "resources/count/";
    _outputName += std::to_string(year);
    _outputName += "/";
    _outputName += name ? name->GetTitle() : "outputName.root";  

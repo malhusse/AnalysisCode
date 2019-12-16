@@ -41,6 +41,7 @@ void plotSelec::Begin(TTree * /*tree*/)
    TParameter<Int_t> *pYear = dynamic_cast<TParameter<Int_t> *>(fInput->FindObject("getYear"));
    collectionYear = pYear->GetVal();
 
+   //   _outputName = "histoFilesH/";
    _outputName = "histoFiles/";
    _outputName += std::to_string(collectionYear);
    _outputName += "/";
@@ -54,97 +55,203 @@ void plotSelec::SlaveBegin(TTree * /*tree*/)
    // The tree argument is deprecated (on PROOF 0 is passed).
 
    TString option = GetOption();
-   h_leadMuon_pt = new TH1F("lead_muon_pt", "Leading Muon p_{T};p_{T}  (GeV);Events ", 100, 0, 200);
-   h_leadMuon_eta = new TH1F("lead_muon_eta", "Leading Muon \\eta;\\eta;Events ", 50, -2.5, 2.5);
+   h_leadMuon_pt_onZ = new TH1F("lead_muon_pt_onZ", "Leading Muon p_{T};p_{T}  (GeV);Events ", 100, 0, 200);
+   h_leadMuon_eta_onZ = new TH1F("lead_muon_eta_onZ", "Leading Muon \\eta;\\eta;Events ", 50, -2.5, 2.5);
+   h_subMuon_pt_onZ = new TH1F("sub_muon_pt_onZ", "Subleading Muon p_{T};p_{T}  (GeV);Events ", 100, 0, 200);
+   h_subMuon_eta_onZ = new TH1F("sub_muon_eta_onZ", "Subleading Muon eta;\\eta;Events ", 50, -2.5, 2.5);
+   h_dimuon_mass_onZ = new TH1F("dimuon_mass_onZ", "Dimuon Mass;M_{\\mu \\mu}  (Gev);Events ", 100, 70, 110);
+   h_dimuon_pt_onZ = new TH1F("dimuon_pt_onZ", "Dimuon p_{T};p_{T}  (GeV);Events ", 200, 0, 400);
+   h_dimuon_eta_onZ = new TH1F("dimuon_eta_onZ", "Dimuon \\eta;\\eta;Events ", 100, -5.0, 5.0);
+   h_dimuon_phi_onZ = new TH1F("dimuon_phi_onZ", "Dimuon \\phi;\\phi;Events ", 36, -3.6, 3.6);
+   h_dimuon_deta_onZ = new TH1F("dimuon_deta_onZ", "Dimuon deta;deta;Events ", 50, 0, 5.0);
+   h_dimuon_dphi_onZ = new TH1F("dimuon_dphi_onZ", "Dimuon dphi;dphi;Events ", 18, 0, 3.6);
+   h_num_jets_onZ = new TH1F("num_jets_onZ", "Number of Jets;nJets;Events ", 8, 0, 8);
+   h_num_bjets_onZ = new TH1F("num_bjets_onZ", "Number of B Jets;nBJets;Events ", 6, 0, 6);
+   h_leadjet_pt_onZ = new TH1F("leadjet_pt_onZ", "Leading Jet p_{T};p_{T}  (GeV);Events ", 250, 0, 500);
+   h_leadjet_eta_onZ = new TH1F("leadjet_eta_onZ", "Leading Jet \\eta;\\eta;Events ", 94, -4.7, 4.7);
+   h_subjet_pt_onZ = new TH1F("subjet_pt_onZ", "Subleading Jet p_{T};p_{T}  (GeV);Events ", 250, 0, 500);
+   h_subjet_eta_onZ = new TH1F("subjet_eta_onZ", "Subleading Jet \\eta;\\eta;Events ", 94, -4.7, 4.7);
+   h_dijet_mass_onZ = new TH1F("dijet_mass1_onZ", "DiJet Mass;M_{jj}  (GeV);Events ", 60, 0, 600);
+   h_dijet_deta_onZ = new TH1F("dijet_deta1_onZ", "DiJet deta;deta;Events ", 94, 0, 9.4);
+   h_met_pt_onZ = new TH1F("met_pt_onZ", "MET p_{T};p_{T}  (GeV) ", 100, 0, 200);
+   h_mindrmj_onZ = new TH1F("mindrmj_onZ", "min(dR(m,j));dR(m,j) ", 50, -5, 5);
+   h_zeppen_onZ = new TH1F("zeppen_onZ", "; zeppen; ", 100, -10, 10);
+   h_csTheta_onZ = new TH1F("csTheta_onZ", " ; csTheta; ", 10, -1, 1);
+   h_csPhi_onZ = new TH1F("csPhi_onZ", " ; csPhi ; ", 100, -10, 10);
 
-   h_subMuon_pt = new TH1F("sub_muon_pt", "Subleading Muon p_{T};p_{T}  (GeV);Events ", 100, 0, 200);
-   h_subMuon_eta = new TH1F("sub_muon_eta", "Subleading Muon eta;\\eta;Events ", 50, -2.5, 2.5);
+   h_leadMuon_pt_onH = new TH1F("lead_muon_pt_onH", "Leading Muon p_{T};p_{T}  (GeV);Events ", 100, 0, 200);
+   h_leadMuon_eta_onH = new TH1F("lead_muon_eta_onH", "Leading Muon \\eta;\\eta;Events ", 50, -2.5, 2.5);
+   h_subMuon_pt_onH = new TH1F("sub_muon_pt_onH", "Subleading Muon p_{T};p_{T}  (GeV);Events ", 100, 0, 200);
+   h_subMuon_eta_onH = new TH1F("sub_muon_eta_onH", "Subleading Muon eta;\\eta;Events ", 50, -2.5, 2.5);
+   h_dimuon_mass_onH = new TH1F("dimuon_mass_onH", "Dimuon Mass;M_{\\mu \\mu}  (Gev);Events ", 80, 110, 150);
+   h_dimuon_pt_onH = new TH1F("dimuon_pt_onH", "Dimuon p_{T};p_{T}  (GeV);Events ", 200, 0, 400);
+   h_dimuon_eta_onH = new TH1F("dimuon_eta_onH", "Dimuon \\eta;\\eta;Events ", 100, -5.0, 5.0);
+   h_dimuon_phi_onH = new TH1F("dimuon_phi_onH", "Dimuon \\phi;\\phi;Events ", 36, -3.6, 3.6);
+   h_dimuon_deta_onH = new TH1F("dimuon_deta_onH", "Dimuon deta;deta;Events ", 50, 0, 5.0);
+   h_dimuon_dphi_onH = new TH1F("dimuon_dphi_onH", "Dimuon dphi;dphi;Events ", 18, 0, 3.6);
+   h_num_jets_onH = new TH1F("num_jets_onH", "Number of Jets;nJets;Events ", 8, 0, 8);
+   h_num_bjets_onH = new TH1F("num_bjets_onH", "Number of B Jets;nBJets;Events ", 6, 0, 6);
+   h_leadjet_pt_onH = new TH1F("leadjet_pt_onH", "Leading Jet p_{T};p_{T}  (GeV);Events ", 250, 0, 500);
+   h_leadjet_eta_onH = new TH1F("leadjet_eta_onH", "Leading Jet \\eta;\\eta;Events ", 94, -4.7, 4.7);
+   h_subjet_pt_onH = new TH1F("subjet_pt_onH", "Subleading Jet p_{T};p_{T}  (GeV);Events ", 250, 0, 500);
+   h_subjet_eta_onH = new TH1F("subjet_eta_onH", "Subleading Jet \\eta;\\eta;Events ", 94, -4.7, 4.7);
+   h_dijet_mass_onH = new TH1F("dijet_mass1_onH", "DiJet Mass;M_{jj}  (GeV);Events ", 60, 0, 600);
+   h_dijet_deta_onH = new TH1F("dijet_deta1_onH", "DiJet deta;deta;Events ", 94, 0, 9.4);
+   h_met_pt_onH = new TH1F("met_pt_onH", "MET p_{T};p_{T}  (GeV) ", 100, 0, 200);
+   h_mindrmj_onH = new TH1F("mindrmj_onH", "min(dR(m,j));dR(m,j) ", 50, -5, 5);
+   h_zeppen_onH = new TH1F("zeppen_onH", "; zeppen; ", 100, -10, 10);
+   h_csTheta_onH = new TH1F("csTheta_onH", " ; csTheta; ", 10, -1, 1);
+   h_csPhi_onH = new TH1F("csPhi_onH", " ; csPhi ; ", 100, -10, 10);
 
-   h_dimuon_mass = new TH1F("dimuon_mass", "Dimuon Mass;M_{\\mu \\mu}  (Gev);Events ", 100, 100, 150);
-   h_dimuon_pt = new TH1F("dimuon_pt", "Dimuon p_{T};p_{T}  (GeV);Events ", 200, 0, 400);
-   h_dimuon_eta = new TH1F("dimuon_eta", "Dimuon \\eta;\\eta;Events ", 100, -5.0, 5.0);
-   h_dimuon_phi = new TH1F("dimuon_phi", "Dimuon \\phi;\\phi;Events ", 36, -3.6, 3.6);
-   h_dimuon_deta = new TH1F("dimuon_deta", "Dimuon deta;deta;Events ", 100, -5.0, 5.0);
-   h_dimuon_dphi = new TH1F("dimuon_dphi", "Dimuon dphi;dphi;Events ", 36, -3.6, 3.6);
-
-   h_num_jets = new TH1F("num_jets", "Number of Jets;nJets;Events ", 10, 0, 10);
-   h_num_bjets = new TH1F("num_bjets", "Number of B Jets;nBJets;Events ", 10, 0, 10);
-
-   h_leadjet_pt = new TH1F("leadjet_pt", "Leading Jet p_{T};p_{T}  (GeV);Events ", 500, 0, 500);
-   h_leadjet_eta = new TH1F("leadjet_eta", "Leading Jet \\eta;\\eta;Events ", 94, -4.7, 4.7);
-
-   h_subjet_pt = new TH1F("subjet_pt", "Subleading Jet p_{T};p_{T}  (GeV);Events ", 500, 0, 500);
-   h_subjet_eta = new TH1F("subjet_eta", "Subleading Jet \\eta;\\eta;Events ", 94, -4.7, 4.7);
-
-   h_dijet_mass = new TH1F("dijet_mass1", "DiJet Mass;M_{jj}  (GeV);Events ", 1000, 0, 1000);
-   h_dijet_deta = new TH1F("dijet_deta1", "DiJet deta;deta;Events ", 188, -9.4, 9.4);
-
-   h_met_pt = new TH1F("met_pt", "MET p_{T};p_{T}  (GeV) ", 250, 0, 500);
-   h_mindrmj = new TH1F("mindrmj", "min(dR(m,j));dR(m,j) ", 50, -5, 5);
-   h_zeppen = new TH1F("zeppen", "; zeppen; ", 100, -10, 10);
-   h_csTheta = new TH1F("csTheta", " ; csTheta; ", 10, -1, 1);
-   h_csPhi = new TH1F("csPhi", " ; csPhi ; ", 100, -10, 10);
    h_bdtScore01jet = new TH1F("h_bdtScore01jet", "; ; ", 20, -1, 1);
    h_bdtScore2jet = new TH1F("h_bdtScore2jet", ";;", 20, -1, 1);
+   h_dimuon_0 = new TH1F("dimuon_mass_cat0", " cat 0 ; dimuon mass (GeV); Events", 80, 110, 150);
+   h_dimuon_1 = new TH1F("dimuon_mass_cat1", " cat 1 ; dimuon mass (GeV); Events", 80, 110, 150);
+   h_dimuon_2 = new TH1F("dimuon_mass_cat2", " cat 2 ; dimuon mass (GeV); Events", 80, 110, 150);
+   h_dimuon_3 = new TH1F("dimuon_mass_cat3", " cat 3 ; dimuon mass (GeV); Events", 80, 110, 150);
+   h_dimuon_4 = new TH1F("dimuon_mass_cat4", " cat 4 ; dimuon mass (GeV); Events", 80, 110, 150);
+   h_dimuon_5 = new TH1F("dimuon_mass_cat5", " cat 5 ; dimuon mass (GeV); Events", 80, 110, 150);
+   h_dimuon_6 = new TH1F("dimuon_mass_cat6", " cat 6 ; dimuon mass (GeV); Events", 80, 110, 150);
+   h_dimuon_7 = new TH1F("dimuon_mass_cat7", " cat 7 ; dimuon mass (GeV); Events", 80, 110, 150);
+   h_dimuon_8 = new TH1F("dimuon_mass_cat8", " cat 8 ; dimuon mass (GeV); Events", 80, 110, 150);
+   h_dimuon_9 = new TH1F("dimuon_mass_cat9", " cat 9 ; dimuon mass (GeV); Events", 80, 110, 150);
+   h_dimuon_10 = new TH1F("dimuon_mass_cat10", " cat 10 ; dimuon mass (GeV); Events", 80, 110, 150);
+   h_dimuon_11 = new TH1F("dimuon_mass_cat11", " cat 11 ; dimuon mass (GeV); Events", 80, 110, 150);
+   h_dimuon_12 = new TH1F("dimuon_mass_cat12", " cat 12 ; dimuon mass (GeV); Events", 80, 110, 150);
+   h_dimuon_13 = new TH1F("dimuon_mass_cat13", " cat 13 ; dimuon mass (GeV); Events", 80, 110, 150);
+   h_dimuon_14 = new TH1F("dimuon_mass_cat14", " cat 14 ; dimuon mass (GeV); Events", 80, 110, 150);
 
-   h_dimuon_01jet = new TH1F("dimuon_mass_01", " 01 jet category ; dimuon mass (GeV); Events", 100, 100, 150);
-   h_dimuon_2jet = new TH1F("dimuon_mass_2", " 2 jet category ; dimuon mass (GeV); Events", 100, 100, 150);
+   h_leadMuon_pt_onZ->Sumw2();
+   h_leadMuon_eta_onZ->Sumw2();
+   h_subMuon_pt_onZ->Sumw2();
+   h_subMuon_eta_onZ->Sumw2();
+   h_dimuon_mass_onZ->Sumw2();
+   h_dimuon_pt_onZ->Sumw2();
+   h_dimuon_eta_onZ->Sumw2();
+   h_dimuon_phi_onZ->Sumw2();
+   h_dimuon_deta_onZ->Sumw2();
+   h_dimuon_dphi_onZ->Sumw2();
+   h_num_jets_onZ->Sumw2();
+   h_num_bjets_onZ->Sumw2();
+   h_leadjet_pt_onZ->Sumw2();
+   h_leadjet_eta_onZ->Sumw2();
+   h_subjet_pt_onZ->Sumw2();
+   h_subjet_eta_onZ->Sumw2();
+   h_dijet_mass_onZ->Sumw2();
+   h_dijet_deta_onZ->Sumw2();
+   h_met_pt_onZ->Sumw2();
+   h_mindrmj_onZ->Sumw2();
+   h_zeppen_onZ->Sumw2();
+   h_csTheta_onZ->Sumw2();
+   h_csPhi_onZ->Sumw2();
 
-   h_leadMuon_pt->Sumw2();
-   h_leadMuon_eta->Sumw2();
-   h_subMuon_pt->Sumw2();
-   h_subMuon_eta->Sumw2();
-   h_dimuon_mass->Sumw2();
-   h_dimuon_pt->Sumw2();
-   h_dimuon_eta->Sumw2();
-   h_dimuon_phi->Sumw2();
-   h_dimuon_deta->Sumw2();
-   h_dimuon_dphi->Sumw2();
-   h_num_jets->Sumw2();
-   h_num_bjets->Sumw2();
-   h_leadjet_pt->Sumw2();
-   h_leadjet_eta->Sumw2();
-   h_subjet_pt->Sumw2();
-   h_subjet_eta->Sumw2();
-   h_dijet_mass->Sumw2();
-   h_dijet_deta->Sumw2();
-   h_met_pt->Sumw2();
-   h_mindrmj->Sumw2();
-   h_zeppen->Sumw2();
-   h_csTheta->Sumw2();
-   h_csPhi->Sumw2();
+   h_leadMuon_pt_onH->Sumw2();
+   h_leadMuon_eta_onH->Sumw2();
+   h_subMuon_pt_onH->Sumw2();
+   h_subMuon_eta_onH->Sumw2();
+   h_dimuon_mass_onH->Sumw2();
+   h_dimuon_pt_onH->Sumw2();
+   h_dimuon_eta_onH->Sumw2();
+   h_dimuon_phi_onH->Sumw2();
+   h_dimuon_deta_onH->Sumw2();
+   h_dimuon_dphi_onH->Sumw2();
+   h_num_jets_onH->Sumw2();
+   h_num_bjets_onH->Sumw2();
+   h_leadjet_pt_onH->Sumw2();
+   h_leadjet_eta_onH->Sumw2();
+   h_subjet_pt_onH->Sumw2();
+   h_subjet_eta_onH->Sumw2();
+   h_dijet_mass_onH->Sumw2();
+   h_dijet_deta_onH->Sumw2();
+   h_met_pt_onH->Sumw2();
+   h_mindrmj_onH->Sumw2();
+   h_zeppen_onH->Sumw2();
+   h_csTheta_onH->Sumw2();
+   h_csPhi_onH->Sumw2();
    h_bdtScore01jet->Sumw2();
    h_bdtScore2jet->Sumw2();
-   h_dimuon_01jet->Sumw2();
-   h_dimuon_2jet->Sumw2();
 
-   GetOutputList()->Add(h_leadMuon_pt);
-   GetOutputList()->Add(h_leadMuon_eta);
-   GetOutputList()->Add(h_subMuon_pt);
-   GetOutputList()->Add(h_subMuon_eta);
-   GetOutputList()->Add(h_dimuon_mass);
-   GetOutputList()->Add(h_dimuon_pt);
-   GetOutputList()->Add(h_dimuon_eta);
-   GetOutputList()->Add(h_dimuon_phi);
-   GetOutputList()->Add(h_dimuon_deta);
-   GetOutputList()->Add(h_dimuon_dphi);
-   GetOutputList()->Add(h_num_jets);
-   GetOutputList()->Add(h_num_bjets);
-   GetOutputList()->Add(h_leadjet_pt);
-   GetOutputList()->Add(h_leadjet_eta);
-   GetOutputList()->Add(h_subjet_pt);
-   GetOutputList()->Add(h_subjet_eta);
-   GetOutputList()->Add(h_dijet_mass);
-   GetOutputList()->Add(h_dijet_deta);
-   GetOutputList()->Add(h_met_pt);
-   GetOutputList()->Add(h_mindrmj);
-   GetOutputList()->Add(h_zeppen);
-   GetOutputList()->Add(h_csTheta);
-   GetOutputList()->Add(h_csPhi);
+   h_dimuon_0->Sumw2();
+   h_dimuon_1->Sumw2();
+   h_dimuon_2->Sumw2();
+   h_dimuon_3->Sumw2();
+   h_dimuon_4->Sumw2();
+   h_dimuon_5->Sumw2();
+   h_dimuon_6->Sumw2();
+   h_dimuon_7->Sumw2();
+   h_dimuon_8->Sumw2();
+   h_dimuon_9->Sumw2();
+   h_dimuon_10->Sumw2();
+   h_dimuon_11->Sumw2();
+   h_dimuon_12->Sumw2();
+   h_dimuon_13->Sumw2();
+   h_dimuon_14->Sumw2();
+
+   GetOutputList()->Add(h_leadMuon_pt_onZ);
+   GetOutputList()->Add(h_leadMuon_eta_onZ);
+   GetOutputList()->Add(h_subMuon_pt_onZ);
+   GetOutputList()->Add(h_subMuon_eta_onZ);
+   GetOutputList()->Add(h_dimuon_mass_onZ);
+   GetOutputList()->Add(h_dimuon_pt_onZ);
+   GetOutputList()->Add(h_dimuon_eta_onZ);
+   GetOutputList()->Add(h_dimuon_phi_onZ);
+   GetOutputList()->Add(h_dimuon_deta_onZ);
+   GetOutputList()->Add(h_dimuon_dphi_onZ);
+   GetOutputList()->Add(h_num_jets_onZ);
+   GetOutputList()->Add(h_num_bjets_onZ);
+   GetOutputList()->Add(h_leadjet_pt_onZ);
+   GetOutputList()->Add(h_leadjet_eta_onZ);
+   GetOutputList()->Add(h_subjet_pt_onZ);
+   GetOutputList()->Add(h_subjet_eta_onZ);
+   GetOutputList()->Add(h_dijet_mass_onZ);
+   GetOutputList()->Add(h_dijet_deta_onZ);
+   GetOutputList()->Add(h_met_pt_onZ);
+   GetOutputList()->Add(h_mindrmj_onZ);
+   GetOutputList()->Add(h_zeppen_onZ);
+   GetOutputList()->Add(h_csTheta_onZ);
+   GetOutputList()->Add(h_csPhi_onZ);
+
+   GetOutputList()->Add(h_leadMuon_pt_onH);
+   GetOutputList()->Add(h_leadMuon_eta_onH);
+   GetOutputList()->Add(h_subMuon_pt_onH);
+   GetOutputList()->Add(h_subMuon_eta_onH);
+   GetOutputList()->Add(h_dimuon_mass_onH);
+   GetOutputList()->Add(h_dimuon_pt_onH);
+   GetOutputList()->Add(h_dimuon_eta_onH);
+   GetOutputList()->Add(h_dimuon_phi_onH);
+   GetOutputList()->Add(h_dimuon_deta_onH);
+   GetOutputList()->Add(h_dimuon_dphi_onH);
+   GetOutputList()->Add(h_num_jets_onH);
+   GetOutputList()->Add(h_num_bjets_onH);
+   GetOutputList()->Add(h_leadjet_pt_onH);
+   GetOutputList()->Add(h_leadjet_eta_onH);
+   GetOutputList()->Add(h_subjet_pt_onH);
+   GetOutputList()->Add(h_subjet_eta_onH);
+   GetOutputList()->Add(h_dijet_mass_onH);
+   GetOutputList()->Add(h_dijet_deta_onH);
+   GetOutputList()->Add(h_met_pt_onH);
+   GetOutputList()->Add(h_mindrmj_onH);
+   GetOutputList()->Add(h_zeppen_onH);
+   GetOutputList()->Add(h_csTheta_onH);
+   GetOutputList()->Add(h_csPhi_onH);
    GetOutputList()->Add(h_bdtScore01jet);
    GetOutputList()->Add(h_bdtScore2jet);
-   GetOutputList()->Add(h_dimuon_01jet);
-   GetOutputList()->Add(h_dimuon_2jet);
+
+   GetOutputList()->Add(h_dimuon_0);
+   GetOutputList()->Add(h_dimuon_1);
+   GetOutputList()->Add(h_dimuon_2);
+   GetOutputList()->Add(h_dimuon_3);
+   GetOutputList()->Add(h_dimuon_4);
+   GetOutputList()->Add(h_dimuon_5);
+   GetOutputList()->Add(h_dimuon_6);
+   GetOutputList()->Add(h_dimuon_7);
+   GetOutputList()->Add(h_dimuon_8);
+   GetOutputList()->Add(h_dimuon_9);
+   GetOutputList()->Add(h_dimuon_10);
+   GetOutputList()->Add(h_dimuon_11);
+   GetOutputList()->Add(h_dimuon_12);
+   GetOutputList()->Add(h_dimuon_13);
+   GetOutputList()->Add(h_dimuon_14);
 }
 
 Bool_t plotSelec::Process(Long64_t entry)
@@ -166,54 +273,154 @@ Bool_t plotSelec::Process(Long64_t entry)
    // The return value is currently not used.
 
    fReader.SetLocalEntry(entry);
-   if (*h_mass < 100 || *h_mass > 150)
-      return kTRUE;
+   //   if (*h_mass < 110 || *h_mass > 150)
 
-   float weight = *totalWeight;
-   h_leadMuon_pt->Fill(*muPtC_1, weight);
-   h_leadMuon_eta->Fill(*muEtaC_1, weight);
 
-   h_subMuon_pt->Fill(*muPtC_2, weight);
-   h_subMuon_eta->Fill(*muEtaC_2, weight);
+   float weight = 1.0;
 
-   h_dimuon_mass->Fill(*h_mass, weight);
-   h_dimuon_pt->Fill(*h_pt, weight);
-   h_dimuon_eta->Fill(*h_eta, weight);
-   h_dimuon_phi->Fill(*h_phi, weight);
-   h_dimuon_deta->Fill(*h_deta, weight);
-   h_dimuon_dphi->Fill(*h_dphi, weight);
-
-   h_num_jets->Fill(*njets, weight);
-   h_num_bjets->Fill(*nbtagJets, weight);
-
-   h_leadjet_pt->Fill(*jetpt_1, weight);
-   h_leadjet_eta->Fill(*jeteta_1, weight);
-
-   h_subjet_pt->Fill(*jetpt_2, weight);
-   h_subjet_eta->Fill(*jeteta_2, weight);
-
-   h_dijet_mass->Fill(*mjj_1, weight);
-   h_dijet_deta->Fill(*detajj_1, weight);
-
-   h_met_pt->Fill(*metpt, weight);
-   h_mindrmj->Fill(*mindrmj, weight);
-   h_zeppen->Fill(*zeppen, weight);
-   h_csTheta->Fill(*csTheta, weight);
-   h_csPhi->Fill(*csPhi, weight);
-
-   // insert if here for different event category!
-
-   if (*category == 16)
+   if (*mclabel)
    {
-      h_bdtScore01jet->Fill(*bdtScore, weight);
-      h_dimuon_01jet->Fill(*h_mass, weight);
+      weight = (*puW) * (*genXsOverN) * (*zptW) * (*nvtxW) * (*l1preW) * (*btagSF) * (*idSF) * (*isoSF) * (*trigSF);
    }
-   if (*category == 18)
+ 
+
+   if (*h_mass > 70 && *h_mass < 110)
    {
-      h_bdtScore2jet->Fill(*bdtScore, weight);
-      h_dimuon_2jet->Fill(*h_mass, weight);
+      h_leadMuon_pt_onZ->Fill(*muPtC_1, weight);
+      h_leadMuon_eta_onZ->Fill(*muEtaC_1, weight);
+
+      h_subMuon_pt_onZ->Fill(*muPtC_2, weight);
+      h_subMuon_eta_onZ->Fill(*muEtaC_2, weight);
+
+      h_dimuon_mass_onZ->Fill(*h_mass, weight);
+      h_dimuon_pt_onZ->Fill(*h_pt, weight);
+      h_dimuon_eta_onZ->Fill(*h_eta, weight);
+      h_dimuon_phi_onZ->Fill(*h_phi, weight);
+      h_dimuon_deta_onZ->Fill(*h_deta, weight);
+      h_dimuon_dphi_onZ->Fill(*h_dphi, weight);
+
+      h_num_jets_onZ->Fill(*njets, weight);
+      h_num_bjets_onZ->Fill(*nbtagJets, weight);
+
+      h_leadjet_pt_onZ->Fill(*jetpt_1, weight);
+      h_leadjet_eta_onZ->Fill(*jeteta_1, weight);
+
+      h_subjet_pt_onZ->Fill(*jetpt_2, weight);
+      h_subjet_eta_onZ->Fill(*jeteta_2, weight);
+
+      h_dijet_mass_onZ->Fill(*mjj_1, weight);
+      h_dijet_deta_onZ->Fill(*detajj_1, weight);
+
+      h_met_pt_onZ->Fill(*metpt, weight);
+      h_mindrmj_onZ->Fill(*mindrmj, weight);
+      h_zeppen_onZ->Fill(*zeppen, weight);
+      h_csTheta_onZ->Fill(*csTheta, weight);
+      h_csPhi_onZ->Fill(*csPhi, weight);
    }
 
+   if (*h_mass > 110 && *h_mass < 150)
+   {
+      h_leadMuon_pt_onH->Fill(*muPtC_1, weight);
+      h_leadMuon_eta_onH->Fill(*muEtaC_1, weight);
+
+      h_subMuon_pt_onH->Fill(*muPtC_2, weight);
+      h_subMuon_eta_onH->Fill(*muEtaC_2, weight);
+
+      h_dimuon_mass_onH->Fill(*h_mass, weight);
+      h_dimuon_pt_onH->Fill(*h_pt, weight);
+      h_dimuon_eta_onH->Fill(*h_eta, weight);
+      h_dimuon_phi_onH->Fill(*h_phi, weight);
+      h_dimuon_deta_onH->Fill(*h_deta, weight);
+      h_dimuon_dphi_onH->Fill(*h_dphi, weight);
+
+      h_num_jets_onH->Fill(*njets, weight);
+      h_num_bjets_onH->Fill(*nbtagJets, weight);
+
+      h_leadjet_pt_onH->Fill(*jetpt_1, weight);
+      h_leadjet_eta_onH->Fill(*jeteta_1, weight);
+
+      h_subjet_pt_onH->Fill(*jetpt_2, weight);
+      h_subjet_eta_onH->Fill(*jeteta_2, weight);
+
+      h_dijet_mass_onH->Fill(*mjj_1, weight);
+      h_dijet_deta_onH->Fill(*detajj_1, weight);
+
+      h_met_pt_onH->Fill(*metpt, weight);
+      h_mindrmj_onH->Fill(*mindrmj, weight);
+      h_zeppen_onH->Fill(*zeppen, weight);
+      h_csTheta_onH->Fill(*csTheta, weight);
+      h_csPhi_onH->Fill(*csPhi, weight);
+
+      if (*category == 0)
+      {
+         h_bdtScore2jet->Fill(*bdtScore, weight);
+         h_dimuon_0->Fill(*h_mass, weight);
+      }
+      if (*category == 1)
+      {
+         h_bdtScore2jet->Fill(*bdtScore, weight);
+         h_dimuon_1->Fill(*h_mass, weight);
+      }
+      if (*category == 2)
+      {
+         h_bdtScore2jet->Fill(*bdtScore, weight);
+         h_dimuon_2->Fill(*h_mass, weight);
+      }
+      if (*category == 3)
+      {
+         h_bdtScore2jet->Fill(*bdtScore, weight);
+         h_dimuon_3->Fill(*h_mass, weight);
+      }
+      if (*category == 4)
+      {
+         h_bdtScore2jet->Fill(*bdtScore, weight);
+         h_dimuon_4->Fill(*h_mass, weight);
+      }
+      if (*category == 5)
+      {
+         h_bdtScore01jet->Fill(*bdtScore, weight);
+         h_dimuon_5->Fill(*h_mass, weight);
+      }
+      if (*category == 6)
+      {
+         h_bdtScore01jet->Fill(*bdtScore, weight);
+         h_dimuon_6->Fill(*h_mass, weight);
+      }
+      if (*category == 7)
+      {
+         h_bdtScore01jet->Fill(*bdtScore, weight);
+         h_dimuon_7->Fill(*h_mass, weight);
+      }
+      if (*category == 8)
+      {
+         h_bdtScore01jet->Fill(*bdtScore, weight);
+         h_dimuon_8->Fill(*h_mass, weight);
+      }
+      if (*category == 9)
+      {
+         h_dimuon_9->Fill(*h_mass, weight);
+      }
+      if (*category == 10)
+      {
+         h_dimuon_10->Fill(*h_mass, weight);
+      }
+      if (*category == 11)
+      {
+         h_dimuon_11->Fill(*h_mass, weight);
+      }
+      if (*category == 12)
+      {
+         h_dimuon_12->Fill(*h_mass, weight);
+      }
+      if (*category == 13)
+      {
+         h_dimuon_13->Fill(*h_mass, weight);
+      }
+      if (*category == 14)
+      {
+         h_dimuon_14->Fill(*h_mass, weight);
+      }
+   }
    return kTRUE;
 }
 

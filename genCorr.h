@@ -4,8 +4,8 @@
 // from TChain ntuplemaker_H2DiMuonMaker/Events/
 //////////////////////////////////////////////////////////
 
-#ifndef genPUMC_h
-#define genPUMC_h
+#ifndef genCorr_h
+#define genCorr_h
 
 #include <TROOT.h>
 #include <TChain.h>
@@ -26,21 +26,27 @@
 //#include "interface/MetaHiggs.h"
 #include "interface/Electron.h"
 
-
-class genPUMC : public TSelector {
+class genCorr : public TSelector {
 public :
    TTreeReader     fReader;  //!the tree reader
    TTree          *fChain = 0;   //!pointer to the analyzed TTree or TChain
 
    Int_t year = 0;
+   bool isData = false; // dont do pileup for data..
+   bool isDY = false;
+   bool isGGH = false;
+
    TH1 *h_pileup = 0;
-   
+   TH1 *h_zpt = 0;
+
    // Readers to access the data (delete the ones you do not need).
+   // TTreeReaderArray<analysis::core::Vertex> Vertices = {fReader, "Vertices"};
+   TTreeReaderArray<analysis::core::Muon> Muons = {fReader, "Muons"};
    TTreeReaderValue<Int_t> _nPU = {fReader, "_nPU"};
    TTreeReaderValue<Int_t> _genWeight = {fReader, "_genWeight"};
 
-   genPUMC(TTree * /*tree*/ =0) { }
-   virtual ~genPUMC() { }
+   genCorr(TTree * /*tree*/ =0) { }
+   virtual ~genCorr() { }
    virtual Int_t   Version() const { return 2; }
    virtual void    Begin(TTree *tree);
    virtual void    SlaveBegin(TTree *tree);
@@ -55,14 +61,14 @@ public :
    virtual void    SlaveTerminate();
    virtual void    Terminate();
 
-   ClassDef(genPUMC,0);
+   ClassDef(genCorr,0);
 
 };
 
 #endif
 
-#ifdef genPUMC_cxx
-void genPUMC::Init(TTree *tree)
+#ifdef genCorr_cxx
+void genCorr::Init(TTree *tree)
 {
    // The Init() function is called when the selector needs to initialize
    // a new tree or chain. Typically here the reader is initialized.
@@ -74,7 +80,7 @@ void genPUMC::Init(TTree *tree)
    fReader.SetTree(tree);
 }
 
-Bool_t genPUMC::Notify()
+Bool_t genCorr::Notify()
 {
    // The Notify() function is called when a new file is opened. This
    // can be either for a new TTree in a TChain or when when a new TTree
@@ -86,4 +92,4 @@ Bool_t genPUMC::Notify()
 }
 
 
-#endif // #ifdef genPUMC_cxx
+#endif // #ifdef genCorr_cxx

@@ -15,25 +15,24 @@ for f in filelists:
 f = open("runCount{}.sh".format(year),"w")
 f.write("#!/bin/bash\n")
 for k,v in dic.items():
-    line = "root -l -b -q 'quickCount.C(\"{}\",\"{}\",{})'\n".format(k,v,year)
-    f.write(line)
+    if "SingleMuon" not in k:
+        line = "root -l -b -q 'quickCount.C(\"{}\",\"{}\",{})'\n".format(k,v,year)
+        f.write(line)
 f.close()
 os.system("chmod 755 {}".format("runCount{}.sh".format(year)))
 
-f = open("runPUMC{}.sh".format(year),"w")
+f = open("runCorr{}.sh".format(year),"w")
 f.write("#!/bin/bash\n")
 for k,v in dic.items():
-    if 'SingleMuon' not in k:
-        line = "root -l -b -q 'quickPUMC.C(\"{}\",\"{}\",{})'\n".format(k,v,year)
-        f.write(line)
+    line = "root -l -b -q 'quickCorr.C(\"{}\",\"{}\",{})'\n".format(k,v,year)
+    f.write(line)
+f.write("hadd resources/data/allData{}.root resources/corrections/{}/SingleMuon*.root\n".format(year,year))
 f.close()
-os.system("chmod 755 {}".format("runPUMC{}.sh".format(year)))
+os.system("chmod 755 {}".format("runCorr{}.sh".format(year)))
 
 f = open("runSelector{}.sh".format(year),"w")
 f.write("#!/bin/bash\n")
 for k,v in dic.items():
-#     if year == "2016" and "M-105To160" in k:
-#         continue
     line = "root -l -b -q 'quickScript.C(\"{}\",\"{}\",{})'\n".format(k,v,year)
     line2 = "mv {} ntupleFiles/{}/\n".format(v,year)
     f.write(line)
@@ -51,13 +50,3 @@ f.write("mv histoFiles/{}/SingleMuon*.root histoFiles/{}/data/\n".format(year,ye
 f.write("hadd histoFiles/{}/allData{}.root histoFiles/{}/data/*.root\n".format(year,year,year))
 f.close()
 os.system("chmod 755 {}".format("runHistos{}.sh".format(year)))
-
-f = open("runZPT{}.sh".format(year),"w")
-f.write("#!/bin/bash\n")
-for k,v in dic.items():
-    if "SingleMuon" in k or "DY" in k:
-        line = "root -l -b -q 'quickZPT.C(\"{}\",\"{}\",{})'\n".format(k,v,year)
-        f.write(line)
-f.write("hadd data/zpt/{}/allData{}.root data/zpt/{}/SingleMuon*.root\n".format(year,year))
-f.close()
-os.system("chmod 755 {}".format("runZPT{}.sh".format(year)))

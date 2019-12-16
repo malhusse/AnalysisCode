@@ -5,16 +5,19 @@
 #include "TFile.h"
 #include "TH1.h"
 
-class ZptReWeighting
+class NvtxReWeighting
 {
 
 public:
-  ZptReWeighting(std::string generatedFile, std::string dataFile, std::string GenHistName, std::string DataHistName);
+  NvtxReWeighting(std::string generatedFile,
+                  std::string dataFile,
+                  std::string GenHistName,
+                  std::string DataHistName);
 
-  ZptReWeighting(){};
+  NvtxReWeighting(){};
 
-  double weight(float dimupt);
-
+  double weight(int nvertices);
+  boost::shared_ptr<TH1> weights_;
 protected:
   std::string generatedFileName_;
   std::string dataFileName_;
@@ -22,15 +25,14 @@ protected:
   std::string DataHistName_;
   boost::shared_ptr<TFile> generatedFile_;
   boost::shared_ptr<TFile> dataFile_;
-  boost::shared_ptr<TH1> weights_;
+  //  boost::shared_ptr<TH1> weights_;
 
   // keep copies of normalized distributions:
   boost::shared_ptr<TH1> MC_distr_;
   boost::shared_ptr<TH1> Data_distr_;
 };
 
-
-ZptReWeighting::ZptReWeighting(std::string generatedFile, std::string dataFile, std::string GenHistName, std::string DataHistName)
+NvtxReWeighting::NvtxReWeighting(std::string generatedFile, std::string dataFile, std::string GenHistName, std::string DataHistName)
     : generatedFileName_(generatedFile), dataFileName_(dataFile), GenHistName_(GenHistName), DataHistName_(DataHistName)
 {
   generatedFile_ = boost::shared_ptr<TFile>(new TFile(generatedFileName_.c_str()));
@@ -44,23 +46,23 @@ ZptReWeighting::ZptReWeighting(std::string generatedFile, std::string dataFile, 
   MC_distr_->Scale(1.0 / MC_distr_->Integral());
 
   weights_ = boost::shared_ptr<TH1>(static_cast<TH1 *>(Data_distr_->Clone()));
-  weights_->SetName("ZptWeights");
+  weights_->SetName("NvtxWeights");
 
   TH1 *den = dynamic_cast<TH1 *>(MC_distr_->Clone());
   weights_->Divide(den);
   int NBins = weights_->GetNbinsX();
 
-  // compute avarage Z pt re-weight //
+  // compute avarage Nvtx re-weight //
   double SumMC = 0;
-  double SumZptReWeightTimesMC = 0;
+  double SumNvtxReWeightTimesMC = 0;
   for (int ibin = 0; ibin < NBins; ++ibin)
   {
     double MC = den->GetBinContent(ibin);
-    double ZptReWeight = weights_->GetBinContent(ibin);
+    double NvtxReWeight = weights_->GetBinContent(ibin);
     SumMC += MC;
-    SumZptReWeightTimesMC += ZptReWeight * MC;
+    SumNvtxReWeightTimesMC += NvtxReWeight * MC;
   }
-  double SumWeight = SumZptReWeightTimesMC / SumMC;
+  double SumWeight = SumNvtxReWeightTimesMC / SumMC;
   weights_->Scale(1 / SumWeight);
   ///////////////////////////////
 
@@ -69,8 +71,8 @@ ZptReWeighting::ZptReWeighting(std::string generatedFile, std::string dataFile, 
     GetWeight += weights_->GetBinContent(ibin) * den->GetBinContent(ibin);
 }
 
-double ZptReWeighting::weight(float dimupt)
+double NvtxReWeighting::weight(int nvertices)
 {
-  int bin = weights_->GetXaxis()->FindBin(dimupt);
+  int bin = weights_->GetXaxis()->FindBin(nvertices);
   return weights_->GetBinContent(bin);
 }

@@ -28,50 +28,97 @@ public:
    TTreeReader fReader; //!the tree reader
    TTree *fChain = 0;   //!pointer to the analyzed TTree or TChain
 
-   TH1 *h_leadMuon_pt = 0;
-   TH1 *h_leadMuon_eta = 0;
+   // Z window plots
+   // 70 - 110 GeV
+   TH1 *h_leadMuon_pt_onZ = 0;
+   TH1 *h_leadMuon_eta_onZ = 0;
+   TH1 *h_subMuon_pt_onZ = 0;
+   TH1 *h_subMuon_eta_onZ = 0;
+   TH1 *h_dimuon_mass_onZ = 0;
+   TH1 *h_dimuon_pt_onZ = 0;
+   TH1 *h_dimuon_eta_onZ = 0;
+   TH1 *h_dimuon_phi_onZ = 0;
+   TH1 *h_dimuon_deta_onZ = 0;
+   TH1 *h_dimuon_dphi_onZ = 0;
+   TH1 *h_num_jets_onZ = 0;
+   TH1 *h_num_bjets_onZ = 0;
+   TH1 *h_leadjet_pt_onZ = 0;
+   TH1 *h_leadjet_eta_onZ = 0;
+   TH1 *h_subjet_pt_onZ = 0;
+   TH1 *h_subjet_eta_onZ = 0;
+   TH1 *h_dijet_mass_onZ = 0;
+   TH1 *h_dijet_deta_onZ = 0;
+   TH1 *h_met_pt_onZ = 0;
+   TH1 *h_mindrmj_onZ = 0;
+   TH1 *h_zeppen_onZ = 0;
+   TH1 *h_csTheta_onZ = 0;
+   TH1 *h_csPhi_onZ = 0;
 
-   TH1 *h_subMuon_pt = 0;
-   TH1 *h_subMuon_eta = 0;
+   // H window plots
+   // 110-150 GeV
+   TH1 *h_leadMuon_pt_onH = 0;
+   TH1 *h_leadMuon_eta_onH = 0;
+   TH1 *h_subMuon_pt_onH = 0;
+   TH1 *h_subMuon_eta_onH = 0;
+   TH1 *h_dimuon_mass_onH = 0;
+   TH1 *h_dimuon_pt_onH = 0;
+   TH1 *h_dimuon_eta_onH = 0;
+   TH1 *h_dimuon_phi_onH = 0;
+   TH1 *h_dimuon_deta_onH = 0;
+   TH1 *h_dimuon_dphi_onH = 0;
+   TH1 *h_num_jets_onH = 0;
+   TH1 *h_num_bjets_onH = 0;
+   TH1 *h_leadjet_pt_onH = 0;
+   TH1 *h_leadjet_eta_onH = 0;
+   TH1 *h_subjet_pt_onH = 0;
+   TH1 *h_subjet_eta_onH = 0;
+   TH1 *h_dijet_mass_onH = 0;
+   TH1 *h_dijet_deta_onH = 0;
+   TH1 *h_met_pt_onH = 0;
+   TH1 *h_mindrmj_onH = 0;
+   TH1 *h_zeppen_onH = 0;
+   TH1 *h_csTheta_onH = 0;
+   TH1 *h_csPhi_onH = 0;
 
-   TH1 *h_dimuon_mass = 0;
-   TH1 *h_dimuon_pt = 0;
-   TH1 *h_dimuon_eta = 0;
-   TH1 *h_dimuon_phi = 0;
-   TH1 *h_dimuon_deta = 0;
-   TH1 *h_dimuon_dphi = 0;
-
-   TH1 *h_num_jets = 0;
-   TH1 *h_num_bjets = 0;
-
-   TH1 *h_leadjet_pt = 0;
-   TH1 *h_leadjet_eta = 0;
-
-   TH1 *h_subjet_pt = 0;
-   TH1 *h_subjet_eta = 0;
-
-   TH1 *h_dijet_mass = 0;
-   TH1 *h_dijet_deta = 0;
-
-   TH1 *h_met_pt = 0;
-   TH1 *h_mindrmj = 0;
-   TH1 *h_zeppen = 0;
-   TH1 *h_csTheta = 0;
-   TH1 *h_csPhi = 0;
+   // H window only
    TH1 *h_bdtScore01jet = 0;
    TH1 *h_bdtScore2jet = 0;
-
-   TH1 *h_dimuon_01jet = 0;
-   TH1 *h_dimuon_2jet = 0;
+   TH1 *h_dimuon_0 = 0;
+   TH1 *h_dimuon_1 = 0;
+   TH1 *h_dimuon_2 = 0;
+   TH1 *h_dimuon_3 = 0;
+   TH1 *h_dimuon_4 = 0;
+   TH1 *h_dimuon_5 = 0;
+   TH1 *h_dimuon_6 = 0;
+   TH1 *h_dimuon_7 = 0;
+   TH1 *h_dimuon_8 = 0;
+   TH1 *h_dimuon_9 = 0;
+   TH1 *h_dimuon_10 = 0;
+   TH1 *h_dimuon_11 = 0;
+   TH1 *h_dimuon_12 = 0;
+   TH1 *h_dimuon_13 = 0;
+   TH1 *h_dimuon_14 = 0;
+   // TH1 *h_dimuon_01jet = 0;
+   // TH1 *h_dimuon_2jet = 0;
    
    TString _outputName;
    Int_t collectionYear;
 
    // Readers to access the data (delete the ones you do not need).
    TTreeReaderValue<Float_t> mclabel = {fReader, "mclabel"};
-   TTreeReaderValue<Float_t> totalSF = {fReader, "totalSF"};
-   TTreeReaderValue<Float_t> eWeight = {fReader, "eWeight"};
-   TTreeReaderValue<Float_t> totalWeight = {fReader, "totalWeight"};
+   // TTreeReaderValue<Float_t> totalSF = {fReader, "totalSF"};
+   // TTreeReaderValue<Float_t> eWeight = {fReader, "eWeight"};
+   // TTreeReaderValue<Float_t> totalWeight = {fReader, "totalWeight"};
+   TTreeReaderValue<Float_t>  puW= {fReader, "puW"};
+   TTreeReaderValue<Float_t>  genXsOverN= {fReader, "genXsOverN"};
+   TTreeReaderValue<Float_t>  zptW= {fReader, "zptW"};
+   TTreeReaderValue<Float_t>  nvtxW= {fReader, "nvtxW"};
+   TTreeReaderValue<Float_t>  l1preW = {fReader, "l1preW"};
+   TTreeReaderValue<Float_t>  btagSF = {fReader, "btagSF"};
+   TTreeReaderValue<Float_t>  idSF = {fReader, "idSF"};
+   TTreeReaderValue<Float_t>  isoSF = {fReader, "isoSF"};
+   TTreeReaderValue<Float_t>  trigSF = {fReader, "trigSF"};
+
    TTreeReaderValue<Float_t> muPtC_1 = {fReader, "muPtC_1"};
    TTreeReaderValue<Float_t> muEtaC_1 = {fReader, "muEtaC_1"};
    TTreeReaderValue<Float_t> muPtC_2 = {fReader, "muPtC_2"};
