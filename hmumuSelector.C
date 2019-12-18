@@ -267,15 +267,18 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    for (analysis::core::Muon iMu : Muons)
    {
       // Try to FSR correct the muon, set pt to roch Cor one or roch Cor + FSR
-      if (iMu.fsrP4.Pt() > 0 and iMu.fsrP4.Pt() < 20 and p4mu.Pt() > 20)
-         {
-            TLorentzVector p4mu;
-            p4mu.SetPtEtaPhiM(iMu._corrPT, iMu._eta, iMu._phi, PDG_MASS_Mu);
+      if (iMu._corrPT > 20 and passFSR(iMu.fsrP4))
+      {
+         TLorentzVector p4mu; 
+         p4mu.SetPtEtaPhiM(iMu._corrPT, iMu._eta, iMu._phi, PDG_MASS_Mu);
+         if ( (iMu.fsrP4.Et() / p4mu.Et()) < 0.4)
+         {            
             p4mu = p4mu + iMu.fsrP4;
             iMu._pt = p4mu.Pt();
             iMu._eta = p4mu.Eta();
             iMu._phi = p4mu.Phi();
-         }
+         }         
+      }
       else
       {
             iMu._pt = iMu._geoPT;
@@ -936,4 +939,17 @@ float hmumuSelector::getCsPhi(TLorentzVector v1, TLorentzVector v2)
    TVector3 yAxis_cs = direction_cs.Cross(xAxis_cs);
 
    return std::atan2(refV_v1.Vect() * yAxis_cs, refV_v1.Vect() * xAxis_cs);
+}
+
+bool hmumuSelector::passFSR(TLorentzVector fsrP4)
+{
+   if (fsrP4.Pt() > 2)
+   {
+      if (TMath::Abs(fsrP4.Eta()) < 2.4)
+      {
+         if (TMath::Abs(fsr.Eta()) > 1.4 and TMath::Abs(fsr.Eta()) < 1.6)            
+            return false;
+         return true;
+      }
+   }
 }

@@ -132,9 +132,10 @@ public :
    bool passMuonHLT(analysis::core::Muon const &m);
    bool passMuons(analysis::core::Muon const &mu1, analysis::core::Muon const &mu2);
    float jetMuondR(float jeta, float jphi, float meta, float mphi);
-   bool passTightJetID(analysis::core::Jet j);
-   bool passLoosePUID(analysis::core::Jet j);
-   bool passNoiseJet(analysis::core::Jet j);
+   // bool passTightJetID(analysis::core::Jet j);
+   // bool passLoosePUID(analysis::core::Jet j);
+   // bool passNoiseJet(analysis::core::Jet j);
+   bool passFSR(TLorentzVector fsrP4);
    // should already be correct using _passedMetFilters
    // bool passMetFilters(std::vector<std::pair<string,int>> filterBits);
    float getCsTheta(TLorentzVector v1, TLorentzVector v2);
