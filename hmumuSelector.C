@@ -66,7 +66,7 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
    
    TNamed *name = dynamic_cast<TNamed *>(fInput->FindObject("outputName"));
    _outputRoot = name->GetTitle();
-
+   // std::cout << "outputRoot" << std::endl;
    TParameter<Int_t> *pYear = dynamic_cast<TParameter<Int_t> *>(fInput->FindObject("getYear"));
    year = pYear->GetVal();
 
@@ -74,7 +74,8 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
    // _outputNameFinal += std::to_string(year);
    // _outputNameFinal += "/";
    _outputNameFinal = _outputRoot;
-
+   // std::cout << _outputNameFinal << std::endl; 
+   // exit(1);
    fProofFile = new TProofOutputFile(_outputNameFinal, TProofOutputFile::kMerge, TProofOutputFile::kLocal);
 
    fFile = fProofFile->OpenFile("RECREATE");
@@ -673,7 +674,7 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    float bdtScore = -99;
    // nbjets = _btagJetsM;
 
-   std::pair<double,double> met_pt_phi = METXYCorr_Met_MetPhi( *_pt, *_phi, *_run, year, bool(mcLabel), _nvtx);
+   std::pair<double,double> met_pt_phi = METXYCorr_Met_MetPhi( *_pt, *_phi, *_run, year, bool(mcLabel), *_nvtx);
    float met_pt = met_pt_phi.first;
    float met_phi = met_pt_phi.second;
    
@@ -694,9 +695,9 @@ Bool_t hmumuSelector::Process(Long64_t entry)
 
    float toFill[] = {
       static_cast<float>(year),
-      static_cast<float>(run),
-      static_cast<float>(lumi),
-      static_cast<float>(event),
+      static_cast<float>(*_run),
+      static_cast<float>(*_lumi),
+      static_cast<float>(*_event),
       static_cast<float>(mcLabel),
       eWeight,
       pileupWeight,
@@ -705,7 +706,7 @@ Bool_t hmumuSelector::Process(Long64_t entry)
       *_idSF,
       *_isoSF,
       *_trigEffSF,
-      rebtagSF,
+      btagSF,
       mupt_1,
       mueta_1,
       mupt_2,
@@ -947,9 +948,11 @@ bool hmumuSelector::passFSR(TLorentzVector fsrP4)
    {
       if (TMath::Abs(fsrP4.Eta()) < 2.4)
       {
-         if (TMath::Abs(fsr.Eta()) > 1.4 and TMath::Abs(fsr.Eta()) < 1.6)            
+         if (TMath::Abs(fsrP4.Eta()) > 1.4 and TMath::Abs(fsrP4.Eta()) < 1.6)            
             return false;
          return true;
       }
    }
+   
+   return false;
 }

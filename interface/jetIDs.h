@@ -1,3 +1,4 @@
+#include "Jet.h"
 
 bool passPUID(analysis::core::Jet j, int year)
 {
@@ -15,7 +16,9 @@ bool passPUID(analysis::core::Jet j, int year)
       }
       return loosePU;
    }
-      
+   // shouldn't happen
+   std::cout << "year invalid" << std::endl;    
+   return false; 
 }
 
 
@@ -103,6 +106,8 @@ bool passJetID(analysis::core::Jet j, int year)
       }
       return tightID;
    }   
+   std::cout << "year invalid" << std::endl;    
+   return false; 
 }
 
 // no longer needed?

@@ -1,4 +1,4 @@
-xxxx//////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////
 // This class has been automatically generated on
 // Thu Apr 18 13:08:17 2019 by ROOT version 6.10/09
 // from TChain ntuplemaker_H2DiMuonMaker/Events/
@@ -86,7 +86,6 @@ public :
    TTreeReaderArray<analysis::core::Electron> Electrons = {fReader,"Electrons"};
 
    TTreeReaderValue<Int_t> _nPU = {fReader, "_nPU"};
-   TTreeReaderValue<Int_t> _nvtx = {fReader, "_nvtx"};
    TTreeReaderValue<Int_t> _genWeight = {fReader, "_genWeight"};
    TTreeReaderValue<vector<bool>> _hasHLTFired = {fReader, "_hasHLTFired"};
 
@@ -105,7 +104,7 @@ public :
    TTreeReaderValue<Float_t> _trigEffSF = {fReader, "_trigEffSF"};
    TTreeReaderValue<Float_t> _idSF = {fReader, "_idSF"};
    TTreeReaderValue<Float_t> _isoSF = {fReader, "_isoSF"};
-   TTreeReaderValue<Float_t> _btagSF = {fReader, "_btagSF"};
+   // TTreeReaderValue<Float_t> _btagSF = {fReader, "_btagSF"};
 
    // This is now fixed, so we can just use it instead of the individual filters..
    TTreeReaderValue<Bool_t> _passedMetFilters = {fReader, "_passedMetFilters"};
@@ -129,8 +128,8 @@ public :
    bool passVertex(std::vector<analysis::core::Vertex> vertexCol);
    bool passMuon(analysis::core::Muon const &m, bool useMiniIso);
    bool passElectron(analysis::core::Electron const &e);
-   bool passMuonHLT(analysis::core::Muon const &m);
-   bool passMuons(analysis::core::Muon const &mu1, analysis::core::Muon const &mu2);
+   bool passMuonHLT(analysis::core::Muon const &m, int year);
+   bool passMuons(analysis::core::Muon const &mu1, analysis::core::Muon const &mu2, int year);
    float jetMuondR(float jeta, float jphi, float meta, float mphi);
    // bool passTightJetID(analysis::core::Jet j);
    // bool passLoosePUID(analysis::core::Jet j);
