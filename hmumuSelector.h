@@ -1,4 +1,4 @@
-//////////////////////////////////////////////////////////
+xxxx//////////////////////////////////////////////////////////
 // This class has been automatically generated on
 // Thu Apr 18 13:08:17 2019 by ROOT version 6.10/09
 // from TChain ntuplemaker_H2DiMuonMaker/Events/
@@ -24,8 +24,10 @@
 #include <TF1.h>
 
 #include "interface/LumiReweightingStandAlone.h"
-#include "interface/ZptReWeighting.h"
-#include "interface/NvtxReWeighting.h"
+#include "interface/ZptReweight.h"
+// #include "interface/NvtxReWeighting.h"
+#include "interface/MetCorrection.h"
+#include "interface/jetIDs.h"
 #include "interface/Muon.h"
 #include "interface/Jet.h"
 #include "interface/Vertex.h"
@@ -49,14 +51,14 @@ public :
    Int_t mcLabel = -99;
    Double_t xsec = 0;
   
-   const TF1 *nvtxFunc = 0;
+   // const TF1 *nvtxFunc = 0;
 
    TFile *fFile;
    TProofOutputFile *fProofFile;
    
    reweight::LumiReWeighting *weighter;
 
-   ZptReWeighting *zptweighter = 0;
+   zptutils *zptweighter = 0;
    
    TString _dataCorrFile;
    TString _mcCorrFile;
@@ -65,17 +67,16 @@ public :
    TString _outputNameFinal;
    TString _dataPUfile;
    TString _mcPUfile;
-   TString _01jetxml;
-   TString _2jetxml;
+   TString _bdtxml;
    
-   TMVA::Reader* reader_01jet = 0;
-   TMVA::Reader* reader_2jet = 0;
+   TMVA::Reader* reader_bdt = 0;
+   // TMVA::Reader* reader_2jet = 0;
 
    // reader variables..
    float hmmpt, hmmrap, hmmthetacs, hmmphics, j1pt, j1eta, j2pt, detajj, dphijj;
-   float mjj, met, zepen, njets, drmj, m1ptOverMass, m2ptOverMass, m1eta, m2eta; 
+   float mjj, zepen, njets, dphimmj, detammj, m1ptOverMass, m2ptOverMass, m1eta, m2eta; 
    // spectators
-   float hmerr, weight, hmass, nbjets, bdtucsd_inclusive, bdtucsd_01jet, bdtucsd_2jet;
+   float event, hmass, hmerr, weight, bdtucsd_2jet_nonvbf;
 
 
    // Readers to access the data (delete the ones you do not need).
@@ -85,11 +86,16 @@ public :
    TTreeReaderArray<analysis::core::Electron> Electrons = {fReader,"Electrons"};
 
    TTreeReaderValue<Int_t> _nPU = {fReader, "_nPU"};
+   TTreeReaderValue<Int_t> _nvtx = {fReader, "_nvtx"};
    TTreeReaderValue<Int_t> _genWeight = {fReader, "_genWeight"};
    TTreeReaderValue<vector<bool>> _hasHLTFired = {fReader, "_hasHLTFired"};
 
-   // This is the MET pt. 
+   // This is the MET pt, phi, px and py variables
    TTreeReaderValue<Float_t> _pt = {fReader, "_pt"};
+   TTreeReaderValue<Float_t> _phi = {fReader, "_phi"};
+   // TTreeReaderValue<Float_t> _px = {fReader, "_px"};
+   // TTreeReaderValue<Float_t> _py = {fReader, "_py"};
+
   
    TTreeReaderValue<Int_t> _run = {fReader, "_run"};
    TTreeReaderValue<Int_t> _lumi = {fReader, "_lumi"};

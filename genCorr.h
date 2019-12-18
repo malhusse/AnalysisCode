@@ -33,15 +33,15 @@ public :
 
    Int_t year = 0;
    bool isData = false; // dont do pileup for data..
-   bool isDY = false;
-   bool isGGH = false;
+   // bool isDY = false;
+   // bool isGGH = false;
 
    TH1 *h_pileup = 0;
-   TH1 *h_zpt = 0;
 
    // Readers to access the data (delete the ones you do not need).
    // TTreeReaderArray<analysis::core::Vertex> Vertices = {fReader, "Vertices"};
-   TTreeReaderArray<analysis::core::Muon> Muons = {fReader, "Muons"};
+   // TTreeReaderArray<analysis::core::Muon> Muons = {fReader, "Muons"};
+   // TTreeReaderArray<analysis::core::Jet> Jets = {fReader, "Jets"};
    TTreeReaderValue<Int_t> _nPU = {fReader, "_nPU"};
    TTreeReaderValue<Int_t> _genWeight = {fReader, "_genWeight"};
 

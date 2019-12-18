@@ -69,11 +69,11 @@ void genCorr::SlaveBegin(TTree * /*tree*/)
    if (((string)_sname.Data()).find("SingleMuon") != string::npos) //is Data
       isData = true;
 
-   if (((string)_sname.Data()).find("DY") != string::npos) //is Drell-Yan Sample
-      isDY = true;
+   // if (((string)_sname.Data()).find("DY") != string::npos) //is Drell-Yan Sample
+      // isDY = true;
 
-   if (((string)_sname.Data()).find("GluGlu") != string::npos)
-      isGGH = true; // for nnlops
+   // if (((string)_sname.Data()).find("GluGlu") != string::npos)
+      // isGGH = true; // for nnlops
 
    if (!isData)
    {
@@ -81,12 +81,18 @@ void genCorr::SlaveBegin(TTree * /*tree*/)
       h_pileup->Sumw2();
       GetOutputList()->Add(h_pileup);
    }
-   if (isDY || isData)
-   {
-      h_zpt = new TH1D("zpt", "zpt", 100, 0, 1000);
-      h_zpt->Sumw2();
-      GetOutputList()->Add(h_zpt);
-   }
+   // if (isDY || isData)
+   // {
+   //    h_zpt_0j = new TH1D("zpt_0j", "zpt 0j", 100, 0, 1000);
+   //    h_zpt_1j = new TH1D("zpt_1j", "zpt 1j", 100, 0, 1000);
+   //    h_zpt_2j = new TH1D("zpt_2j", "zpt 2j", 100, 0, 1000);
+   //    h_zpt_0j->Sumw2();
+   //    h_zpt_1j->Sumw2();
+   //    h_zpt_2j->Sumw2();
+   //    GetOutputList()->Add(h_zpt_0j);
+   //    GetOutputList()->Add(h_zpt_1j);
+   //    GetOutputList()->Add(h_zpt_2j);
+   // }
 
 }
 
@@ -116,29 +122,34 @@ Bool_t genCorr::Process(Long64_t entry)
       h_pileup->Fill(*_nPU, *_genWeight);
    }
 
-   double dimupt = -10;
+   // double dimupt = -10;
 
-   for (unsigned int i = 1; i < Muons.GetSize(); ++i)
-   {
-      if (Muons[i]._charge != Muons[0]._charge )
-      {
-         TLorentzVector p4m1, p4m2;
-         p4m1.SetPtEtaPhiM(Muons[0]._pt, Muons[0]._eta, Muons[0]._phi, PDG_MASS_Mu);
-         p4m2.SetPtEtaPhiM(Muons[i]._pt, Muons[i]._eta, Muons[i]._phi, PDG_MASS_Mu);
+   // for (unsigned int i = 1; i < Muons.GetSize(); ++i)
+   // {
+   //    if (Muons[i]._charge != Muons[0]._charge )
+   //    {
+   //       TLorentzVector p4m1, p4m2;
+   //       p4m1.SetPtEtaPhiM(Muons[0]._pt, Muons[0]._eta, Muons[0]._phi, PDG_MASS_Mu);
+   //       p4m2.SetPtEtaPhiM(Muons[i]._pt, Muons[i]._eta, Muons[i]._phi, PDG_MASS_Mu);
          
-         if ((p4m1 + p4m2).M() > 70 && (p4m1 + p4m2).M() < 110)
-         {
-            dimupt = (p4m1 + p4m2).Pt();
-         }
+   //       if ((p4m1 + p4m2).M() > 70 && (p4m1 + p4m2).M() < 110)
+   //       {
+   //          dimupt = (p4m1 + p4m2).Pt();
+   //       }
 
-      }
-   }
+   //    }
+   // }
 
 
-   if (dimupt > 0 && (isDY || isData))
-   {
-         h_zpt->Fill(dimupt, *_genWeight);
-   }
+   // if (dimupt > 0 && (isDY || isData))
+   // {
+   //    if (Jets.GetSize() == 0)
+   //       h_zpt_0j->Fill(dimupt, *_genWeight);
+   //    else if (Jets.GetSize() == 1)
+   //       h_zpt_1j->Fill(dimupt, *_genWeight);
+   //    else if (Jets.GetSize() >= 2)
+   //       h_zpt_2j->Fill(dimupt, *_genWeight);
+   // }
 
    return kTRUE;
 }

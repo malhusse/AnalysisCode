@@ -32,7 +32,6 @@
 #include <TNamed.h>
 
 double const PDG_MASS_Mu = 0.1056583745;
-double const _muonMatchedPt = 30.;
 double const _muonMatchedEta = 2.4;
 double const _muonPt = 20.;
 double const _muonEta = 2.4;
@@ -45,7 +44,7 @@ double const _electronEta = 2.4;
 
 double const _dimuonMinMass = 50.;
 double const _dimuonMaxMass = 200.;
-double const _JetPt = 30.;
+double const _JetPt = 25.;
 double const _JetEta = 4.7;
 
 void hmumuSelector::Begin(TTree * /*tree*/)
@@ -113,47 +112,49 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
 
       weighter = new reweight::LumiReWeighting(_mcPUfile.Data(), _dataPUfile.Data(), "pileup", "pileup");
 
-      _dataCorrFile = "/uscms_data/d1/malhusse/analysis/AnalysisCode/resources/data/";
-      _dataCorrFile += "allData";
-      _dataCorrFile += std::to_string(year);
-      _dataCorrFile += ".root";
 
-      _mcCorrFile = "/uscms_data/d1/malhusse/analysis/AnalysisCode/resources/corrections/";
-      _mcCorrFile += std::to_string(year);
-      _mcCorrFile += "/";
-      _mcCorrFile += _outputRoot;
+      // _dataCorrFile = "/uscms_data/d1/malhusse/analysis/AnalysisCode/resources/data/";
+      // _dataCorrFile += "allData";
+      // _dataCorrFile += std::to_string(year);
+      // _dataCorrFile += ".root";
 
-      if (year == 2016)
-      {
-         nvtxFunc = new TF1("nvtx2016", "1.2085+0.0268937*x-0.00237406*x*x+1.98438e-06*x*x*x+1.15459e-06*TMath::Power(x,4)-5.92703e-09*TMath::Power(x,5)", 0, 60);
-      }
-      else if (year == 2017)
-      {
-         nvtxFunc = new TF1("nvtx2017", "1.44456-0.148486*x+0.0119359*x*x-0.000387874*x*x*x+5.45264e-06*TMath::Power(x,4)-2.63655e-08*TMath::Power(x,5)", 0, 60);
-      }
-      else if (year == 2018)
-      {
-         nvtxFunc = new TF1("nvtx2018", "0.812887+0.0136629*x-0.000938635*x*x+3.59058e-05*x*x*x-1.16732e-06*TMath::Power(x,4)+2.11019e-08*TMath::Power(x,5)", 0, 60);
-      }
+      // _mcCorrFile = "/uscms_data/d1/malhusse/analysis/AnalysisCode/resources/corrections/";
+      // _mcCorrFile += std::to_string(year);
+      // _mcCorrFile += "/";
+      // _mcCorrFile += _outputRoot;
+
+      // if (year == 2016)
+      // {
+      //    nvtxFunc = new TF1("nvtx2016", "1.2085+0.0268937*x-0.00237406*x*x+1.98438e-06*x*x*x+1.15459e-06*TMath::Power(x,4)-5.92703e-09*TMath::Power(x,5)", 0, 60);
+      // }
+      // else if (year == 2017)
+      // {
+      //    nvtxFunc = new TF1("nvtx2017", "1.44456-0.148486*x+0.0119359*x*x-0.000387874*x*x*x+5.45264e-06*TMath::Power(x,4)-2.63655e-08*TMath::Power(x,5)", 0, 60);
+      // }
+      // else if (year == 2018)
+      // {
+      //    nvtxFunc = new TF1("nvtx2018", "0.812887+0.0136629*x-0.000938635*x*x+3.59058e-05*x*x*x-1.16732e-06*TMath::Power(x,4)+2.11019e-08*TMath::Power(x,5)", 0, 60);
+      // }
 
       if (((string)_outputRoot.Data()).find("DY") != string::npos) //is Drell-Yan Sample
       {
-         zptweighter = new ZptReWeighting(_mcCorrFile.Data(), _dataCorrFile.Data(), "zpt", "zpt");
+         // This is a Drell-Yan sample and requires the Z-Pt reweighting
+         // zptweighter = new ZptReWeighting(_mcCorrFile.Data(), _dataCorrFile.Data(), "zpt", "zpt");
+         zptutils zptweighter;
       }
    }
 
    // construct readers
-   reader_01jet = new TMVA::Reader();
-   reader_2jet = new TMVA::Reader();
+   reader_bdt = new TMVA::Reader();
 
    // build string to load ucsd BDT training files
-   _01jetxml = "/uscms_data/d1/malhusse/analysis/AnalysisCode/resources/Hmm_BDT_xml/";
-   _01jetxml += std::to_string(year);
-   _01jetxml += "/TMVAClassification_BDTG.weights.01jet.xml";
+   // _01jetxml = "/uscms_data/d1/malhusse/analysis/AnalysisCode/resources/Hmm_BDT_xml/";
+   // _01jetxml += std::to_string(year);
+   // _01jetxml += "/TMVAClassification_BDTG.weights.01jet.xml";
 
-   _2jetxml = "/uscms_data/d1/malhusse/analysis/AnalysisCode/resources/Hmm_BDT_xml/";
-   _2jetxml += std::to_string(year);
-   _2jetxml += "/TMVAClassification_BDTG.weights.2jet_bveto.xml";
+   _bdtxml = "/uscms_data/d1/malhusse/analysis/AnalysisCode/resources/Hmm_BDT_xml/";
+   _bdtxml += std::to_string(year);
+   _bdtxml += "/TMVAClassification_BDTG.weights.nonvbf.xml";
 
    // // reader variables..
    // float hmmpt, hmmrap, hmmthetacs, hmmphics, j1pt, j1eta, j2pt, detajj, dphijj;
@@ -163,84 +164,43 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
 
    // Add Variables to readers
    // 2 Jet Reader
-   reader_2jet->AddVariable("hmmpt", &hmmpt);
-   reader_2jet->AddVariable("hmmrap", &hmmrap);
-   reader_2jet->AddVariable("hmmthetacs", &hmmthetacs);
-   reader_2jet->AddVariable("hmmphics", &hmmphics);
-   reader_2jet->AddVariable("j1pt", &j1pt);
-   reader_2jet->AddVariable("j1eta", &j1eta);
-   reader_2jet->AddVariable("j2pt", &j2pt);
-   reader_2jet->AddVariable("detajj", &detajj);
-   reader_2jet->AddVariable("dphijj", &dphijj);
-   reader_2jet->AddVariable("mjj", &mjj);
-   reader_2jet->AddVariable("met", &met);
-   reader_2jet->AddVariable("zepen", &zepen);
-   reader_2jet->AddVariable("njets", &njets);
-   reader_2jet->AddVariable("drmj", &drmj);
-   reader_2jet->AddVariable("m1ptOverMass", &m1ptOverMass);
-   reader_2jet->AddVariable("m2ptOverMass", &m2ptOverMass);
-   reader_2jet->AddVariable("m1eta", &m1eta);
-   reader_2jet->AddVariable("m2eta", &m2eta);
-   reader_2jet->AddSpectator("hmerr", &hmerr);
-   reader_2jet->AddSpectator("weight", &weight);
-   reader_2jet->AddSpectator("hmass", &hmass);
-   reader_2jet->AddSpectator("nbjets", &nbjets);
-   reader_2jet->AddSpectator("bdtucsd_inclusive", &bdtucsd_inclusive);
-   reader_2jet->AddSpectator("bdtucsd_01jet", &bdtucsd_01jet);
-   reader_2jet->AddSpectator("bdtucsd_2jet", &bdtucsd_2jet);
+   reader_bdt->AddVariable("hmmpt", &hmmpt);
+   reader_bdt->AddVariable("hmmrap", &hmmrap);
+   reader_bdt->AddVariable("hmmthetacs", &hmmthetacs);
+   reader_bdt->AddVariable("hmmphics", &hmmphics);
+   reader_bdt->AddVariable("j1pt", &j1pt);
+   reader_bdt->AddVariable("j1eta", &j1eta);
+   reader_bdt->AddVariable("j2pt", &j2pt);
+   reader_bdt->AddVariable("detajj", &detajj);
+   reader_bdt->AddVariable("dphijj", &dphijj);
+   reader_bdt->AddVariable("mjj", &mjj);
+   reader_bdt->AddVariable("zepen", &zepen);
+   reader_bdt->AddVariable("njets", &njets);
+   reader_bdt->AddVariable("dphimmj", &dphimmj);
+   reader_bdt->AddVariable("detammj", &detammj);
+   reader_bdt->AddVariable("m1ptOverMass", &m1ptOverMass);
+   reader_bdt->AddVariable("m2ptOverMass", &m2ptOverMass);
+   reader_bdt->AddVariable("m1eta", &m1eta);
+   reader_bdt->AddVariable("m2eta", &m2eta);
 
-   // 01 Jet Reader
-   reader_01jet->AddVariable("hmmpt", &hmmpt);
-   reader_01jet->AddVariable("hmmrap", &hmmrap);
-   reader_01jet->AddVariable("hmmthetacs", &hmmthetacs);
-   reader_01jet->AddVariable("hmmphics", &hmmphics);
-   reader_01jet->AddVariable("j1pt", &j1pt);
-   reader_01jet->AddVariable("j1eta", &j1eta);
-   reader_01jet->AddVariable("met", &met);
-   reader_01jet->AddVariable("nbjets", &nbjets);
-   reader_01jet->AddVariable("drmj", &drmj);
-   reader_01jet->AddVariable("njets", &njets);
-   reader_01jet->AddVariable("m1ptOverMass", &m1ptOverMass);
-   reader_01jet->AddVariable("m2ptOverMass", &m2ptOverMass);
-   reader_01jet->AddVariable("m1eta", &m1eta);
-   reader_01jet->AddVariable("m2eta", &m2eta);
-   reader_01jet->AddSpectator("hmerr", &hmerr);
-   reader_01jet->AddSpectator("weight", &weight);
-   reader_01jet->AddSpectator("hmass", &hmass);
-   reader_01jet->AddSpectator("bdtucsd_inclusive", &bdtucsd_inclusive);
-   reader_01jet->AddSpectator("bdtucsd_01jet", &bdtucsd_01jet);
-   reader_01jet->AddSpectator("bdtucsd_2jet", &bdtucsd_2jet);
+   reader_bdt->AddSpectator("event", &event);
+   reader_bdt->AddSpectator("hmass", &hmass);
+   reader_bdt->AddSpectator("hmerr", &hmerr);
+   reader_bdt->AddSpectator("weight", &weight);
+   reader_bdt->AddSpectator("bdtucsd_2jet_nonvbf", &bdtucsd_2jet_nonvbf);
 
    // Book Reader
-   reader_01jet->BookMVA("BDT01jets", _01jetxml);
-   reader_2jet->BookMVA("BDT2jets", _2jetxml);
+   reader_bdt->BookMVA("BDTreader", _bdtxml);
 
-   //   "muRoch_1:muRoch_2:mu_kinfit_pt_1:mu_kinfit_pt_2"
-   //   "fsrPt_1:fsrEta_1:fsrPhi_1:fsrPt_2:fsrEta_2:fsrPhi_2"
-   //   "muPt_1:muEta_1:muPhi_1:muPt_2:muEta_2:muPhi_2:"
-
-   // string vars = "year:run:lumi:event:mclabel:genWeight:numGen:xsec:puWeight:"
-   //               "idSF:isoSF:btagSF:trigSF:prefireSF:totalSF:eWeight:totalWeight:"
-   //               "muPtC_1:muEtaC_1:muPhiC_1:"
-   //               "muPtC_2:muEtaC_2:muPhiC_2:"
-   //               "h_mass:h_pt:h_eta:h_phi:h_deta:h_dphi:"
-   //               "njets:ncentJets:nfwdJets:nbtagJets:maxbdisc:"
-   //               "jetpt_1:jetmass_1:jeteta_1:jetpt_2:jetmass_2:jeteta_2:"
-   //               "mjj_1:detajj_1:mjj_2:detajj_2:"
-   //               "metpt:mindrmj:zeppen:csTheta:csPhi:bdtScore";
-   //
-   // define output TNtuples..
-   //
-
-   string vars = "mclabel:puW:genXsOverN:"
-                 "zptW:nvtxW:l1preW:btagSF:idSF:isoSF:trigSF:"
+   string vars = "year:run:lumi:event:mclabel:eWeight:puWeight:zptWeight:"
+                 "prefireSF:idSF:isoSF:trigSF:btagSF:"
                  "muPtC_1:muEtaC_1:"
                  "muPtC_2:muEtaC_2:"
                  "h_mass:h_pt:h_eta:h_phi:h_deta:h_dphi:"
                  "njets:nbtagJets:"
                  "jetpt_1:jeteta_1:jetpt_2:jeteta_2:"
-                 "mjj_1:detajj_1:"
-                 "metpt:mindrmj:zeppen:csTheta:csPhi:category:bdtScore";
+                 "mjj:detajj:dphijj:"
+                 "metpt:metphi:zeppen:csTheta:csPhi:category:bdtScore";
 
    ntuple = new TNtuple("ntupledData", "Data TNtuple", vars.c_str());
 
@@ -271,7 +231,6 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    fReader.SetLocalEntry(entry);
 
    // std::cout << "event number " << *_event << std::endl;
-
    Long64_t eventDebug = -1;
 
    // create vector of vertices
@@ -304,18 +263,24 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    std::vector<analysis::core::Jet> goodJets;
 
    // start with muons
-   // correct Muons using kinfit pt * rochester factor + fsr photon
-   // The correct method is to apply rochester w.r.t kinfit values - update this
+   // correct Muons using geofit after rochester + fsr?
    for (analysis::core::Muon iMu : Muons)
    {
-
-      TLorentzVector p4mu, p4pho;
-      p4mu.SetPtEtaPhiM((iMu._pt_kinfit * iMu._roccCor), iMu._eta, iMu._phi, PDG_MASS_Mu);
-      p4pho = iMu.fsrP4;
-      p4mu += p4pho;
-      iMu._pt = p4mu.Pt();
-      iMu._eta = p4mu.Eta();
-      iMu._phi = p4mu.Phi();
+      // Try to FSR correct the muon, set pt to roch Cor one or roch Cor + FSR
+      if (iMu.fsrP4.Pt() > 0 and iMu.fsrP4.Pt() < 20 and p4mu.Pt() > 20)
+         {
+            TLorentzVector p4mu;
+            p4mu.SetPtEtaPhiM(iMu._corrPT, iMu._eta, iMu._phi, PDG_MASS_Mu);
+            p4mu = p4mu + iMu.fsrP4;
+            iMu._pt = p4mu.Pt();
+            iMu._eta = p4mu.Eta();
+            iMu._phi = p4mu.Phi();
+         }
+      else
+      {
+            iMu._pt = iMu._geoPT;
+      }
+      
       if (passMuon(iMu, true)) // corrected should be more than 20?
       {
          goodMuons.push_back(iMu);
@@ -352,16 +317,23 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    int _nfwdJets = 0;
    int _numJets = 0;
 
-   float rebtagSF = 1.0;
+   float btagSF = 1.0;
    float maxBDisc = 0.0;
-   float mindrmj = 99;
 
    for (analysis::core::Jet iJet : Jets)
    {
-      if (iJet._pt > _JetPt and TMath::Abs(iJet._eta) < _JetEta and passTightJetID(iJet) and passLoosePUID(iJet) and passNoiseJet(iJet))
+      if (iJet._pt > _JetPt and TMath::Abs(iJet._eta) < _JetEta and passJetID(iJet, year) and passPUID(iJet, year))
       {
          // clean against leptons..
          bool cleanJet = true;
+         for (analysis::core::Muon iM : goodMuons)
+         {
+            if (jetMuondR(iJet._eta, iJet._phi, iM._eta, iM._phi) < 0.4)
+               cleanJet = false;
+         }
+         if (!cleanJet)
+            continue;
+
          for (analysis::core::Electron iE : goodElectrons)
          {
             if (jetMuondR(iJet._eta, iJet._phi, iE._eta, iE._phi) < 0.4)
@@ -370,18 +342,9 @@ Bool_t hmumuSelector::Process(Long64_t entry)
          if (!cleanJet)
             continue;
 
-         for (analysis::core::Muon iM : goodMuons)
-         {
-            float drmj = jetMuondR(iJet._eta, iJet._phi, iM._eta, iM._phi);
-            if (drmj < 0.4)
-               cleanJet = false;
-            else
-               mindrmj = std::min(mindrmj, drmj);
-         }
-         if (!cleanJet)
-            continue;
-
          _numJets++;
+         
+         btagSF *= iJet._btag_sf ? iJet._btag_sf : 1.0;
 
          // now the jet is clean and can be used further
 
@@ -391,13 +354,7 @@ Bool_t hmumuSelector::Process(Long64_t entry)
          if (iJet._dcsvMedium)
             _btagJetsM++;
          if (TMath::Abs(iJet._eta) <= 2.4)
-         {
             _ncentJets++;
-            if (iJet._dcsvMedium)
-            {
-               rebtagSF *= iJet._btag_sf ? iJet._btag_sf : 1.0;
-            }
-         }
          else
             _nfwdJets++;
          goodJets.push_back(iJet);
@@ -418,7 +375,7 @@ Bool_t hmumuSelector::Process(Long64_t entry)
          analysis::core::Muon mu1 = goodMuons.at(im);
          analysis::core::Muon mu2 = goodMuons.at(jm);
 
-         if (passMuons(mu1, mu2))
+         if (passMuons(mu1, mu2, year))
          {
             //          // muon pair passed..
             TLorentzVector p4m1, p4m2;
@@ -489,9 +446,9 @@ Bool_t hmumuSelector::Process(Long64_t entry)
       return kFALSE;
 
    if ((category < 0) and (_btagJetsL > 1 or _btagJetsM > 0) and nLeptons > 2)
-      category = 10; // ttH Leptonic
+      category = 6; // ttH Leptonic
    if ((category < 0) and (_btagJetsL > 1 or _btagJetsM > 0) and _numJets > 4)
-      category = 9; // ttH Hadronic
+      category = 5; // ttH Hadronic
 
    if (*_event == eventDebug)  std::cout << " point 1.3 " << std::endl;
 
@@ -513,7 +470,7 @@ Bool_t hmumuSelector::Process(Long64_t entry)
          TLorentzVector e1LV, e2LV;
          e1LV.SetPtEtaPhiM(e1->_pt, e1->_eta, e1->_phi, 0.511);
          e2LV.SetPtEtaPhiM(e2->_pt, e2->_eta, e2->_phi, 0.511);
-         if ((e1LV + e2LV).M() > 71 and (e1LV + e2LV).M() < 111) category = 11;
+         if ((e1LV + e2LV).M() > 71 and (e1LV + e2LV).M() < 111) category = 7;
       }
    }
 
@@ -581,7 +538,7 @@ Bool_t hmumuSelector::Process(Long64_t entry)
             if (*_event == eventDebug)  std::cout << " point 1.56 " << std::endl;
             leadMuon = mt1;
             subMuon = mt2;
-            category = 11;
+            category = 7;
          }
       }
    }
@@ -590,7 +547,7 @@ Bool_t hmumuSelector::Process(Long64_t entry)
 
    if ((category < 0) and nLeptons >= 3) // WH leptonic
    {
-      category = 12;
+      category = 7;
    }
 
    if (*_event == eventDebug)  std::cout << " point 1.7 " << std::endl;
@@ -602,13 +559,13 @@ Bool_t hmumuSelector::Process(Long64_t entry)
        std::max(leadJet._qgLikelihood, subJet._qgLikelihood) > .65 and
        diJet.Pt() > 75)
    {
-      category = 13; // VH Hadronic
+      category = 8; // VH Hadronic
    }
 
 
    if (*_event == eventDebug)  std::cout << " point 2 cat: " << category << std::endl;
 
-   if (category and category != 13) // change the Higgs muons and p4 if exclusive
+   if (category and category != 8) // change the Higgs muons and p4 if exclusive
    {
       higgsCandidate.SetPtEtaPhiM(0, 0, 0, 0);
       TLorentzVector p4mu1, p4mu2;
@@ -628,24 +585,20 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    float h_deta = TMath::Abs(mu1LV.Eta() - mu2LV.Eta());
    float h_dphi = TMath::Abs(mu1LV.Eta() - mu2LV.Eta());
 
-   if (mindrmj == 99)
-      mindrmj = 0;
-
    // //event weight stuff goes here?
    float pileupWeight = 1.0;
    float zptWeight = 1.0;
-   float nvtxWeight = 1.0;
    float eWeight = 1.0;
 
 
    if (((string)_outputRoot.Data()).find("DY") != string::npos) //is Drell-Yan Sample
    {
-      zptWeight = zptweighter->weight(h_pt);
+      zptWeight = zptweighter->getZPtReweight(h_pt, year, _numJets);
    }
 
    if (mcLabel)
    {
-      nvtxWeight = (*_nvtx <= 60) ? nvtxFunc->Eval(*_nvtx) : 1.0;
+      // nvtxWeight = (*_nvtx <= 60) ? nvtxFunc->Eval(*_nvtx) : 1.0;
       pileupWeight = weighter->weight(*_nPU);
       eWeight =  *_genWeight * xsec / valueSumEventsWeighted;
    }
@@ -661,11 +614,12 @@ Bool_t hmumuSelector::Process(Long64_t entry)
 
    float jetpt_1 = leadJet._pt;
    float jetmass_1 = leadJet._mass;
-   float jeteta_1 = leadJet._pt ? leadJet._eta : -5;
+   float jeteta_1 = leadJet._eta;
+   float jetphi_1 = leadJet._phi; 
 
    float jetpt_2 = subJet._pt;
    float jetmass_2 = subJet._mass;
-   float jeteta_2 = subJet._pt ? subJet._eta : -5;
+   float jeteta_2 = subJet._eta;
 
    float mjj_1 = diJet.M() ? diJet.M() : 0;
    float detajj_1 = diJet.M() ? TMath::Abs(leadJet._eta - subJet._eta) : -1;
@@ -704,106 +658,77 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    detajj = std::max(zero, detajj_1);
    dphijj = dphijj_1;
    mjj = mjj_1;
-   met = *_pt;
    zepen = zeppen;
    njets = _numJets;
-   nbjets = _btagJetsM;
-   drmj = mindrmj;
+   dphimmj = TMath::Abs(h_phi - jetphi_1);
+   detammj = TMath::Abs(hmmrap - j1eta);
    m1ptOverMass = (mupt_1 / h_mass);
    m2ptOverMass = (mupt_2 / h_mass);
    m1eta = mueta_1;
    m2eta = mueta_2;
 
    float bdtScore = -99;
+   // nbjets = _btagJetsM;
 
+   std::pair<double,double> met_pt_phi = METXYCorr_Met_MetPhi( *_pt, *_phi, *_run, year, bool(mcLabel), _nvtx);
+   float met_pt = met_pt_phi.first;
+   float met_phi = met_pt_phi.second;
    
-   if ((category < 0) and mjj_1 > 400)
+   if ((category < 0) and mjj_1 > 400 and detajj > 2.5 and j1pt > 35)
    {
-      category = 14; // VBF
-   }
-
-
-   if ((category < 0) and njets >= 2)
-   {
-      bdtScore = reader_2jet->EvaluateMVA("BDT2jets");
-      vector<float> bound{-1.0001, -0.66, -0.34, -0.03, 0.5, 1.0001};
-      auto ib = std::lower_bound(bound.begin(), bound.end(), bdtScore);
-      if (ib == bound.end())
-      {
-         category = 0; // shouldn't happen
-      }
-      else
-      {
-         int catnum = (ib - bound.begin()) - 1;
-         if (catnum < 0)
-            catnum = 0;
-         category = catnum;
-      }
+      category = 9; // VBF
    }
 
 
    if ((category < 0))
    {
-      bdtScore = reader_01jet->EvaluateMVA("BDT01jets");
-      vector<float> bound{-1.00001, -0.58, -0.02, 0.43, 1.00001};
+      bdtScore = reader_bdt->EvaluateMVA("BDTreader");
+      vector<float> bound{-1.00001, -0.1, 0.15, 0.30, .46, 1.00001};
       auto ib = std::lower_bound(bound.begin(), bound.end(), bdtScore);
-      if (ib == bound.end())
-         category = 5;
-      else
-      {
-         int catnum = (ib - bound.begin()) - 1;
-         if (catnum < 0)
-            catnum = 0;
-         catnum += 5;
-         category = catnum;
-      }
+      category = (ib - bound.begin()) - 1;
    }
 
 
    float toFill[] = {
-       static_cast<float>(mcLabel),
-       pileupWeight,
-       eWeight,
-       zptWeight,
-       nvtxWeight,
-       static_cast<float>(*_prefiringweight),
-       rebtagSF,
-       *_idSF,
-       *_isoSF,
-       *_trigEffSF,
-       mupt_1,
-       mueta_1,
-       mupt_2,
-       mueta_2,
-       h_mass,
-       h_pt,
-       h_eta,
-       h_phi,
-       h_deta,
-       h_dphi,
-       static_cast<float>(_numJets),
-       static_cast<float>(_btagJetsM),
-       jetpt_1,
-       jeteta_1,
-       jetpt_2,
-       jeteta_2,
-       mjj_1,
-       detajj_1,
-       *_pt,
-       mindrmj,
-       zeppen,
-       csTheta,
-       csPhi,
-       category,
-       bdtScore};
-
-
-   // float toFill[] = { static_cast<float>(year), static_cast<float>(*_run), static_cast<float>(*_lumi), static_cast<float>(*_event),
-   //  static_cast<float>(mcLabel), static_cast<float>(*_genWeight), static_cast<float>(valueSumEventsWeighted), static_cast<float>(xsec),
-   //  pileupWeight, *_idSF, *_isoSF, rebtagSF, *_trigEffSF, static_cast<float>(*_prefiringweight), totalSF, eWeight, totalWeight, mupt_1,
-   //  mueta_1, muphi_1, mupt_2, mueta_2, muphi_2, h_mass, h_pt, h_eta, h_phi, h_deta, h_dphi, static_cast<float>(_numJets),
-   //  static_cast<float>(_ncentJets), static_cast<float>(_nfwdJets), static_cast<float>(_btagJets), maxBDisc, jetpt_1, jetmass_1, jeteta_1,
-   //  jetpt_2, jetmass_2, jeteta_2, mjj_1, detajj_1, mjj_2, detajj_2, *_pt, drmj, zepen, hmmthetacs, hmmphics, bdtScore };
+      static_cast<float>(year),
+      static_cast<float>(run),
+      static_cast<float>(lumi),
+      static_cast<float>(event),
+      static_cast<float>(mcLabel),
+      eWeight,
+      pileupWeight,
+      zptWeight,
+      static_cast<float>(*_prefiringweight),
+      *_idSF,
+      *_isoSF,
+      *_trigEffSF,
+      rebtagSF,
+      mupt_1,
+      mueta_1,
+      mupt_2,
+      mueta_2,
+      h_mass,
+      h_pt,
+      h_eta,
+      h_phi,
+      h_deta,
+      h_dphi,
+      static_cast<float>(_numJets),
+      static_cast<float>(_btagJetsM),
+      jetpt_1,
+      jeteta_1,
+      jetpt_2,
+      jeteta_2,
+      mjj_1,
+      detajj_1,
+      dphijj_1,
+      met_pt,
+      met_phi,
+      zeppen,
+      csTheta,
+      csPhi,
+      category,
+      bdtScore};
 
 
    ntuple->Fill(toFill);
@@ -903,19 +828,20 @@ bool hmumuSelector::passMuon(analysis::core::Muon const &m, bool useMiniIso)
    return false;
 }
 
-bool hmumuSelector::passMuonHLT(analysis::core::Muon const &m)
+bool hmumuSelector::passMuonHLT(analysis::core::Muon const &m, int year)
 {
-   if ((m._isHLTMatched[1] || m._isHLTMatched[0]) and m._pt > _muonMatchedPt and TMath::Abs(m._eta) < _muonMatchedEta)
+   std::map<int, int> _muonMatchedPt = { {2016, 26}, {2017, 29}, {2018, 26}};
+   if ((m._isHLTMatched[1] || m._isHLTMatched[0]) and m._pt > _muonMatchedPt[year] and TMath::Abs(m._eta) < _muonMatchedEta)
       return true;
 
    return false;
 }
 
-bool hmumuSelector::passMuons(analysis::core::Muon const &m1, analysis::core::Muon const &m2)
+bool hmumuSelector::passMuons(analysis::core::Muon const &m1, analysis::core::Muon const &m2, int year)
 {
    if (m1._charge != m2._charge) // Opposite Sign
    {
-      if (passMuonHLT(m1) || passMuonHLT(m2)) // at least one hlt triggered muon..
+      if (passMuonHLT(m1, year) || passMuonHLT(m2, year)) // at least one hlt triggered muon..
          return true;
    }
    return false;
@@ -929,81 +855,9 @@ float hmumuSelector::jetMuondR(float jeta, float jphi, float meta, float mphi)
    return p4j.DeltaR(p4m);
 }
 
-bool hmumuSelector::passTightJetID(analysis::core::Jet j)
-{
-   bool tightID = false;
-   double jeta = TMath::Abs(j._eta);
-   int numConst = j._cm + j._nm;
 
-   if (jeta <= 2.7)
-   {
-      tightID = (j._nhf < 0.90 and j._nef < 0.90 and numConst > 1);
 
-      if (jeta < 2.4)
-      {
-         tightID &= (j._chf > 0 and j._cm > 0);
-      }
-   }
-   else if (jeta <= 3.0)
-   {
-      tightID = (j._nef > 0.02 and j._nef < 0.99 and j._nm > 2);
-   }
-   else
-   {
-      tightID = (j._nef < 0.90 and j._nhf > 0.02 and j._nm > 10);
-   }
 
-   return tightID;
-}
-
-bool hmumuSelector::passLoosePUID(analysis::core::Jet j)
-{
-   float jeta = TMath::Abs(j._eta);
-   float jpt = j._pt;
-   float jpuid = j._puid;
-
-   if (jeta < 2.5)
-   {
-      if (jpt >= 30 and jpt < 50 and jpuid < -0.89)
-         return false;
-      if (jpt >= 10 and jpt < 30 and jpuid < -0.97)
-         return false;
-   }
-   else if (jeta < 2.75)
-   {
-      if (jpt >= 30 and jpt < 50 and jpuid < -0.52)
-         return false;
-      if (jpt >= 10 and jpt < 30 and jpuid < -0.68)
-         return false;
-   }
-   else if (jeta < 3.0)
-   {
-      if (jpt >= 30 and jpt < 50 and jpuid < -0.38)
-         return false;
-      if (jpt >= 10 and jpt < 30 and jpuid < -0.53)
-         return false;
-   }
-   else if (jeta < 5)
-   {
-      if (jpt >= 30 and jpt < 50 and jpuid < -0.30)
-         return false;
-      if (jpt >= 10 and jpt < 30 and jpuid < -0.47)
-         return false;
-   }
-   return true;
-}
-
-bool hmumuSelector::passNoiseJet(analysis::core::Jet j)
-{
-   if (!mcLabel and year == 2017)
-   {
-      float jeta = TMath::Abs(j._eta);
-      float jpt = j._pt;
-      if (jeta >= 2.65 and jeta <= 3.139 and jpt < 50)
-         return false;
-   }
-   return true;
-}
 
 // bool hmumuSelector::passMetFilters(std::vector<std::pair<string, int>> filterBits)
 // {
