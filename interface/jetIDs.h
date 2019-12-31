@@ -24,7 +24,7 @@ bool passPUID(analysis::core::Jet j, int year)
 
 bool passJetID(analysis::core::Jet j, int year)
 {
-   // for 2016 use Loose, for 2017 and 2017 use tight.. rgerosa 15/11
+   // for 2016 use Loose, for 2017 and 2018 use tight.. rgerosa 15/11
    bool tightID = false;
    bool looseID = false;
 
