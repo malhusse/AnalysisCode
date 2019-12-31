@@ -58,8 +58,8 @@ public :
    
    reweight::LumiReWeighting *weighter;
 
-   zptutils *zptweighter = 0;
-   
+   zptutils *zptweighter;
+
    TString _dataCorrFile;
    TString _mcCorrFile;
 

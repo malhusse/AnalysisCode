@@ -99,6 +99,7 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
    mcLabel = pmcLabel->GetVal();
    xsec = static_cast<Float_t>(pxsec->GetVal());
 
+
    // mcLabel should be 0 for data, so this is true only for mc
    if (mcLabel)
    {
@@ -112,6 +113,7 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
       _mcPUfile += _outputRoot;
 
       weighter = new reweight::LumiReWeighting(_mcPUfile.Data(), _dataPUfile.Data(), "pileup", "pileup");
+      zptweighter = new zptutils;
 
 
       // _dataCorrFile = "/uscms_data/d1/malhusse/analysis/AnalysisCode/resources/data/";
@@ -137,12 +139,10 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
       //    nvtxFunc = new TF1("nvtx2018", "0.812887+0.0136629*x-0.000938635*x*x+3.59058e-05*x*x*x-1.16732e-06*TMath::Power(x,4)+2.11019e-08*TMath::Power(x,5)", 0, 60);
       // }
 
-      if (((string)_outputRoot.Data()).find("DY") != string::npos) //is Drell-Yan Sample
-      {
-         // This is a Drell-Yan sample and requires the Z-Pt reweighting
-         // zptweighter = new ZptReWeighting(_mcCorrFile.Data(), _dataCorrFile.Data(), "zpt", "zpt");
-         zptutils zptweighter;
-      }
+      // if (((string)_outputRoot.Data()).find("DY") != string::npos) //is Drell-Yan Sample
+      // {
+      //    // This is a Drell-Yan sample and requires the Z-Pt reweighting
+      // }
    }
 
    // construct readers
@@ -834,11 +834,13 @@ bool hmumuSelector::passMuon(analysis::core::Muon const &m, bool useMiniIso)
 
 bool hmumuSelector::passMuonHLT(analysis::core::Muon const &m, int year)
 {
-   std::map<int, int> _muonMatchedPt = { {2016, 26}, {2017, 29}, {2018, 26}};
-   if ((m._isHLTMatched[1] || m._isHLTMatched[0]) and m._pt > _muonMatchedPt[year] and TMath::Abs(m._eta) < _muonMatchedEta)
-      return true;
+   // std::map<int, int> _muonMatchedPt = { {2016, 26}, {2017, 29}, {2018, 26}};
+   // if ((m._isHLTMatched[1] || m._isHLTMatched[0]) and m._pt > _muonMatchedPt[year] and TMath::Abs(m._eta) < _muonMatchedEta)
+   //    return true;
 
-   return false;
+   // return false;
+  // bypass for the moment since the trigger paths are not correct?
+  return true;
 }
 
 bool hmumuSelector::passMuons(analysis::core::Muon const &m1, analysis::core::Muon const &m2, int year)
