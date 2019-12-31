@@ -49,10 +49,11 @@ public:
    TH1 *h_dijet_mass_onZ = 0;
    TH1 *h_dijet_deta_onZ = 0;
    TH1 *h_met_pt_onZ = 0;
-   TH1 *h_mindrmj_onZ = 0;
-   TH1 *h_zeppen_onZ = 0;
-   TH1 *h_csTheta_onZ = 0;
-   TH1 *h_csPhi_onZ = 0;
+   TH1 *h_met_phi_onZ = 0;
+   // TH1 *h_mindrmj_onZ = 0;
+   // TH1 *h_zeppen_onZ = 0;
+   // TH1 *h_csTheta_onZ = 0;
+   // TH1 *h_csPhi_onZ = 0;
 
    // H window plots
    // 110-150 GeV
@@ -75,14 +76,15 @@ public:
    TH1 *h_dijet_mass_onH = 0;
    TH1 *h_dijet_deta_onH = 0;
    TH1 *h_met_pt_onH = 0;
-   TH1 *h_mindrmj_onH = 0;
-   TH1 *h_zeppen_onH = 0;
-   TH1 *h_csTheta_onH = 0;
-   TH1 *h_csPhi_onH = 0;
+   TH1 *h_met_phi_onH = 0;
+   // TH1 *h_mindrmj_onH = 0;
+   // TH1 *h_zeppen_onH = 0;
+   // TH1 *h_csTheta_onH = 0;
+   // TH1 *h_csPhi_onH = 0;
 
    // H window only
-   TH1 *h_bdtScore01jet = 0;
-   TH1 *h_bdtScore2jet = 0;
+   // TH1 *h_bdtScore01jet = 0;
+   TH1 *h_bdtScore = 0;
    TH1 *h_dimuon_0 = 0;
    TH1 *h_dimuon_1 = 0;
    TH1 *h_dimuon_2 = 0;
@@ -93,11 +95,11 @@ public:
    TH1 *h_dimuon_7 = 0;
    TH1 *h_dimuon_8 = 0;
    TH1 *h_dimuon_9 = 0;
-   TH1 *h_dimuon_10 = 0;
-   TH1 *h_dimuon_11 = 0;
-   TH1 *h_dimuon_12 = 0;
-   TH1 *h_dimuon_13 = 0;
-   TH1 *h_dimuon_14 = 0;
+   // TH1 *h_dimuon_10 = 0;
+   // TH1 *h_dimuon_11 = 0;
+   // TH1 *h_dimuon_12 = 0;
+   // TH1 *h_dimuon_13 = 0;
+   // TH1 *h_dimuon_14 = 0;
    // TH1 *h_dimuon_01jet = 0;
    // TH1 *h_dimuon_2jet = 0;
    
@@ -106,18 +108,14 @@ public:
 
    // Readers to access the data (delete the ones you do not need).
    TTreeReaderValue<Float_t> mclabel = {fReader, "mclabel"};
-   // TTreeReaderValue<Float_t> totalSF = {fReader, "totalSF"};
-   // TTreeReaderValue<Float_t> eWeight = {fReader, "eWeight"};
-   // TTreeReaderValue<Float_t> totalWeight = {fReader, "totalWeight"};
-   TTreeReaderValue<Float_t>  puW= {fReader, "puW"};
-   TTreeReaderValue<Float_t>  genXsOverN= {fReader, "genXsOverN"};
-   TTreeReaderValue<Float_t>  zptW= {fReader, "zptW"};
-   TTreeReaderValue<Float_t>  nvtxW= {fReader, "nvtxW"};
-   TTreeReaderValue<Float_t>  l1preW = {fReader, "l1preW"};
-   TTreeReaderValue<Float_t>  btagSF = {fReader, "btagSF"};
+   TTreeReaderValue<Float_t> eWeight = {fReader, "eWeight"};
+   TTreeReaderValue<Float_t>  puWeight = {fReader, "puWeight"};
+   TTreeReaderValue<Float_t>  zptWeight= {fReader, "zptWeight"};
+   TTreeReaderValue<Float_t>  prefireSF = {fReader, "prefireSF"};
    TTreeReaderValue<Float_t>  idSF = {fReader, "idSF"};
    TTreeReaderValue<Float_t>  isoSF = {fReader, "isoSF"};
    TTreeReaderValue<Float_t>  trigSF = {fReader, "trigSF"};
+   TTreeReaderValue<Float_t>  btagSF = {fReader, "btagSF"};
 
    TTreeReaderValue<Float_t> muPtC_1 = {fReader, "muPtC_1"};
    TTreeReaderValue<Float_t> muEtaC_1 = {fReader, "muEtaC_1"};
@@ -135,13 +133,14 @@ public:
    TTreeReaderValue<Float_t> jeteta_1 = {fReader, "jeteta_1"};
    TTreeReaderValue<Float_t> jetpt_2 = {fReader, "jetpt_2"};
    TTreeReaderValue<Float_t> jeteta_2 = {fReader, "jeteta_2"};
-   TTreeReaderValue<Float_t> mjj_1 = {fReader, "mjj_1"};
-   TTreeReaderValue<Float_t> detajj_1 = {fReader, "detajj_1"};
+   TTreeReaderValue<Float_t> mjj = {fReader, "mjj"};
+   TTreeReaderValue<Float_t> detajj = {fReader, "detajj"};
+   // TTreeReaderValue<Float_t> dphijj = {fReader, "dphijj"};
    TTreeReaderValue<Float_t> metpt = {fReader, "metpt"};
-   TTreeReaderValue<Float_t> mindrmj = {fReader, "mindrmj"};
-   TTreeReaderValue<Float_t> zeppen = {fReader, "zeppen"};
-   TTreeReaderValue<Float_t> csTheta = {fReader, "csTheta"};
-   TTreeReaderValue<Float_t> csPhi = {fReader, "csPhi"};
+   TTreeReaderValue<Float_t> metphi = {fReader, "metphi"};
+   // TTreeReaderValue<Float_t> zeppen = {fReader, "zeppen"};
+   // TTreeReaderValue<Float_t> csTheta = {fReader, "csTheta"};
+   // TTreeReaderValue<Float_t> csPhi = {fReader, "csPhi"};
    TTreeReaderValue<Float_t> category = {fReader, "category"};
    TTreeReaderValue<Float_t> bdtScore = {fReader, "bdtScore"};
 

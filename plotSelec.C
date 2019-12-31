@@ -74,10 +74,10 @@ void plotSelec::SlaveBegin(TTree * /*tree*/)
    h_dijet_mass_onZ = new TH1F("dijet_mass1_onZ", "DiJet Mass;M_{jj}  (GeV);Events ", 60, 0, 600);
    h_dijet_deta_onZ = new TH1F("dijet_deta1_onZ", "DiJet deta;deta;Events ", 94, 0, 9.4);
    h_met_pt_onZ = new TH1F("met_pt_onZ", "MET p_{T};p_{T}  (GeV) ", 100, 0, 200);
-   h_mindrmj_onZ = new TH1F("mindrmj_onZ", "min(dR(m,j));dR(m,j) ", 50, -5, 5);
-   h_zeppen_onZ = new TH1F("zeppen_onZ", "; zeppen; ", 100, -10, 10);
-   h_csTheta_onZ = new TH1F("csTheta_onZ", " ; csTheta; ", 10, -1, 1);
-   h_csPhi_onZ = new TH1F("csPhi_onZ", " ; csPhi ; ", 100, -10, 10);
+   h_met_phi_onZ = new TH1F("met_phi_onZ", "MET phi", 36, -3.6, 3.6);
+   // h_zeppen_onZ = new TH1F("zeppen_onZ", "; zeppen; ", 100, -10, 10);
+   // h_csTheta_onZ = new TH1F("csTheta_onZ", " ; csTheta; ", 10, -1, 1);
+   // h_csPhi_onZ = new TH1F("csPhi_onZ", " ; csPhi ; ", 100, -10, 10);
 
    h_leadMuon_pt_onH = new TH1F("lead_muon_pt_onH", "Leading Muon p_{T};p_{T}  (GeV);Events ", 100, 0, 200);
    h_leadMuon_eta_onH = new TH1F("lead_muon_eta_onH", "Leading Muon \\eta;\\eta;Events ", 50, -2.5, 2.5);
@@ -98,13 +98,13 @@ void plotSelec::SlaveBegin(TTree * /*tree*/)
    h_dijet_mass_onH = new TH1F("dijet_mass1_onH", "DiJet Mass;M_{jj}  (GeV);Events ", 60, 0, 600);
    h_dijet_deta_onH = new TH1F("dijet_deta1_onH", "DiJet deta;deta;Events ", 94, 0, 9.4);
    h_met_pt_onH = new TH1F("met_pt_onH", "MET p_{T};p_{T}  (GeV) ", 100, 0, 200);
-   h_mindrmj_onH = new TH1F("mindrmj_onH", "min(dR(m,j));dR(m,j) ", 50, -5, 5);
-   h_zeppen_onH = new TH1F("zeppen_onH", "; zeppen; ", 100, -10, 10);
-   h_csTheta_onH = new TH1F("csTheta_onH", " ; csTheta; ", 10, -1, 1);
-   h_csPhi_onH = new TH1F("csPhi_onH", " ; csPhi ; ", 100, -10, 10);
+   h_met_phi_onH = new TH1F("met_phi_onH", "MET phi", 36, -3.6, 3.6);
 
-   h_bdtScore01jet = new TH1F("h_bdtScore01jet", "; ; ", 20, -1, 1);
-   h_bdtScore2jet = new TH1F("h_bdtScore2jet", ";;", 20, -1, 1);
+   // h_zeppen_onH = new TH1F("zeppen_onH", "; zeppen; ", 100, -10, 10);
+   // h_csTheta_onH = new TH1F("csTheta_onH", " ; csTheta; ", 10, -1, 1);
+   // h_csPhi_onH = new TH1F("csPhi_onH", " ; csPhi ; ", 100, -10, 10);
+
+   h_bdtScore = new TH1F("h_bdtScore01jet", "; ; ", 20, -1, 1);
    h_dimuon_0 = new TH1F("dimuon_mass_cat0", " cat 0 ; dimuon mass (GeV); Events", 80, 110, 150);
    h_dimuon_1 = new TH1F("dimuon_mass_cat1", " cat 1 ; dimuon mass (GeV); Events", 80, 110, 150);
    h_dimuon_2 = new TH1F("dimuon_mass_cat2", " cat 2 ; dimuon mass (GeV); Events", 80, 110, 150);
@@ -115,11 +115,6 @@ void plotSelec::SlaveBegin(TTree * /*tree*/)
    h_dimuon_7 = new TH1F("dimuon_mass_cat7", " cat 7 ; dimuon mass (GeV); Events", 80, 110, 150);
    h_dimuon_8 = new TH1F("dimuon_mass_cat8", " cat 8 ; dimuon mass (GeV); Events", 80, 110, 150);
    h_dimuon_9 = new TH1F("dimuon_mass_cat9", " cat 9 ; dimuon mass (GeV); Events", 80, 110, 150);
-   h_dimuon_10 = new TH1F("dimuon_mass_cat10", " cat 10 ; dimuon mass (GeV); Events", 80, 110, 150);
-   h_dimuon_11 = new TH1F("dimuon_mass_cat11", " cat 11 ; dimuon mass (GeV); Events", 80, 110, 150);
-   h_dimuon_12 = new TH1F("dimuon_mass_cat12", " cat 12 ; dimuon mass (GeV); Events", 80, 110, 150);
-   h_dimuon_13 = new TH1F("dimuon_mass_cat13", " cat 13 ; dimuon mass (GeV); Events", 80, 110, 150);
-   h_dimuon_14 = new TH1F("dimuon_mass_cat14", " cat 14 ; dimuon mass (GeV); Events", 80, 110, 150);
 
    h_leadMuon_pt_onZ->Sumw2();
    h_leadMuon_eta_onZ->Sumw2();
@@ -140,10 +135,10 @@ void plotSelec::SlaveBegin(TTree * /*tree*/)
    h_dijet_mass_onZ->Sumw2();
    h_dijet_deta_onZ->Sumw2();
    h_met_pt_onZ->Sumw2();
-   h_mindrmj_onZ->Sumw2();
-   h_zeppen_onZ->Sumw2();
-   h_csTheta_onZ->Sumw2();
-   h_csPhi_onZ->Sumw2();
+   h_met_phi_onZ->Sumw2();
+   // h_zeppen_onZ->Sumw2();
+   // h_csTheta_onZ->Sumw2();
+   // h_csPhi_onZ->Sumw2();
 
    h_leadMuon_pt_onH->Sumw2();
    h_leadMuon_eta_onH->Sumw2();
@@ -164,12 +159,12 @@ void plotSelec::SlaveBegin(TTree * /*tree*/)
    h_dijet_mass_onH->Sumw2();
    h_dijet_deta_onH->Sumw2();
    h_met_pt_onH->Sumw2();
-   h_mindrmj_onH->Sumw2();
-   h_zeppen_onH->Sumw2();
-   h_csTheta_onH->Sumw2();
-   h_csPhi_onH->Sumw2();
-   h_bdtScore01jet->Sumw2();
-   h_bdtScore2jet->Sumw2();
+   h_met_phi_onH->Sumw2();
+   // h_zeppen_onH->Sumw2();
+   // h_csTheta_onH->Sumw2();
+   // h_csPhi_onH->Sumw2();
+
+   h_bdtScore->Sumw2();
 
    h_dimuon_0->Sumw2();
    h_dimuon_1->Sumw2();
@@ -181,11 +176,7 @@ void plotSelec::SlaveBegin(TTree * /*tree*/)
    h_dimuon_7->Sumw2();
    h_dimuon_8->Sumw2();
    h_dimuon_9->Sumw2();
-   h_dimuon_10->Sumw2();
-   h_dimuon_11->Sumw2();
-   h_dimuon_12->Sumw2();
-   h_dimuon_13->Sumw2();
-   h_dimuon_14->Sumw2();
+
 
    GetOutputList()->Add(h_leadMuon_pt_onZ);
    GetOutputList()->Add(h_leadMuon_eta_onZ);
@@ -206,10 +197,11 @@ void plotSelec::SlaveBegin(TTree * /*tree*/)
    GetOutputList()->Add(h_dijet_mass_onZ);
    GetOutputList()->Add(h_dijet_deta_onZ);
    GetOutputList()->Add(h_met_pt_onZ);
-   GetOutputList()->Add(h_mindrmj_onZ);
-   GetOutputList()->Add(h_zeppen_onZ);
-   GetOutputList()->Add(h_csTheta_onZ);
-   GetOutputList()->Add(h_csPhi_onZ);
+   GetOutputList()->Add(h_met_phi_onZ);
+
+   // GetOutputList()->Add(h_zeppen_onZ);
+   // GetOutputList()->Add(h_csTheta_onZ);
+   // GetOutputList()->Add(h_csPhi_onZ);
 
    GetOutputList()->Add(h_leadMuon_pt_onH);
    GetOutputList()->Add(h_leadMuon_eta_onH);
@@ -230,12 +222,11 @@ void plotSelec::SlaveBegin(TTree * /*tree*/)
    GetOutputList()->Add(h_dijet_mass_onH);
    GetOutputList()->Add(h_dijet_deta_onH);
    GetOutputList()->Add(h_met_pt_onH);
-   GetOutputList()->Add(h_mindrmj_onH);
-   GetOutputList()->Add(h_zeppen_onH);
-   GetOutputList()->Add(h_csTheta_onH);
-   GetOutputList()->Add(h_csPhi_onH);
-   GetOutputList()->Add(h_bdtScore01jet);
-   GetOutputList()->Add(h_bdtScore2jet);
+   GetOutputList()->Add(h_met_phi_onH);
+   // GetOutputList()->Add(h_zeppen_onH);
+   // GetOutputList()->Add(h_csTheta_onH);
+   // GetOutputList()->Add(h_csPhi_onH);
+   GetOutputList()->Add(h_bdtScore);
 
    GetOutputList()->Add(h_dimuon_0);
    GetOutputList()->Add(h_dimuon_1);
@@ -247,11 +238,7 @@ void plotSelec::SlaveBegin(TTree * /*tree*/)
    GetOutputList()->Add(h_dimuon_7);
    GetOutputList()->Add(h_dimuon_8);
    GetOutputList()->Add(h_dimuon_9);
-   GetOutputList()->Add(h_dimuon_10);
-   GetOutputList()->Add(h_dimuon_11);
-   GetOutputList()->Add(h_dimuon_12);
-   GetOutputList()->Add(h_dimuon_13);
-   GetOutputList()->Add(h_dimuon_14);
+
 }
 
 Bool_t plotSelec::Process(Long64_t entry)
@@ -280,7 +267,7 @@ Bool_t plotSelec::Process(Long64_t entry)
 
    if (*mclabel)
    {
-      weight = (*puW) * (*genXsOverN) * (*zptW) * (*nvtxW) * (*l1preW) * (*btagSF) * (*idSF) * (*isoSF) * (*trigSF);
+      weight = (*eWeight) * (*puWeight) * (*zptWeight) * (*prefireSF) * (*idSF) * (*isoSF) * (*trigSF) * (*btagSF);
    }
  
 
@@ -302,20 +289,26 @@ Bool_t plotSelec::Process(Long64_t entry)
       h_num_jets_onZ->Fill(*njets, weight);
       h_num_bjets_onZ->Fill(*nbtagJets, weight);
 
-      h_leadjet_pt_onZ->Fill(*jetpt_1, weight);
-      h_leadjet_eta_onZ->Fill(*jeteta_1, weight);
+      if (*njets > 0)
+      {
+         h_leadjet_pt_onZ->Fill(*jetpt_1, weight);
+         h_leadjet_eta_onZ->Fill(*jeteta_1, weight);
 
-      h_subjet_pt_onZ->Fill(*jetpt_2, weight);
-      h_subjet_eta_onZ->Fill(*jeteta_2, weight);
+         if (*njets > 1)
+         {
+            h_subjet_pt_onZ->Fill(*jetpt_2, weight);
+            h_subjet_eta_onZ->Fill(*jeteta_2, weight);
 
-      h_dijet_mass_onZ->Fill(*mjj_1, weight);
-      h_dijet_deta_onZ->Fill(*detajj_1, weight);
-
+            h_dijet_mass_onZ->Fill(*mjj, weight);
+            h_dijet_deta_onZ->Fill(*detajj, weight);
+         }
+      }
       h_met_pt_onZ->Fill(*metpt, weight);
-      h_mindrmj_onZ->Fill(*mindrmj, weight);
-      h_zeppen_onZ->Fill(*zeppen, weight);
-      h_csTheta_onZ->Fill(*csTheta, weight);
-      h_csPhi_onZ->Fill(*csPhi, weight);
+      h_met_phi_onZ->Fill(*metphi, weight);
+
+      // h_zeppen_onZ->Fill(*zeppen, weight);
+      // h_csTheta_onZ->Fill(*csTheta, weight);
+      // h_csPhi_onZ->Fill(*csPhi, weight);
    }
 
    if (*h_mass > 110 && *h_mass < 150)
@@ -336,90 +329,92 @@ Bool_t plotSelec::Process(Long64_t entry)
       h_num_jets_onH->Fill(*njets, weight);
       h_num_bjets_onH->Fill(*nbtagJets, weight);
 
-      h_leadjet_pt_onH->Fill(*jetpt_1, weight);
-      h_leadjet_eta_onH->Fill(*jeteta_1, weight);
+      if (*njets > 0)
+      {
+         h_leadjet_pt_onH->Fill(*jetpt_1, weight);
+         h_leadjet_eta_onH->Fill(*jeteta_1, weight);
 
-      h_subjet_pt_onH->Fill(*jetpt_2, weight);
-      h_subjet_eta_onH->Fill(*jeteta_2, weight);
+         if (*njets > 1)
+         {
+            h_subjet_pt_onH->Fill(*jetpt_2, weight);
+            h_subjet_eta_onH->Fill(*jeteta_2, weight);
 
-      h_dijet_mass_onH->Fill(*mjj_1, weight);
-      h_dijet_deta_onH->Fill(*detajj_1, weight);
-
+            h_dijet_mass_onH->Fill(*mjj, weight);
+            h_dijet_deta_onH->Fill(*detajj, weight);
+         }
+      }
       h_met_pt_onH->Fill(*metpt, weight);
-      h_mindrmj_onH->Fill(*mindrmj, weight);
-      h_zeppen_onH->Fill(*zeppen, weight);
-      h_csTheta_onH->Fill(*csTheta, weight);
-      h_csPhi_onH->Fill(*csPhi, weight);
+      h_met_phi_onH->Fill(*metphi, weight);
+
+      // h_zeppen_onH->Fill(*zeppen, weight);
+      // h_csTheta_onH->Fill(*csTheta, weight);
+      // h_csPhi_onH->Fill(*csPhi, weight);
 
       if (*category == 0)
       {
-         h_bdtScore2jet->Fill(*bdtScore, weight);
+         h_bdtScore->Fill(*bdtScore, weight);
          h_dimuon_0->Fill(*h_mass, weight);
       }
       if (*category == 1)
       {
-         h_bdtScore2jet->Fill(*bdtScore, weight);
+         h_bdtScore->Fill(*bdtScore, weight);
          h_dimuon_1->Fill(*h_mass, weight);
       }
       if (*category == 2)
       {
-         h_bdtScore2jet->Fill(*bdtScore, weight);
+         h_bdtScore->Fill(*bdtScore, weight);
          h_dimuon_2->Fill(*h_mass, weight);
       }
       if (*category == 3)
       {
-         h_bdtScore2jet->Fill(*bdtScore, weight);
+         h_bdtScore->Fill(*bdtScore, weight);
          h_dimuon_3->Fill(*h_mass, weight);
       }
       if (*category == 4)
       {
-         h_bdtScore2jet->Fill(*bdtScore, weight);
+         h_bdtScore->Fill(*bdtScore, weight);
          h_dimuon_4->Fill(*h_mass, weight);
       }
       if (*category == 5)
       {
-         h_bdtScore01jet->Fill(*bdtScore, weight);
          h_dimuon_5->Fill(*h_mass, weight);
       }
       if (*category == 6)
       {
-         h_bdtScore01jet->Fill(*bdtScore, weight);
          h_dimuon_6->Fill(*h_mass, weight);
       }
       if (*category == 7)
       {
-         h_bdtScore01jet->Fill(*bdtScore, weight);
          h_dimuon_7->Fill(*h_mass, weight);
       }
       if (*category == 8)
       {
-         h_bdtScore01jet->Fill(*bdtScore, weight);
          h_dimuon_8->Fill(*h_mass, weight);
       }
       if (*category == 9)
       {
          h_dimuon_9->Fill(*h_mass, weight);
       }
-      if (*category == 10)
-      {
-         h_dimuon_10->Fill(*h_mass, weight);
-      }
-      if (*category == 11)
-      {
-         h_dimuon_11->Fill(*h_mass, weight);
-      }
-      if (*category == 12)
-      {
-         h_dimuon_12->Fill(*h_mass, weight);
-      }
-      if (*category == 13)
-      {
-         h_dimuon_13->Fill(*h_mass, weight);
-      }
-      if (*category == 14)
-      {
-         h_dimuon_14->Fill(*h_mass, weight);
-      }
+      // if (*category == 10)
+      // {
+      //    h_dimuon_10->Fill(*h_mass, weight);
+      // }
+      // if (*category == 11)
+      // {
+      //    h_dimuon_11->Fill(*h_mass, weight);
+      // }
+      // if (*category == 12)
+      // {
+      //    h_dimuon_12->Fill(*h_mass, weight);
+      // }
+      // if (*category == 13)
+      // {
+      //    h_dimuon_13->Fill(*h_mass, weight);
+      // }
+      // if (*category == 14)
+      // {
+      //    h_dimuon_14->Fill(*h_mass, weight);
+      // }
    }
    return kTRUE;
 }
