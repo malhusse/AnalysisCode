@@ -24,9 +24,10 @@ os.system("chmod 755 {}".format("runCount{}.sh".format(year)))
 f = open("runCorr{}.sh".format(year),"w")
 f.write("#!/bin/bash\n")
 for k,v in dic.items():
-    line = "root -l -b -q 'quickCorr.C(\"{}\",\"{}\",{})'\n".format(k,v,year)
-    f.write(line)
-f.write("hadd resources/data/allData{}.root resources/corrections/{}/SingleMuon*.root\n".format(year,year))
+    if "SingleMuon" not in k:
+        line = "root -l -b -q 'quickCorr.C(\"{}\",\"{}\",{})'\n".format(k,v,year)
+        f.write(line)
+#f.write("hadd resources/data/allData{}.root resources/corrections/{}/SingleMuon*.root\n".format(year,year))
 f.close()
 os.system("chmod 755 {}".format("runCorr{}.sh".format(year)))
 
