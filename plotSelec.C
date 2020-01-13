@@ -55,22 +55,22 @@ void plotSelec::SlaveBegin(TTree * /*tree*/)
    // The tree argument is deprecated (on PROOF 0 is passed).
 
    TString option = GetOption();
-   h_leadMuon_pt_onZ = new TH1F("lead_muon_pt_onZ", "Leading Muon p_{T};p_{T}  (GeV);Events ", 100, 0, 200);
+   // h_leadMuon_pt_onZ = new TH1F("lead_muon_pt_onZ", "Leading Muon p_{T};p_{T}  (GeV);Events ", 100, 0, 200);
    h_leadMuon_eta_onZ = new TH1F("lead_muon_eta_onZ", "Leading Muon \\eta;\\eta;Events ", 50, -2.5, 2.5);
-   h_subMuon_pt_onZ = new TH1F("sub_muon_pt_onZ", "Subleading Muon p_{T};p_{T}  (GeV);Events ", 100, 0, 200);
+   // h_subMuon_pt_onZ = new TH1F("sub_muon_pt_onZ", "Subleading Muon p_{T};p_{T}  (GeV);Events ", 100, 0, 200);
    h_subMuon_eta_onZ = new TH1F("sub_muon_eta_onZ", "Subleading Muon eta;\\eta;Events ", 50, -2.5, 2.5);
    h_dimuon_mass_onZ = new TH1F("dimuon_mass_onZ", "Dimuon Mass;M_{\\mu \\mu}  (Gev);Events ", 100, 70, 110);
    h_dimuon_pt_onZ = new TH1F("dimuon_pt_onZ", "Dimuon p_{T};p_{T}  (GeV);Events ", 200, 0, 400);
    h_dimuon_eta_onZ = new TH1F("dimuon_eta_onZ", "Dimuon \\eta;\\eta;Events ", 100, -5.0, 5.0);
-   h_dimuon_phi_onZ = new TH1F("dimuon_phi_onZ", "Dimuon \\phi;\\phi;Events ", 36, -3.6, 3.6);
-   h_dimuon_deta_onZ = new TH1F("dimuon_deta_onZ", "Dimuon deta;deta;Events ", 50, 0, 5.0);
-   h_dimuon_dphi_onZ = new TH1F("dimuon_dphi_onZ", "Dimuon dphi;dphi;Events ", 18, 0, 3.6);
+   // h_dimuon_phi_onZ = new TH1F("dimuon_phi_onZ", "Dimuon \\phi;\\phi;Events ", 36, -3.6, 3.6);
+   // h_dimuon_deta_onZ = new TH1F("dimuon_deta_onZ", "Dimuon deta;deta;Events ", 50, 0, 5.0);
+   // h_dimuon_dphi_onZ = new TH1F("dimuon_dphi_onZ", "Dimuon dphi;dphi;Events ", 18, 0, 3.6);
    h_num_jets_onZ = new TH1F("num_jets_onZ", "Number of Jets;nJets;Events ", 8, 0, 8);
    h_num_bjets_onZ = new TH1F("num_bjets_onZ", "Number of B Jets;nBJets;Events ", 6, 0, 6);
    h_leadjet_pt_onZ = new TH1F("leadjet_pt_onZ", "Leading Jet p_{T};p_{T}  (GeV);Events ", 250, 0, 500);
    h_leadjet_eta_onZ = new TH1F("leadjet_eta_onZ", "Leading Jet \\eta;\\eta;Events ", 94, -4.7, 4.7);
    h_subjet_pt_onZ = new TH1F("subjet_pt_onZ", "Subleading Jet p_{T};p_{T}  (GeV);Events ", 250, 0, 500);
-   h_subjet_eta_onZ = new TH1F("subjet_eta_onZ", "Subleading Jet \\eta;\\eta;Events ", 94, -4.7, 4.7);
+   // h_subjet_eta_onZ = new TH1F("subjet_eta_onZ", "Subleading Jet \\eta;\\eta;Events ", 94, -4.7, 4.7);
    h_dijet_mass_onZ = new TH1F("dijet_mass1_onZ", "DiJet Mass;M_{jj}  (GeV);Events ", 60, 0, 600);
    h_dijet_deta_onZ = new TH1F("dijet_deta1_onZ", "DiJet deta;deta;Events ", 94, 0, 9.4);
    h_met_pt_onZ = new TH1F("met_pt_onZ", "MET p_{T};p_{T}  (GeV) ", 100, 0, 200);
@@ -79,22 +79,22 @@ void plotSelec::SlaveBegin(TTree * /*tree*/)
    // h_csTheta_onZ = new TH1F("csTheta_onZ", " ; csTheta; ", 10, -1, 1);
    // h_csPhi_onZ = new TH1F("csPhi_onZ", " ; csPhi ; ", 100, -10, 10);
 
-   h_leadMuon_pt_onH = new TH1F("lead_muon_pt_onH", "Leading Muon p_{T};p_{T}  (GeV);Events ", 100, 0, 200);
+   // h_leadMuon_pt_onH = new TH1F("lead_muon_pt_onH", "Leading Muon p_{T};p_{T}  (GeV);Events ", 100, 0, 200);
    h_leadMuon_eta_onH = new TH1F("lead_muon_eta_onH", "Leading Muon \\eta;\\eta;Events ", 50, -2.5, 2.5);
-   h_subMuon_pt_onH = new TH1F("sub_muon_pt_onH", "Subleading Muon p_{T};p_{T}  (GeV);Events ", 100, 0, 200);
+   // h_subMuon_pt_onH = new TH1F("sub_muon_pt_onH", "Subleading Muon p_{T};p_{T}  (GeV);Events ", 100, 0, 200);
    h_subMuon_eta_onH = new TH1F("sub_muon_eta_onH", "Subleading Muon eta;\\eta;Events ", 50, -2.5, 2.5);
    h_dimuon_mass_onH = new TH1F("dimuon_mass_onH", "Dimuon Mass;M_{\\mu \\mu}  (Gev);Events ", 80, 110, 150);
    h_dimuon_pt_onH = new TH1F("dimuon_pt_onH", "Dimuon p_{T};p_{T}  (GeV);Events ", 200, 0, 400);
    h_dimuon_eta_onH = new TH1F("dimuon_eta_onH", "Dimuon \\eta;\\eta;Events ", 100, -5.0, 5.0);
-   h_dimuon_phi_onH = new TH1F("dimuon_phi_onH", "Dimuon \\phi;\\phi;Events ", 36, -3.6, 3.6);
-   h_dimuon_deta_onH = new TH1F("dimuon_deta_onH", "Dimuon deta;deta;Events ", 50, 0, 5.0);
-   h_dimuon_dphi_onH = new TH1F("dimuon_dphi_onH", "Dimuon dphi;dphi;Events ", 18, 0, 3.6);
+   // h_dimuon_phi_onH = new TH1F("dimuon_phi_onH", "Dimuon \\phi;\\phi;Events ", 36, -3.6, 3.6);
+   // h_dimuon_deta_onH = new TH1F("dimuon_deta_onH", "Dimuon deta;deta;Events ", 50, 0, 5.0);
+   // h_dimuon_dphi_onH = new TH1F("dimuon_dphi_onH", "Dimuon dphi;dphi;Events ", 18, 0, 3.6);
    h_num_jets_onH = new TH1F("num_jets_onH", "Number of Jets;nJets;Events ", 8, 0, 8);
    h_num_bjets_onH = new TH1F("num_bjets_onH", "Number of B Jets;nBJets;Events ", 6, 0, 6);
    h_leadjet_pt_onH = new TH1F("leadjet_pt_onH", "Leading Jet p_{T};p_{T}  (GeV);Events ", 250, 0, 500);
    h_leadjet_eta_onH = new TH1F("leadjet_eta_onH", "Leading Jet \\eta;\\eta;Events ", 94, -4.7, 4.7);
    h_subjet_pt_onH = new TH1F("subjet_pt_onH", "Subleading Jet p_{T};p_{T}  (GeV);Events ", 250, 0, 500);
-   h_subjet_eta_onH = new TH1F("subjet_eta_onH", "Subleading Jet \\eta;\\eta;Events ", 94, -4.7, 4.7);
+   // h_subjet_eta_onH = new TH1F("subjet_eta_onH", "Subleading Jet \\eta;\\eta;Events ", 94, -4.7, 4.7);
    h_dijet_mass_onH = new TH1F("dijet_mass1_onH", "DiJet Mass;M_{jj}  (GeV);Events ", 60, 0, 600);
    h_dijet_deta_onH = new TH1F("dijet_deta1_onH", "DiJet deta;deta;Events ", 94, 0, 9.4);
    h_met_pt_onH = new TH1F("met_pt_onH", "MET p_{T};p_{T}  (GeV) ", 100, 0, 200);
@@ -116,22 +116,22 @@ void plotSelec::SlaveBegin(TTree * /*tree*/)
    h_dimuon_8 = new TH1F("dimuon_mass_cat8", " cat 8 ; dimuon mass (GeV); Events", 80, 110, 150);
    h_dimuon_9 = new TH1F("dimuon_mass_cat9", " cat 9 ; dimuon mass (GeV); Events", 80, 110, 150);
 
-   h_leadMuon_pt_onZ->Sumw2();
+   // h_leadMuon_pt_onZ->Sumw2();
    h_leadMuon_eta_onZ->Sumw2();
-   h_subMuon_pt_onZ->Sumw2();
+   // h_subMuon_pt_onZ->Sumw2();
    h_subMuon_eta_onZ->Sumw2();
    h_dimuon_mass_onZ->Sumw2();
    h_dimuon_pt_onZ->Sumw2();
    h_dimuon_eta_onZ->Sumw2();
-   h_dimuon_phi_onZ->Sumw2();
-   h_dimuon_deta_onZ->Sumw2();
-   h_dimuon_dphi_onZ->Sumw2();
+   // h_dimuon_phi_onZ->Sumw2();
+   // h_dimuon_deta_onZ->Sumw2();
+   // h_dimuon_dphi_onZ->Sumw2();
    h_num_jets_onZ->Sumw2();
    h_num_bjets_onZ->Sumw2();
    h_leadjet_pt_onZ->Sumw2();
    h_leadjet_eta_onZ->Sumw2();
    h_subjet_pt_onZ->Sumw2();
-   h_subjet_eta_onZ->Sumw2();
+   // h_subjet_eta_onZ->Sumw2();
    h_dijet_mass_onZ->Sumw2();
    h_dijet_deta_onZ->Sumw2();
    h_met_pt_onZ->Sumw2();
@@ -140,22 +140,22 @@ void plotSelec::SlaveBegin(TTree * /*tree*/)
    // h_csTheta_onZ->Sumw2();
    // h_csPhi_onZ->Sumw2();
 
-   h_leadMuon_pt_onH->Sumw2();
+   // h_leadMuon_pt_onH->Sumw2();
    h_leadMuon_eta_onH->Sumw2();
-   h_subMuon_pt_onH->Sumw2();
+   // h_subMuon_pt_onH->Sumw2();
    h_subMuon_eta_onH->Sumw2();
    h_dimuon_mass_onH->Sumw2();
    h_dimuon_pt_onH->Sumw2();
    h_dimuon_eta_onH->Sumw2();
-   h_dimuon_phi_onH->Sumw2();
-   h_dimuon_deta_onH->Sumw2();
-   h_dimuon_dphi_onH->Sumw2();
+   // h_dimuon_phi_onH->Sumw2();
+   // h_dimuon_deta_onH->Sumw2();
+   // h_dimuon_dphi_onH->Sumw2();
    h_num_jets_onH->Sumw2();
    h_num_bjets_onH->Sumw2();
    h_leadjet_pt_onH->Sumw2();
    h_leadjet_eta_onH->Sumw2();
    h_subjet_pt_onH->Sumw2();
-   h_subjet_eta_onH->Sumw2();
+   // h_subjet_eta_onH->Sumw2();
    h_dijet_mass_onH->Sumw2();
    h_dijet_deta_onH->Sumw2();
    h_met_pt_onH->Sumw2();
@@ -178,22 +178,22 @@ void plotSelec::SlaveBegin(TTree * /*tree*/)
    h_dimuon_9->Sumw2();
 
 
-   GetOutputList()->Add(h_leadMuon_pt_onZ);
+   // GetOutputList()->Add(h_leadMuon_pt_onZ);
    GetOutputList()->Add(h_leadMuon_eta_onZ);
-   GetOutputList()->Add(h_subMuon_pt_onZ);
+   // GetOutputList()->Add(h_subMuon_pt_onZ);
    GetOutputList()->Add(h_subMuon_eta_onZ);
    GetOutputList()->Add(h_dimuon_mass_onZ);
    GetOutputList()->Add(h_dimuon_pt_onZ);
    GetOutputList()->Add(h_dimuon_eta_onZ);
-   GetOutputList()->Add(h_dimuon_phi_onZ);
-   GetOutputList()->Add(h_dimuon_deta_onZ);
-   GetOutputList()->Add(h_dimuon_dphi_onZ);
+   // GetOutputList()->Add(h_dimuon_phi_onZ);
+   // GetOutputList()->Add(h_dimuon_deta_onZ);
+   // GetOutputList()->Add(h_dimuon_dphi_onZ);
    GetOutputList()->Add(h_num_jets_onZ);
    GetOutputList()->Add(h_num_bjets_onZ);
    GetOutputList()->Add(h_leadjet_pt_onZ);
    GetOutputList()->Add(h_leadjet_eta_onZ);
    GetOutputList()->Add(h_subjet_pt_onZ);
-   GetOutputList()->Add(h_subjet_eta_onZ);
+   // GetOutputList()->Add(h_subjet_eta_onZ);
    GetOutputList()->Add(h_dijet_mass_onZ);
    GetOutputList()->Add(h_dijet_deta_onZ);
    GetOutputList()->Add(h_met_pt_onZ);
@@ -203,22 +203,22 @@ void plotSelec::SlaveBegin(TTree * /*tree*/)
    // GetOutputList()->Add(h_csTheta_onZ);
    // GetOutputList()->Add(h_csPhi_onZ);
 
-   GetOutputList()->Add(h_leadMuon_pt_onH);
+   // GetOutputList()->Add(h_leadMuon_pt_onH);
    GetOutputList()->Add(h_leadMuon_eta_onH);
-   GetOutputList()->Add(h_subMuon_pt_onH);
+   // GetOutputList()->Add(h_subMuon_pt_onH);
    GetOutputList()->Add(h_subMuon_eta_onH);
    GetOutputList()->Add(h_dimuon_mass_onH);
    GetOutputList()->Add(h_dimuon_pt_onH);
    GetOutputList()->Add(h_dimuon_eta_onH);
-   GetOutputList()->Add(h_dimuon_phi_onH);
-   GetOutputList()->Add(h_dimuon_deta_onH);
-   GetOutputList()->Add(h_dimuon_dphi_onH);
+   // GetOutputList()->Add(h_dimuon_phi_onH);
+   // GetOutputList()->Add(h_dimuon_deta_onH);
+   // GetOutputList()->Add(h_dimuon_dphi_onH);
    GetOutputList()->Add(h_num_jets_onH);
    GetOutputList()->Add(h_num_bjets_onH);
    GetOutputList()->Add(h_leadjet_pt_onH);
    GetOutputList()->Add(h_leadjet_eta_onH);
    GetOutputList()->Add(h_subjet_pt_onH);
-   GetOutputList()->Add(h_subjet_eta_onH);
+   // GetOutputList()->Add(h_subjet_eta_onH);
    GetOutputList()->Add(h_dijet_mass_onH);
    GetOutputList()->Add(h_dijet_deta_onH);
    GetOutputList()->Add(h_met_pt_onH);
@@ -265,26 +265,25 @@ Bool_t plotSelec::Process(Long64_t entry)
 
    float weight = 1.0;
 
-   if (*mclabel)
-   {
-      weight = (*eWeight) * (*puWeight) * (*zptWeight) * (*prefireSF) * (*idSF) * (*isoSF) * (*trigSF) * (*btagSF);
-   }
- 
-
    if (*h_mass > 70 && *h_mass < 110)
    {
-      h_leadMuon_pt_onZ->Fill(*muPtC_1, weight);
+      if (*mclabel)
+      {
+         weight = (*eWeight) * (*puWeight) * (*prefireSF) * (*idSF) * (*isoSF) * (*trigSF) * (*btagSF);
+      }
+
+      // h_leadMuon_pt_onZ->Fill(*muPtC_1, weight);
       h_leadMuon_eta_onZ->Fill(*muEtaC_1, weight);
 
-      h_subMuon_pt_onZ->Fill(*muPtC_2, weight);
+      // h_subMuon_pt_onZ->Fill(*muPtC_2, weight);
       h_subMuon_eta_onZ->Fill(*muEtaC_2, weight);
 
       h_dimuon_mass_onZ->Fill(*h_mass, weight);
       h_dimuon_pt_onZ->Fill(*h_pt, weight);
       h_dimuon_eta_onZ->Fill(*h_eta, weight);
-      h_dimuon_phi_onZ->Fill(*h_phi, weight);
-      h_dimuon_deta_onZ->Fill(*h_deta, weight);
-      h_dimuon_dphi_onZ->Fill(*h_dphi, weight);
+      // h_dimuon_phi_onZ->Fill(*h_phi, weight);
+      // h_dimuon_deta_onZ->Fill(*h_deta, weight);
+      // h_dimuon_dphi_onZ->Fill(*h_dphi, weight);
 
       h_num_jets_onZ->Fill(*njets, weight);
       h_num_bjets_onZ->Fill(*nbtagJets, weight);
@@ -297,7 +296,7 @@ Bool_t plotSelec::Process(Long64_t entry)
          if (*njets > 1)
          {
             h_subjet_pt_onZ->Fill(*jetpt_2, weight);
-            h_subjet_eta_onZ->Fill(*jeteta_2, weight);
+            // h_subjet_eta_onZ->Fill(*jeteta_2, weight);
 
             h_dijet_mass_onZ->Fill(*mjj, weight);
             h_dijet_deta_onZ->Fill(*detajj, weight);
@@ -313,18 +312,23 @@ Bool_t plotSelec::Process(Long64_t entry)
 
    if (*h_mass > 110 && *h_mass < 150)
    {
-      h_leadMuon_pt_onH->Fill(*muPtC_1, weight);
+      if (*mclabel)
+      {
+         weight = (*eWeight) * (*zptWeight) * (*puWeight) * (*prefireSF) * (*idSF) * (*isoSF) * (*trigSF) * (*btagSF);
+      }
+
+      // h_leadMuon_pt_onH->Fill(*muPtC_1, weight);
       h_leadMuon_eta_onH->Fill(*muEtaC_1, weight);
 
-      h_subMuon_pt_onH->Fill(*muPtC_2, weight);
+      // h_subMuon_pt_onH->Fill(*muPtC_2, weight);
       h_subMuon_eta_onH->Fill(*muEtaC_2, weight);
 
       h_dimuon_mass_onH->Fill(*h_mass, weight);
       h_dimuon_pt_onH->Fill(*h_pt, weight);
       h_dimuon_eta_onH->Fill(*h_eta, weight);
-      h_dimuon_phi_onH->Fill(*h_phi, weight);
-      h_dimuon_deta_onH->Fill(*h_deta, weight);
-      h_dimuon_dphi_onH->Fill(*h_dphi, weight);
+      // h_dimuon_phi_onH->Fill(*h_phi, weight);
+      // h_dimuon_deta_onH->Fill(*h_deta, weight);
+      // h_dimuon_dphi_onH->Fill(*h_dphi, weight);
 
       h_num_jets_onH->Fill(*njets, weight);
       h_num_bjets_onH->Fill(*nbtagJets, weight);
@@ -337,7 +341,7 @@ Bool_t plotSelec::Process(Long64_t entry)
          if (*njets > 1)
          {
             h_subjet_pt_onH->Fill(*jetpt_2, weight);
-            h_subjet_eta_onH->Fill(*jeteta_2, weight);
+            // h_subjet_eta_onH->Fill(*jeteta_2, weight);
 
             h_dijet_mass_onH->Fill(*mjj, weight);
             h_dijet_deta_onH->Fill(*detajj, weight);

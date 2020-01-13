@@ -30,22 +30,22 @@ public:
 
    // Z window plots
    // 70 - 110 GeV
-   TH1 *h_leadMuon_pt_onZ = 0;
+   // TH1 *h_leadMuon_pt_onZ = 0;
    TH1 *h_leadMuon_eta_onZ = 0;
-   TH1 *h_subMuon_pt_onZ = 0;
+   // TH1 *h_subMuon_pt_onZ = 0;
    TH1 *h_subMuon_eta_onZ = 0;
    TH1 *h_dimuon_mass_onZ = 0;
    TH1 *h_dimuon_pt_onZ = 0;
    TH1 *h_dimuon_eta_onZ = 0;
-   TH1 *h_dimuon_phi_onZ = 0;
-   TH1 *h_dimuon_deta_onZ = 0;
-   TH1 *h_dimuon_dphi_onZ = 0;
+   // TH1 *h_dimuon_phi_onZ = 0;
+   // TH1 *h_dimuon_deta_onZ = 0;
+   // TH1 *h_dimuon_dphi_onZ = 0;
    TH1 *h_num_jets_onZ = 0;
    TH1 *h_num_bjets_onZ = 0;
    TH1 *h_leadjet_pt_onZ = 0;
    TH1 *h_leadjet_eta_onZ = 0;
    TH1 *h_subjet_pt_onZ = 0;
-   TH1 *h_subjet_eta_onZ = 0;
+   // TH1 *h_subjet_eta_onZ = 0;
    TH1 *h_dijet_mass_onZ = 0;
    TH1 *h_dijet_deta_onZ = 0;
    TH1 *h_met_pt_onZ = 0;
@@ -57,22 +57,22 @@ public:
 
    // H window plots
    // 110-150 GeV
-   TH1 *h_leadMuon_pt_onH = 0;
+   // TH1 *h_leadMuon_pt_onH = 0;
    TH1 *h_leadMuon_eta_onH = 0;
-   TH1 *h_subMuon_pt_onH = 0;
+   // TH1 *h_subMuon_pt_onH = 0;
    TH1 *h_subMuon_eta_onH = 0;
    TH1 *h_dimuon_mass_onH = 0;
    TH1 *h_dimuon_pt_onH = 0;
    TH1 *h_dimuon_eta_onH = 0;
-   TH1 *h_dimuon_phi_onH = 0;
-   TH1 *h_dimuon_deta_onH = 0;
-   TH1 *h_dimuon_dphi_onH = 0;
+   // TH1 *h_dimuon_phi_onH = 0;
+   // TH1 *h_dimuon_deta_onH = 0;
+   // TH1 *h_dimuon_dphi_onH = 0;
    TH1 *h_num_jets_onH = 0;
    TH1 *h_num_bjets_onH = 0;
    TH1 *h_leadjet_pt_onH = 0;
    TH1 *h_leadjet_eta_onH = 0;
    TH1 *h_subjet_pt_onH = 0;
-   TH1 *h_subjet_eta_onH = 0;
+   // TH1 *h_subjet_eta_onH = 0;
    TH1 *h_dijet_mass_onH = 0;
    TH1 *h_dijet_deta_onH = 0;
    TH1 *h_met_pt_onH = 0;
@@ -117,22 +117,22 @@ public:
    TTreeReaderValue<Float_t>  trigSF = {fReader, "trigSF"};
    TTreeReaderValue<Float_t>  btagSF = {fReader, "btagSF"};
 
-   TTreeReaderValue<Float_t> muPtC_1 = {fReader, "muPtC_1"};
+   // TTreeReaderValue<Float_t> muPtC_1 = {fReader, "muPtC_1"};
    TTreeReaderValue<Float_t> muEtaC_1 = {fReader, "muEtaC_1"};
-   TTreeReaderValue<Float_t> muPtC_2 = {fReader, "muPtC_2"};
+   // TTreeReaderValue<Float_t> muPtC_2 = {fReader, "muPtC_2"};
    TTreeReaderValue<Float_t> muEtaC_2 = {fReader, "muEtaC_2"};
    TTreeReaderValue<Float_t> h_mass = {fReader, "h_mass"};
    TTreeReaderValue<Float_t> h_pt = {fReader, "h_pt"};
    TTreeReaderValue<Float_t> h_eta = {fReader, "h_eta"};
-   TTreeReaderValue<Float_t> h_phi = {fReader, "h_phi"};
-   TTreeReaderValue<Float_t> h_deta = {fReader, "h_deta"};
-   TTreeReaderValue<Float_t> h_dphi = {fReader, "h_dphi"};
+   // TTreeReaderValue<Float_t> h_phi = {fReader, "h_phi"};
+   // TTreeReaderValue<Float_t> h_deta = {fReader, "h_deta"};
+   // TTreeReaderValue<Float_t> h_dphi = {fReader, "h_dphi"};
    TTreeReaderValue<Float_t> njets = {fReader, "njets"};
    TTreeReaderValue<Float_t> nbtagJets = {fReader, "nbtagJets"};
    TTreeReaderValue<Float_t> jetpt_1 = {fReader, "jetpt_1"};
    TTreeReaderValue<Float_t> jeteta_1 = {fReader, "jeteta_1"};
    TTreeReaderValue<Float_t> jetpt_2 = {fReader, "jetpt_2"};
-   TTreeReaderValue<Float_t> jeteta_2 = {fReader, "jeteta_2"};
+   // TTreeReaderValue<Float_t> jeteta_2 = {fReader, "jeteta_2"};
    TTreeReaderValue<Float_t> mjj = {fReader, "mjj"};
    TTreeReaderValue<Float_t> detajj = {fReader, "detajj"};
    // TTreeReaderValue<Float_t> dphijj = {fReader, "dphijj"};

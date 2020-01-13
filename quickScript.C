@@ -7,10 +7,10 @@ void quickScript(string inputList, string outputFile, Int_t year)
 {
    std::ifstream jsonFile("resources/cross_sections.json");
    std::ifstream labelFile("resources/mc_labels.json");
-   boost::property_tree::ptree _xsecJson;
+   // boost::property_tree::ptree _xsecJson;
    boost::property_tree::ptree _labelJson;
 
-   boost::property_tree::json_parser::read_json(jsonFile, _xsecJson);
+   // boost::property_tree::json_parser::read_json(jsonFile, _xsecJson);
    boost::property_tree::json_parser::read_json(labelFile, _labelJson);
 
    typedef boost::property_tree::ptree::path_type path;
@@ -26,9 +26,9 @@ void quickScript(string inputList, string outputFile, Int_t year)
    fileList += ".files";
 
    std::cout << "input filelist: " << fileList << " , output filename: " << outputFile << endl;
-   std::cout << _xsecJson.get<double>(inputDataset) << std::endl;
+   // std::cout << _xsecJson.get<double>(inputDataset) << std::endl;
    std::cout << _labelJson.get<int>(inputDataset) << std::endl;
-   double xsec = _xsecJson.get<double>(inputDataset);
+   // double xsec = _xsecJson.get<double>(inputDataset);
    int mcLabel = _labelJson.get<int>(inputDataset);
 
    gSystem->Load("/uscms_data/d1/malhusse/analysis/libAnalysisCore.so");
@@ -59,7 +59,7 @@ void quickScript(string inputList, string outputFile, Int_t year)
 
    gProof->SetParameter("getSumEvents", sumEvents);
    gProof->SetParameter("getSumEventsWeighted", sumEventsWeighted);
-   gProof->SetParameter("getxsec", xsec);
+   // gProof->SetParameter("getxsec", xsec);
    gProof->SetParameter("getmcLabel", mcLabel);
    gProof->SetParameter("getYear", year);
 
