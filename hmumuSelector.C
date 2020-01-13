@@ -94,10 +94,10 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
    valueSumEvents = pSumEvents->GetVal();
    valueSumEventsWeighted = pSumEventsWeighted->GetVal();
 
-   TParameter<Double_t> *pxsec = dynamic_cast<TParameter<Double_t> *>(fInput->FindObject("getxsec"));
+   // TParameter<Double_t> *pxsec = dynamic_cast<TParameter<Double_t> *>(fInput->FindObject("getxsec"));
    TParameter<Int_t> *pmcLabel = dynamic_cast<TParameter<Int_t> *>(fInput->FindObject("getmcLabel"));
    mcLabel = pmcLabel->GetVal();
-   xsec = static_cast<Float_t>(pxsec->GetVal());
+   // xsec = static_cast<Float_t>(pxsec->GetVal());
 
 
    // mcLabel should be 0 for data, so this is true only for mc
@@ -145,6 +145,30 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
       // }
    }
 
+   hmmpt = new float;
+   hmmrap = new float;
+   hmmthetacs = new float;
+   hmmphics = new float;
+   j1pt = new float;
+   j1eta = new float;
+   j2pt = new float;
+   detajj = new float;
+   dphijj = new float;
+   mjj = new float;
+   zepen = new float(0.0);
+   njets = new float;
+   dphimmj = new float;
+   detammj = new float;
+   m1ptOverMass = new float;
+   m2ptOverMass = new float;
+   m1eta = new float;
+   m2eta = new float;
+   event = new float(1.0);
+   hmass = new float;
+   hmerr = new float(1.0);
+   weight = new float(1.0);
+   bdtucsd_2jet_nonvbf = new float(1.0);
+
    // construct readers
    reader_bdt = new TMVA::Reader();
 
@@ -165,41 +189,40 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
 
    // Add Variables to readers
    // 2 Jet Reader
-   reader_bdt->AddVariable("hmmpt", &hmmpt);
-   reader_bdt->AddVariable("hmmrap", &hmmrap);
-   reader_bdt->AddVariable("hmmthetacs", &hmmthetacs);
-   reader_bdt->AddVariable("hmmphics", &hmmphics);
-   reader_bdt->AddVariable("j1pt", &j1pt);
-   reader_bdt->AddVariable("j1eta", &j1eta);
-   reader_bdt->AddVariable("j2pt", &j2pt);
-   reader_bdt->AddVariable("detajj", &detajj);
-   reader_bdt->AddVariable("dphijj", &dphijj);
-   reader_bdt->AddVariable("mjj", &mjj);
-   reader_bdt->AddVariable("zepen", &zepen);
-   reader_bdt->AddVariable("njets", &njets);
-   reader_bdt->AddVariable("dphimmj", &dphimmj);
-   reader_bdt->AddVariable("detammj", &detammj);
-   reader_bdt->AddVariable("m1ptOverMass", &m1ptOverMass);
-   reader_bdt->AddVariable("m2ptOverMass", &m2ptOverMass);
-   reader_bdt->AddVariable("m1eta", &m1eta);
-   reader_bdt->AddVariable("m2eta", &m2eta);
+   reader_bdt->AddVariable("hmmpt", hmmpt);
+   reader_bdt->AddVariable("hmmrap", hmmrap);
+   reader_bdt->AddVariable("hmmthetacs", hmmthetacs);
+   reader_bdt->AddVariable("hmmphics", hmmphics);
+   reader_bdt->AddVariable("j1pt", j1pt);
+   reader_bdt->AddVariable("j1eta", j1eta);
+   reader_bdt->AddVariable("j2pt", j2pt);
+   reader_bdt->AddVariable("detajj", detajj);
+   reader_bdt->AddVariable("dphijj", dphijj);
+   reader_bdt->AddVariable("mjj", mjj);
+   reader_bdt->AddVariable("zepen", zepen);
+   reader_bdt->AddVariable("njets", njets);
+   reader_bdt->AddVariable("dphimmj", dphimmj);
+   reader_bdt->AddVariable("detammj", detammj);
+   reader_bdt->AddVariable("m1ptOverMass", m1ptOverMass);
+   reader_bdt->AddVariable("m2ptOverMass", m2ptOverMass);
+   reader_bdt->AddVariable("m1eta", m1eta);
+   reader_bdt->AddVariable("m2eta", m2eta);
 
-   reader_bdt->AddSpectator("event", &event);
-   reader_bdt->AddSpectator("hmass", &hmass);
-   reader_bdt->AddSpectator("hmerr", &hmerr);
-   reader_bdt->AddSpectator("weight", &weight);
-   reader_bdt->AddSpectator("bdtucsd_2jet_nonvbf", &bdtucsd_2jet_nonvbf);
+   reader_bdt->AddSpectator("event", event);
+   reader_bdt->AddSpectator("hmass", hmass);
+   reader_bdt->AddSpectator("hmerr", hmerr);
+   reader_bdt->AddSpectator("weight", weight);
+   reader_bdt->AddSpectator("bdtucsd_2jet_nonvbf", bdtucsd_2jet_nonvbf);
 
    // Book Reader
    reader_bdt->BookMVA("BDTreader", _bdtxml);
 
    string vars = "year:run:lumi:event:mclabel:eWeight:puWeight:zptWeight:"
                  "prefireSF:idSF:isoSF:trigSF:btagSF:"
-                 "muPtC_1:muEtaC_1:"
-                 "muPtC_2:muEtaC_2:"
-                 "h_mass:h_pt:h_eta:h_phi:h_deta:h_dphi:"
+                 "muEtaC_1:muEtaC_2:"
+                 "h_mass:h_pt:h_eta:"
                  "njets:nbtagJets:"
-                 "jetpt_1:jeteta_1:jetpt_2:jeteta_2:"
+                 "jetpt_1:jeteta_1:jetpt_2:"
                  "mjj:detajj:dphijj:"
                  "metpt:metphi:zeppen:csTheta:csPhi:category:bdtScore";
 
@@ -397,7 +420,7 @@ Bool_t hmumuSelector::Process(Long64_t entry)
          }
       }
    }
-   if (*_event == eventDebug)  std::cout << " point 1 " << std::endl;
+   
 
    TLorentzVector diJet;
    analysis::core::Jet leadJet, subJet;
@@ -429,7 +452,7 @@ Bool_t hmumuSelector::Process(Long64_t entry)
       }
    }
 
-   if (*_event == eventDebug)  std::cout << " point 1.1 " << std::endl;
+   
    
    float category = -99;
 
@@ -444,7 +467,7 @@ Bool_t hmumuSelector::Process(Long64_t entry)
          subMuon = &im;
    }
 
-   if (*_event == eventDebug)  std::cout << " point 1.2 " << std::endl;
+   
 
    if (leadMuon == nullptr or subMuon == nullptr)
       return kFALSE;
@@ -454,7 +477,7 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    if ((category < 0) and (_btagJetsL > 1 or _btagJetsM > 0) and _numJets > 4)
       category = 5; // ttH Hadronic
 
-   if (*_event == eventDebug)  std::cout << " point 1.3 " << std::endl;
+   
 
    if ((category < 0) and nElectrons >= 2) // ZH, Z to electrons
    {
@@ -478,7 +501,7 @@ Bool_t hmumuSelector::Process(Long64_t entry)
       }
    }
 
-   if (*_event == eventDebug)  std::cout << " point 1.4 " << std::endl;
+   
 
    if ((category < 0) and nMuons >= 4) // ZH Z to mumu
    {
@@ -508,7 +531,7 @@ Bool_t hmumuSelector::Process(Long64_t entry)
          }
       }
    
-      if (*_event == eventDebug)  std::cout << " point 1.5 " << std::endl;
+      
 
 
       if (zpt > 0)
@@ -518,28 +541,28 @@ Bool_t hmumuSelector::Process(Long64_t entry)
 
          for (analysis::core::Muon &m : goodMuons)
          {
-            if (*_event == eventDebug)  std::cout << " point 1.55 " << std::endl;
+            
             if (&m == muZ1)
                {
-               if (*_event == eventDebug)  std::cout << " point 1.551 " << std::endl;
+               
                   continue;}
             if (&m == muZ2)
                {
-            if (*_event == eventDebug)  std::cout << " point 1.552 " << std::endl;
+            
                   continue;}
             if (mt1 == nullptr)
                {
-                  if (*_event == eventDebug)  std::cout << " point 1.553 " << std::endl;
+                  
                   mt1 = &m;}
             if (mt2 == nullptr and mt1->_charge * m._charge == -1)
                {
-                if (*_event == eventDebug)  std::cout << " point 1.554 " << std::endl;
+                
                   mt2 = &m;}
          }
 
          if (mt1 != nullptr and mt2 != nullptr)
          {
-            if (*_event == eventDebug)  std::cout << " point 1.56 " << std::endl;
+            
             leadMuon = mt1;
             subMuon = mt2;
             category = 7;
@@ -547,14 +570,14 @@ Bool_t hmumuSelector::Process(Long64_t entry)
       }
    }
 
-   if (*_event == eventDebug)  std::cout << " point 1.6 " << std::endl;
+   
 
    if ((category < 0) and nLeptons >= 3) // WH leptonic
    {
       category = 7;
    }
 
-   if (*_event == eventDebug)  std::cout << " point 1.7 " << std::endl;
+   
 
    if ((category < 0) and _numJets >= 2 and _nfwdJets == 0 and _btagJetsM == 0 and
        diJet.M() >= 64 and diJet.M() < 106 and
@@ -567,7 +590,7 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    }
 
 
-   if (*_event == eventDebug)  std::cout << " point 2 cat: " << category << std::endl;
+   
 
    if (category and category != 8) // change the Higgs muons and p4 if exclusive
    {
@@ -580,64 +603,61 @@ Bool_t hmumuSelector::Process(Long64_t entry)
       higgsCandidate = p4mu1 + p4mu2;
    }
 
-   if (*_event == eventDebug)  std::cout << " point 3 " << std::endl;
+   
 
-   float h_mass = higgsCandidate.M();
-   float h_pt = higgsCandidate.Pt();
-   float h_eta = higgsCandidate.Eta();
-   float h_phi = higgsCandidate.Phi();
-   float h_deta = TMath::Abs(mu1LV.Eta() - mu2LV.Eta());
-   float h_dphi = TMath::Abs(mu1LV.Eta() - mu2LV.Eta());
+   *hmass = higgsCandidate.M();
+   *hmmpt = higgsCandidate.Pt();
+   *hmmrap = higgsCandidate.Eta();
+   // float h_phi = higgsCandidate.Phi();
+   // float h_deta = TMath::Abs(mu1LV.Eta() - mu2LV.Eta());
+   // float h_dphi = TMath::Abs(mu1LV.Eta() - mu2LV.Eta());
 
    // //event weight stuff goes here?
    float pileupWeight = 1.0;
    float zptWeight = 1.0;
    float eWeight = 1.0;
 
-
    if (((string)_outputRoot.Data()).find("DY") != string::npos) //is Drell-Yan Sample
    {
-      zptWeight = zptweighter->getZPtReweight(h_pt, year, _numJets);
+      zptWeight = zptweighter->getZPtReweight(*hmmpt, year, std::min(2,_numJets));
    }
 
    if (mcLabel)
    {
       // nvtxWeight = (*_nvtx <= 60) ? nvtxFunc->Eval(*_nvtx) : 1.0;
       pileupWeight = weighter->weight(*_nPU);
-      eWeight =  *_genWeight * xsec / valueSumEventsWeighted;
+      eWeight =  (float)*_genWeight / valueSumEventsWeighted;
    }
 
-   if (*_event == eventDebug)  std::cout << " point 4 " << std::endl;
+   
 
-   float mupt_1 = mu1LV.Pt();
-   float mueta_1 = mu1LV.Eta();
+   // float mupt_1 = mu1LV.Pt();
+   *m1eta = mu1LV.Eta();
    // float muphi_1 = leadMuon->_phi;
-   float mupt_2 = mu2LV.Pt();
-   float mueta_2 = mu2LV.Eta();
+   // float mupt_2 = mu2LV.Pt();
+   *m2eta = mu2LV.Eta();
    // float muphi_2 = subMuon->_phi;
 
-   float jetpt_1 = leadJet._pt;
-   float jetmass_1 = leadJet._mass;
-   float jeteta_1 = leadJet._eta;
-   float jetphi_1 = leadJet._phi; 
+   *j1pt = leadJet._pt;
+   // float jetmass_1 = leadJet._mass;
+   *j1eta = leadJet._eta;
+   // float jetphi_1 = leadJet._phi; 
 
-   float jetpt_2 = subJet._pt;
-   float jetmass_2 = subJet._mass;
-   float jeteta_2 = subJet._eta;
+   *j2pt = subJet._pt;
+   // float jetmass_2 = subJet._mass;
+   // float jeteta_2 = subJet._eta;
 
-   float mjj_1 = diJet.M() ? diJet.M() : 0;
-   float detajj_1 = diJet.M() ? TMath::Abs(leadJet._eta - subJet._eta) : -1;
-   float dphijj_1 = diJet.M() ? TMath::Abs(leadJet._phi - subJet._phi) : 0;
+   *mjj = diJet.M() ? diJet.M() : 0;
+   *detajj = diJet.M() ? TMath::Abs(leadJet._eta - subJet._eta) : 0;
+   *dphijj = diJet.M() ? TMath::Abs(leadJet._phi - subJet._phi) : -1;
 
-   float zeppen = 0;
+   if (_numJets > 1 and *detajj >= 0)
+      *zepen = (higgsCandidate.Eta() - .5 * (leadJet._eta + subJet._eta)) / *detajj;
 
-   if (_numJets > 1 and detajj_1 > 0)
-      zeppen = h_eta - (.5 * (jeteta_1 + jeteta_2) / detajj_1);
+   // 
 
-   // if (*_event == 4659622){ std::cout << "crash 3 ?? category: " << category << std::endl;}
-
-   // if (*_event == 4659622){ std::cout << hMu1->_pt << hMu1->_eta << hMu1->_phi << std::endl;}
-   // if (*_event == 4659622){ std::cout << hMu2->_pt << hMu2->_eta << hMu2->_phi << std::endl;}
+   // 
+   // 
 
 
 
@@ -646,30 +666,15 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    // subMuonP4.SetPtEtaPhiM(hMu2->_pt, hMu2->_eta, hMu2->_phi, PDG_MASS_Mu);
 
 
-   float csTheta = getCsTheta(mu1LV, mu2LV);
+   *hmmthetacs = getCsTheta(mu1LV, mu2LV);
 
-   float csPhi = getCsPhi(mu1LV, mu2LV);
+   *hmmphics = getCsPhi(mu1LV, mu2LV);
 
-
-   float zero = 0.0;
-   hmmpt = h_pt;
-   hmmrap = h_eta;
-   hmmthetacs = csTheta;
-   hmmphics = csPhi;
-   j1pt = jetpt_1;
-   j1eta = std::max(zero, jeteta_1);
-   j2pt = jetpt_2;
-   detajj = std::max(zero, detajj_1);
-   dphijj = dphijj_1;
-   mjj = mjj_1;
-   zepen = zeppen;
-   njets = _numJets;
-   dphimmj = TMath::Abs(h_phi - jetphi_1);
-   detammj = TMath::Abs(hmmrap - j1eta);
-   m1ptOverMass = (mupt_1 / h_mass);
-   m2ptOverMass = (mupt_2 / h_mass);
-   m1eta = mueta_1;
-   m2eta = mueta_2;
+   *njets = _numJets;
+   *dphimmj = TMath::Abs(higgsCandidate.Phi() - leadJet._phi);
+   *detammj = TMath::Abs(higgsCandidate.Eta() - leadJet._eta);
+   *m1ptOverMass = (mu1LV.Pt() / higgsCandidate.M());
+   *m2ptOverMass = (mu2LV.Pt() / higgsCandidate.M());
 
    float bdtScore = -99;
    // nbjets = _btagJetsM;
@@ -678,7 +683,7 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    float met_pt = met_pt_phi.first;
    float met_phi = met_pt_phi.second;
    
-   if ((category < 0) and mjj_1 > 400 and detajj > 2.5 and j1pt > 35)
+   if ((category < 0) and *mjj > 400 and *detajj > 2.5 and *j1pt > 35)
    {
       category = 9; // VBF
    }
@@ -693,7 +698,7 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    }
 
 
-   float toFill[] = {
+ float toFill[] = {
       static_cast<float>(year),
       static_cast<float>(*_run),
       static_cast<float>(*_lumi),
@@ -707,30 +712,24 @@ Bool_t hmumuSelector::Process(Long64_t entry)
       *_isoSF,
       *_trigEffSF,
       btagSF,
-      mupt_1,
-      mueta_1,
-      mupt_2,
-      mueta_2,
-      h_mass,
-      h_pt,
-      h_eta,
-      h_phi,
-      h_deta,
-      h_dphi,
-      static_cast<float>(_numJets),
+      *m1eta,
+      *m2eta,
+      *hmass,
+      *hmmpt,
+      *hmmrap,
+      *njets,
       static_cast<float>(_btagJetsM),
-      jetpt_1,
-      jeteta_1,
-      jetpt_2,
-      jeteta_2,
-      mjj_1,
-      detajj_1,
-      dphijj_1,
+      *j1pt,
+      *j1eta,
+      *j2pt,
+      *mjj,
+      *detajj,
+      *dphijj,
       met_pt,
       met_phi,
-      zeppen,
-      csTheta,
-      csPhi,
+      *zepen,
+      *hmmthetacs,
+      *hmmphics,
       category,
       bdtScore};
 

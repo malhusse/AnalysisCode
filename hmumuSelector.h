@@ -49,7 +49,7 @@ public :
    Int_t year = 0;
    // Int_t yearS = 0;
    Int_t mcLabel = -99;
-   Double_t xsec = 0;
+   // Double_t xsec = 0;
   
    // const TF1 *nvtxFunc = 0;
 
@@ -72,11 +72,14 @@ public :
    TMVA::Reader* reader_bdt = 0;
    // TMVA::Reader* reader_2jet = 0;
 
+
+   // make these pointers and initialize them in
+   // SlaveBegin() then use them to feed the BDT
    // reader variables..
-   float hmmpt, hmmrap, hmmthetacs, hmmphics, j1pt, j1eta, j2pt, detajj, dphijj;
-   float mjj, zepen, njets, dphimmj, detammj, m1ptOverMass, m2ptOverMass, m1eta, m2eta; 
+   float *hmmpt, *hmmrap, *hmmthetacs, *hmmphics, *j1pt, *j1eta, *j2pt, *detajj, *dphijj;
+   float *mjj, *zepen, *njets, *dphimmj, *detammj, *m1ptOverMass, *m2ptOverMass, *m1eta, *m2eta; 
    // spectators
-   float event, hmass, hmerr, weight, bdtucsd_2jet_nonvbf;
+   float *event, *hmass, *hmerr, *weight, *bdtucsd_2jet_nonvbf;
 
 
    // Readers to access the data (delete the ones you do not need).
