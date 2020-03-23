@@ -14,14 +14,14 @@
 #include <TTreeReader.h>
 #include <TTreeReaderValue.h>
 #include <TTreeReaderArray.h>
-#include <TH1.h>
+// #include <TH1.h>
 #include <TLorentzVector.h>
 #include <vector>
 #include "TParameter.h"
-#include <TNtuple.h>
-#include <TProofOutputFile.h>
+// #include <TNtuple.h>
+// #include <TProofOutputFile.h>
 #include <TMVA/Reader.h>
-#include <TF1.h>
+// #include <TF1.h>
 
 #include "interface/LumiReweightingStandAlone.h"
 #include "interface/ZptReweight.h"
@@ -35,11 +35,10 @@
 #include "interface/MET.h"
 #include "interface/MetaHiggs.h"
 #include "interface/Electron.h"
+#include "interface/histogramCollection.h"
 
 
 class hmumuSelector : public TSelector {
-private:
-   TNtuple *ntuple = 0;
 public :
    TTreeReader     fReader;  //!the tree reader
    TTree          *fChain = 0;   //!pointer to the analyzed TTree or TChain
@@ -47,15 +46,10 @@ public :
    Int_t valueSumEvents = 0;
    Int_t valueSumEventsWeighted = 0;
    Int_t year = 0;
-   // Int_t yearS = 0;
    Int_t mcLabel = -99;
-   // Double_t xsec = 0;
   
    // const TF1 *nvtxFunc = 0;
 
-   TFile *fFile;
-   TProofOutputFile *fProofFile;
-   
    reweight::LumiReWeighting *weighter;
 
    zptutils *zptweighter;
@@ -64,14 +58,15 @@ public :
    TString _mcCorrFile;
 
    TString _outputRoot;
-   TString _outputNameFinal;
+   TString _outputName;
    TString _dataPUfile;
    TString _mcPUfile;
    TString _bdtxml;
    
+   TString _jetUncFile;
+   
    TMVA::Reader* reader_bdt = 0;
    // TMVA::Reader* reader_2jet = 0;
-
 
    // make these pointers and initialize them in
    // SlaveBegin() then use them to feed the BDT
@@ -81,6 +76,7 @@ public :
    // spectators
    float *event, *hmass, *hmerr, *weight, *bdtucsd_2jet_nonvbf;
 
+   vector<float> bound;
 
    // Readers to access the data (delete the ones you do not need).
    TTreeReaderArray<analysis::core::Muon> Muons = {fReader, "Muons"};
@@ -105,13 +101,23 @@ public :
    TTreeReaderValue<Int_t> _nvtx = {fReader, "_nvtx"};
    TTreeReaderValue<Double_t> _prefiringweight = {fReader, "_prefiringweight"};
    TTreeReaderValue<Float_t> _trigEffSF = {fReader, "_trigEffSF"};
+   // TTreeReaderValue<Float_t> _trigEffSF_up = {fReader, "_trigEffSF_up"};
+   // TTreeReaderValue<Float_t> _trigEffSF_down = {fReader, "_trigEffSF_down"};
+
    TTreeReaderValue<Float_t> _idSF = {fReader, "_idSF"};
+
    TTreeReaderValue<Float_t> _isoSF = {fReader, "_isoSF"};
+   TTreeReaderValue<Float_t> _isoSF_up = {fReader, "_isoSF_up"};
+   TTreeReaderValue<Float_t> _isoSF_down = {fReader, "_isoSF_down"};
+
    // TTreeReaderValue<Float_t> _btagSF = {fReader, "_btagSF"};
 
    // This is now fixed, so we can just use it instead of the individual filters..
    TTreeReaderValue<Bool_t> _passedMetFilters = {fReader, "_passedMetFilters"};
    // TTreeReaderArray<pair<string,int>> _metFilterBits = {fReader, "_metFilterBits"};
+
+
+   histogramCollection* outputHistograms = 0;
 
    hmumuSelector(TTree * /*tree*/ =0) { }
    virtual ~hmumuSelector() { }
@@ -128,7 +134,7 @@ public :
    virtual TList  *GetOutputList() const { return fOutput; }
    virtual void    SlaveTerminate();
    virtual void    Terminate();
-   bool passVertex(std::vector<analysis::core::Vertex> vertexCol);
+   bool passVertex(std::vector<analysis::core::Vertex>& vertexCol);
    bool passMuon(analysis::core::Muon const &m, bool useMiniIso);
    bool passElectron(analysis::core::Electron const &e);
    bool passMuonHLT(analysis::core::Muon const &m, int year);
@@ -137,12 +143,16 @@ public :
    // bool passTightJetID(analysis::core::Jet j);
    // bool passLoosePUID(analysis::core::Jet j);
    // bool passNoiseJet(analysis::core::Jet j);
-   bool passFSR(TLorentzVector fsrP4);
+   bool passFSR(TLorentzVector& fsrP4);
    // should already be correct using _passedMetFilters
    // bool passMetFilters(std::vector<std::pair<string,int>> filterBits);
-   float getCsTheta(TLorentzVector v1, TLorentzVector v2);
-   float getCsPhi(TLorentzVector v1, TLorentzVector v2);
-
+   float getCsTheta(TLorentzVector& v1, TLorentzVector& v2);
+   float getCsPhi(TLorentzVector& v1, TLorentzVector& v2);
+   double CosThetaStar(TLorentzVector& v1, TLorentzVector& v2);
+   double CosThetaCSPos(analysis::core::Muon& a, analysis::core::Muon& b);
+   double PhiCSPos(analysis::core::Muon& a, analysis::core::Muon& b);
+   eventEntry analyze(std::vector<analysis::core::Muon> goodMuons, std::vector<analysis::core::Electron> goodElectrons, std::vector<analysis::core::Jet> goodJets, 
+                      int numMuons, int numElectrons, int numCentJets, int numFwdJets, int numBtagL, int numBtagM);
    ClassDef(hmumuSelector,0);
 
 };

@@ -549,7 +549,7 @@ public:
         zpt_2018_1j->SetBinContent(60, 0.850664);
         zpt_2018_1j->SetBinContent(61, 1.123302);
         zpt_2018_1j->SetBinContent(62, 0.887274);
-        zpt_2018_1j->SetBinContent(63, 2.225616);
+        zpt_2018_1j->SetBinContent(63, 1.225616);
         zpt_2018_1j->SetBinContent(64, 1.082745);
         zpt_2018_1j->SetBinContent(65, 0.633827);
         zpt_2018_1j->SetBinContent(66, 0.553662);
