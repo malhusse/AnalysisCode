@@ -114,6 +114,17 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
       _dataPUfile = "/uscms_data/d1/malhusse/analysis/AnalysisCode/resources/data/pileup/pu_data_";
       _dataPUfile += std::to_string(year);
       _dataPUfile += ".root";
+
+      _dataPUfile_up = "/uscms_data/d1/malhusse/analysis/AnalysisCode/resources/data/pileup/pu_data_";
+      _dataPUfile_up += std::to_string(year);
+      _dataPUfile_up += "_up.root";
+
+      _dataPUfile_down = "/uscms_data/d1/malhusse/analysis/AnalysisCode/resources/data/pileup/pu_data_";
+      _dataPUfile_down += std::to_string(year);
+      _dataPUfile_down += "_down.root";
+
+
+
       // _dataPUfile = "/uscms_data/d1/malhusse/build/AnalysisCode/pileup/pu_data_2017.root";
       _mcPUfile = "/uscms_data/d1/malhusse/analysis/AnalysisCode/resources/corrections/";
       _mcPUfile += std::to_string(year);
@@ -121,7 +132,14 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
       _mcPUfile += _outputRoot;
 
       weighter = new reweight::LumiReWeighting(_mcPUfile.Data(), _dataPUfile.Data(), "pileup", "pileup");
+      weighter_up = new reweight::LumiReWeighting(_mcPUfile.Data(), _dataPUfile_up.Data(), "pileup", "pileup");
+      weighter_down = new reweight::LumiReWeighting(_mcPUfile.Data(), _dataPUfile_down.Data(), "pileup", "pileup");
+
       zptweighter = new zptutils;
+
+      // jetUncertainties_ = {"Absolute", "Absolute_" + std::to_string(year), "BBEC1", "BBEC1_" + std::to_string(year), "EC2", "EC2_" + std::to_string(year), "FlavorQCD", "HF", "HF_" + std::to_string(year), "RelativeBal", "RelativeSample_" + std::to_string(year), "Total"};
+
+      jetUncertainties_ = getUncertainties(year);
    }
 
    if (year == 2016)
@@ -167,9 +185,9 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
    _bdtxml += std::to_string(year);
    _bdtxml += "/TMVAClassification_BDTG.weights.nonvbf.xml";
 
-   _jetUncFile = "/uscms/home/malhusse/nobackup/analysis/AnalysisCode/resources/jetunc/Regrouped_";
-   _jetUncFile += std::to_string(year);
-   _jetUncFile += "_AK4PFchs.txt";
+   // _jetUncFile = "/uscms/home/malhusse/nobackup/analysis/AnalysisCode/resources/jetunc/Regrouped_";
+   // _jetUncFile += std::to_string(year);
+   // _jetUncFile += "_AK4PFchs.txt";
 
    // // reader variables..
    // float hmmpt, hmmrap, hmmthetacs, hmmphics, j1pt, j1eta, j2pt, detajj, dphijj;
@@ -221,7 +239,7 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
 
    // ntuple->SetDirectory(fFile);
    // ntuple->AutoSave();
-   outputHistograms = new histogramCollection();
+   outputHistograms = new histogramCollection(mcLabel);
    // GetOutputList()->Add(outputHistograms);
 }
 
@@ -330,6 +348,21 @@ Bool_t hmumuSelector::Process(Long64_t entry)
 
    std::sort(goodMuons.begin(), goodMuons.end(), [](analysis::core::Muon a, analysis::core::Muon b) -> bool { return a._pt > b._pt; });
 
+   analysis::core::Muon *leadMuon = nullptr;
+   analysis::core::Muon *subMuon = nullptr;
+   for (analysis::core::Muon &im : goodMuons)
+   {
+      if (leadMuon == nullptr)
+         leadMuon = &im;
+      // if (subMuon == nullptr and passMuons(*leadMuon, im, year))
+      if (subMuon == nullptr and leadMuon->_charge * im._charge == -1)
+         subMuon = &im;
+   }
+
+   if (leadMuon == nullptr or subMuon == nullptr)
+         return kFALSE;
+
+
    int nMuons = goodMuons.size();
 
    // std::cout << "number of good muons: " << goodMuons.size() << std::endl;
@@ -400,6 +433,7 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    }
    std::sort(goodJets.begin(), goodJets.end(), [](analysis::core::Jet a, analysis::core::Jet b) -> bool { return a._pt > b._pt; });
 
+
    // now we have jets muons and electrons..
    // start looking into muon pair
 
@@ -407,36 +441,83 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    // goodJets, goodElectrons, goodMuons
 
 
+
    float pileupWeight = 1.0;
    float zptWeight = 1.0;
    float eWeight = 1.0;
+   float baselineWeight = 1.0;
+
+   eventEntry baselineResult = analyze(leadMuon, subMuon, goodMuons, goodElectrons, goodJets, 
+                                      nMuons, nElectrons, _ncentJets, _nfwdJets, _btagJetsL, _btagJetsM);
 
    if (((string)_outputRoot.Data()).find("DY") != string::npos) //is Drell-Yan Sample
    {
-      zptWeight = zptweighter->getZPtReweight(*hmmpt, year, std::min(2,  (_ncentJets + _nfwdJets )));
+      zptWeight = zptweighter->getZPtReweight(baselineResult.higgsCandPt, year, std::min(2,  (_ncentJets + _nfwdJets )));
    }
 
    if (mcLabel)
    {
       // nvtxWeight = (*_nvtx <= 60) ? nvtxFunc->Eval(*_nvtx) : 1.0;
       pileupWeight = weighter->weight(*_nPU);
+
       eWeight =  (float)*_genWeight / valueSumEventsWeighted;
+
+      baselineWeight = (eWeight) * (pileupWeight) * (zptWeight) * (*_prefiringweight) * (*_idSF) * (*_isoSF) * (*_trigEffSF) * (btagSF);
+
+      float totalWeightPileupUp = (eWeight) * (zptWeight) * (*_prefiringweight) * (*_idSF) * (*_isoSF) * (*_trigEffSF) * (btagSF) *  weighter_up->weight(*_nPU);
+      float totalWeightPileupDown = (eWeight) * (zptWeight) * (*_prefiringweight) * (*_idSF) * (*_isoSF) * (*_trigEffSF) * (btagSF) *  weighter_down->weight(*_nPU);
+
+      float totalWeightIsoUp = baselineWeight / (*_isoSF) * (*_isoSF_up);
+      float totalWeightIsoDown =  baselineWeight / (*_isoSF) *(*_isoSF_down);
+
+      float totalWeightIDUp = baselineWeight / (*_idSF) * (*_idSF_up);
+      float totalWeightIDDown = baselineWeight / (*_idSF) * (*_idSF_down);
+
+      float totalWeightTrigUp = (eWeight) * (pileupWeight) * (zptWeight) * (*_prefiringweight) * (*_idSF) * (*_isoSF) * (*_trigEffSF_up) * (btagSF);
+      float totalWeightTrigDown = (eWeight) * (pileupWeight) * (zptWeight) * (*_prefiringweight) * (*_idSF) * (*_isoSF) * (*_trigEffSF_down) * (btagSF);
+
+      float totalWeightPrefireUp = baselineWeight / (*_prefiringweight) * (*_prefiringweightup);
+      float totalWeightPrefireDown = baselineWeight / (*_prefiringweight) * (*_prefiringweightdown);
+
+      outputHistograms->fillHistograms(baselineResult, "isoUp", totalWeightIsoUp);
+      outputHistograms->fillHistograms(baselineResult, "isoDown", totalWeightIsoDown);
+      outputHistograms->fillHistograms(baselineResult, "idUp", totalWeightIDUp);
+      outputHistograms->fillHistograms(baselineResult, "idDown", totalWeightIDDown);
+      outputHistograms->fillHistograms(baselineResult, "trigUp", totalWeightTrigUp);
+      outputHistograms->fillHistograms(baselineResult, "trigDown", totalWeightTrigDown);
+      outputHistograms->fillHistograms(baselineResult, "pileupUp", totalWeightPileupUp);
+      outputHistograms->fillHistograms(baselineResult, "pileupDown", totalWeightPileupDown);
+      outputHistograms->fillHistograms(baselineResult, "prefireUp", totalWeightPrefireUp);
+      outputHistograms->fillHistograms(baselineResult, "prefireDown", totalWeightPrefireDown);
+
+      if (_ncentJets + _nfwdJets > 0) {
+         std::vector<analysis::core::Jet> shiftedJets;
+         eventEntry shiftedResult;
+         for (auto name: jetUncertainties_) {
+            shiftedJets = shiftJets(goodJets, name.first, true);
+            shiftedResult = analyze(leadMuon, subMuon, goodMuons, goodElectrons, shiftedJets, 
+                                    nMuons, nElectrons, _ncentJets, _nfwdJets, _btagJetsL, _btagJetsM);
+            outputHistograms->fillHistograms(shiftedResult, "jet"+name.first+"_Up", baselineWeight);
+
+            shiftedJets = shiftJets(goodJets, name.first, false);
+            shiftedResult = analyze(leadMuon, subMuon, goodMuons, goodElectrons, shiftedJets, 
+                                    nMuons, nElectrons, _ncentJets, _nfwdJets, _btagJetsL, _btagJetsM);
+            outputHistograms->fillHistograms(shiftedResult, "jet"+name.first+"_Down", baselineWeight);
+
+         }
+      }
+
+      else {
+         for (auto name: jetUncertainties_) {
+            outputHistograms->fillHistograms(baselineResult, "jet"+name.first+"_Up", baselineWeight);
+            outputHistograms->fillHistograms(baselineResult, "jet"+name.first+"_Down", baselineWeight);
+
+         }
+      }
+
    }
 
-   float totalWeight = (eWeight) * (pileupWeight) * (zptWeight) * (*_prefiringweight) * (*_idSF) * (*_isoSF) * (*_trigEffSF) * (btagSF);
-   float totalWeightIsoUp = (eWeight) * (pileupWeight) * (zptWeight) * (*_prefiringweight) * (*_idSF) * (*_isoSF_up) * (*_trigEffSF) * (btagSF);
-   float totalWeightIsoDown = (eWeight) * (pileupWeight) * (zptWeight) * (*_prefiringweight) * (*_idSF) * (*_isoSF_down) * (*_trigEffSF) * (btagSF);
-
-   eventEntry baselineResult = analyze(goodMuons, goodElectrons, goodJets, 
-                               nMuons, nElectrons, _ncentJets, _nfwdJets, _btagJetsL, _btagJetsM);
-
-   
-   if (!baselineResult.isValid) return kFALSE;
-
-   outputHistograms->fillHistograms(baselineResult, "noSyst", totalWeight);
-   outputHistograms->fillHistograms(baselineResult, "isoUp", totalWeightIsoUp);
-   outputHistograms->fillHistograms(baselineResult, "isoDown", totalWeightIsoDown);
-
+   outputHistograms->fillHistograms(baselineResult, "noSyst", baselineWeight);
 
    return kTRUE;
 }
@@ -448,8 +529,8 @@ void hmumuSelector::SlaveTerminate()
    // on each slave server.
    // if (outputHistograms)
    // {
-      std::cout << "crashing here?" << std::endl;
-      std::vector<TH1F*> outputHistos = outputHistograms->getHistograms();
+      // std::cout << "crashing here?" << std::endl;
+      std::vector<TH1F*> outputHistos = outputHistograms->getAllHistograms();
 
       for (auto h: outputHistos)
       {
@@ -551,18 +632,18 @@ bool hmumuSelector::passMuon(analysis::core::Muon const &m, bool useMiniIso)
 
 bool hmumuSelector::passMuonHLT(analysis::core::Muon const &m, int year)
 {
-   std::map<int, int> _muonMatchedPt = { {2016, 26}, {2017, 29}, {2018, 26}};
-   if ((m._isHLTMatched[1] || m._isHLTMatched[0]) and m._pt > _muonMatchedPt[year] and TMath::Abs(m._eta) < _muonMatchedEta)
-      return true;
+   // std::map<int, int> _muonMatchedPt = { {2016, 26}, {2017, 29}, {2018, 26}};
+   // if ((m._isHLTMatched[1] || m._isHLTMatched[0]) and m._pt > _muonMatchedPt[year] and TMath::Abs(m._eta) < _muonMatchedEta)
+   //    return true;
 
-   return false;
+   // return false;
   // bypass for the moment since the trigger paths are not correct?
   return true;
 }
 
 bool hmumuSelector::passMuons(analysis::core::Muon const &m1, analysis::core::Muon const &m2, int year)
 {
-   if (m1._charge != m2._charge) // Opposite Sign
+   if (m1._charge * m2._charge == -1) // Opposite Sign
    {
       if (passMuonHLT(m1, year) || passMuonHLT(m2, year)) // at least one hlt triggered muon..
          return true;
@@ -698,27 +779,30 @@ bool hmumuSelector::passFSR(TLorentzVector& fsrP4)
    return false;
 }
 
+std::vector<analysis::core::Jet> hmumuSelector::shiftJets(std::vector<analysis::core::Jet> inputJets, std::string uncSource, bool shiftUp) {
+   std::vector<analysis::core::Jet> shiftedJets;
+   JetCorrectionUncertainty *unc = jetUncertainties_[uncSource];
+   
+   for (analysis::core::Jet iJet : inputJets) {
+      unc->setJetPt(iJet._pt);
+      unc->setJetEta(iJet._eta);
+      double shift = unc->getUncertainty(shiftUp);
+      int sign = shiftUp ? 1 : -1;
+      analysis::core::Jet newJet = analysis::core::Jet(iJet);
+      newJet._pt = iJet._pt*(1+sign*shift);
+      shiftedJets.push_back(newJet);
+   }
 
-eventEntry hmumuSelector::analyze(std::vector<analysis::core::Muon> goodMuons, std::vector<analysis::core::Electron> goodElectrons, std::vector<analysis::core::Jet> goodJets, 
+   return shiftedJets;
+}
+
+eventEntry hmumuSelector::analyze(analysis::core::Muon* leadMuon, analysis::core::Muon* subMuon, std::vector<analysis::core::Muon> goodMuons, std::vector<analysis::core::Electron> goodElectrons, std::vector<analysis::core::Jet> goodJets, 
                                   int numMuons, int numElectrons, int numCentJets, int numFwdJets, int numBtagL, int numBtagM) {
 
    int _numJets = numCentJets + numFwdJets;
    int nLeptons = numMuons + numElectrons;
    
    // Start of categorization
-   analysis::core::Muon *leadMuon = nullptr;
-   analysis::core::Muon *subMuon = nullptr;
-   for (analysis::core::Muon &im : goodMuons)
-   {
-      if (leadMuon == nullptr)
-         leadMuon = &im;
-      if (subMuon == nullptr and (leadMuon->_charge * im._charge == -1))
-         subMuon = &im;
-   }
-
-   if (leadMuon == nullptr or subMuon == nullptr)
-      return eventEntry {false};
-
    TLorentzVector higgsCandidate;
    TLorentzVector p4m1, p4m2;
    p4m1.SetPtEtaPhiM(leadMuon->_pt, leadMuon->_eta, leadMuon->_phi, PDG_MASS_Mu);
@@ -801,7 +885,6 @@ eventEntry hmumuSelector::analyze(std::vector<analysis::core::Muon> goodMuons, s
 
    if ((category < 0) and numMuons > 3) // ZH Z to mumu
    {
-
       analysis::core::Muon *muZ1 = nullptr;
       analysis::core::Muon *muZ2 = nullptr;
 

@@ -36,6 +36,9 @@
 #include "interface/MetaHiggs.h"
 #include "interface/Electron.h"
 #include "interface/histogramCollection.h"
+#include "interface/jetUncertainties.h"
+// #include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
+// #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 
 
 class hmumuSelector : public TSelector {
@@ -51,6 +54,9 @@ public :
    // const TF1 *nvtxFunc = 0;
 
    reweight::LumiReWeighting *weighter;
+   reweight::LumiReWeighting *weighter_up;
+   reweight::LumiReWeighting *weighter_down;
+
 
    zptutils *zptweighter;
 
@@ -59,11 +65,15 @@ public :
 
    TString _outputRoot;
    TString _outputName;
+   
    TString _dataPUfile;
+   TString _dataPUfile_up;
+   TString _dataPUfile_down;
+
    TString _mcPUfile;
    TString _bdtxml;
    
-   TString _jetUncFile;
+   // TString _jetUncFile;
    
    TMVA::Reader* reader_bdt = 0;
    // TMVA::Reader* reader_2jet = 0;
@@ -78,6 +88,8 @@ public :
 
    vector<float> bound;
 
+   // std::vector<std::string> jetUncertainties_;
+   std::map<std::string, JetCorrectionUncertainty*> jetUncertainties_;
    // Readers to access the data (delete the ones you do not need).
    TTreeReaderArray<analysis::core::Muon> Muons = {fReader, "Muons"};
    TTreeReaderArray<analysis::core::Jet> Jets = {fReader, "Jets"};
@@ -99,12 +111,18 @@ public :
    TTreeReaderValue<Int_t> _lumi = {fReader, "_lumi"};
    TTreeReaderValue<Long64_t> _event = {fReader, "_event"};
    TTreeReaderValue<Int_t> _nvtx = {fReader, "_nvtx"};
+
    TTreeReaderValue<Double_t> _prefiringweight = {fReader, "_prefiringweight"};
+   TTreeReaderValue<Double_t> _prefiringweightup = {fReader, "_prefiringweightup"};
+   TTreeReaderValue<Double_t> _prefiringweightdown = {fReader, "_prefiringweightdown"};
+
    TTreeReaderValue<Float_t> _trigEffSF = {fReader, "_trigEffSF"};
-   // TTreeReaderValue<Float_t> _trigEffSF_up = {fReader, "_trigEffSF_up"};
-   // TTreeReaderValue<Float_t> _trigEffSF_down = {fReader, "_trigEffSF_down"};
+   TTreeReaderValue<Float_t> _trigEffSF_up = {fReader, "_trigEffSF_up"};
+   TTreeReaderValue<Float_t> _trigEffSF_down = {fReader, "_trigEffSF_down"};
 
    TTreeReaderValue<Float_t> _idSF = {fReader, "_idSF"};
+   TTreeReaderValue<Float_t> _idSF_up = {fReader, "_idSF_up"};
+   TTreeReaderValue<Float_t> _idSF_down = {fReader, "_idSF_down"};
 
    TTreeReaderValue<Float_t> _isoSF = {fReader, "_isoSF"};
    TTreeReaderValue<Float_t> _isoSF_up = {fReader, "_isoSF_up"};
@@ -151,7 +169,8 @@ public :
    double CosThetaStar(TLorentzVector& v1, TLorentzVector& v2);
    double CosThetaCSPos(analysis::core::Muon& a, analysis::core::Muon& b);
    double PhiCSPos(analysis::core::Muon& a, analysis::core::Muon& b);
-   eventEntry analyze(std::vector<analysis::core::Muon> goodMuons, std::vector<analysis::core::Electron> goodElectrons, std::vector<analysis::core::Jet> goodJets, 
+   std::vector<analysis::core::Jet> shiftJets(std::vector<analysis::core::Jet> inputJets, std::string uncSource, bool shiftUp);
+   eventEntry analyze(analysis::core::Muon* leadMuon, analysis::core::Muon* subMuon, std::vector<analysis::core::Muon> goodMuons, std::vector<analysis::core::Electron> goodElectrons, std::vector<analysis::core::Jet> goodJets, 
                       int numMuons, int numElectrons, int numCentJets, int numFwdJets, int numBtagL, int numBtagM);
    ClassDef(hmumuSelector,0);
 

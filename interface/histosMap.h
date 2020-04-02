@@ -9,6 +9,12 @@ class histosMap {
     public:
 
     histosMap(std::string systName) {
+        if (systName == "noSyst") addMap(systName);
+        else if (systName.find("jet") != std::string::npos) addJetSystMap(systName);
+        else addEventSystMap(systName);
+    }
+
+    void addMap(std::string systName) {
         TH1::SetDefaultSumw2();
         histosMap_["leadMuon_pt_onZ"] = new TH1F( ("lead_muon_pt_onZ_" + systName).c_str(), "Leading Muon p_{T};p_{T}  (GeV);Events", 100, 0, 200);
         histosMap_["leadMuon_eta_onZ"] = new TH1F( ("lead_muon_eta_onZ_" + systName).c_str(), "Leading Muon \\eta;\\eta;Events", 50, -2.5, 2.5);
@@ -35,7 +41,7 @@ class histosMap {
         histosMap_["zeppen_onZ"] = new TH1F( ("zeppen_onZ_" + systName).c_str(), "; zeppen; ",  100, -10, 10);
         histosMap_["csTheta_onZ"] = new TH1F( ("csTheta_onZ_" + systName).c_str(), " ; csTheta; ",  10, -1, 1);
         histosMap_["csPhi_onZ"] = new TH1F( ("csPhi_onZ_" + systName).c_str(), " ; csPhi ; ",  100, -10, 10);
-        histosMap_["bdtScore_onZ"] = new TH1F( ("bdtScore_onZ_" + systName).c_str(), "; ; ",  20, -1, 1);   
+        histosMap_["bdtScore_onZ"] = new TH1F( ("bdtScore_onZ_" + systName).c_str(), "; ; ",  40, -1, 1);   
 
         // Inclusive (All Categories) Plots
         histosMap_["leadMuon_pt_onH"] = new TH1F( ("lead_muon_pt_onH_" + systName).c_str(), "Leading Muon p_{T};p_{T}  (GeV);Events", 100, 0, 200);
@@ -63,7 +69,7 @@ class histosMap {
         histosMap_["zeppen_onH"] = new TH1F( ("zeppen_onH_" + systName).c_str(), "; zeppen; ",  100, -10, 10);
         histosMap_["csTheta_onH"] = new TH1F( ("csTheta_onH_" + systName).c_str(), " ; csTheta; ",  10, -1, 1);
         histosMap_["csPhi_onH"] = new TH1F( ("csPhi_onH_" + systName).c_str(), " ; csPhi ; ",  100, -10, 10);
-        histosMap_["bdtScore_onH"] = new TH1F( ("bdtScore_onH_" + systName).c_str(), "; ; ",  20, -1, 1);   
+        histosMap_["bdtScore_onH"] = new TH1F( ("bdtScore_onH_" + systName).c_str(), "; ; ",  40, -1, 1);   
 
         // ggH-enriched Category Plots
         histosMap_["leadMuon_pt_onGGH"] = new TH1F( ("lead_muon_pt_onGGH_" + systName).c_str(), "Leading Muon p_{T};p_{T}  (GeV);Events", 100, 0, 200);
@@ -91,7 +97,66 @@ class histosMap {
         histosMap_["zeppen_onGGH"] = new TH1F( ("zeppen_onGGH_" + systName).c_str(), "; zeppen; ",  100, -10, 10);
         histosMap_["csTheta_onGGH"] = new TH1F( ("csTheta_onGGH_" + systName).c_str(), " ; csTheta; ",  10, -1, 1);
         histosMap_["csPhi_onGGH"] = new TH1F( ("csPhi_onGGH_" + systName).c_str(), " ; csPhi ; ",  100, -10, 10);
-        histosMap_["bdtScore_onGGH"] = new TH1F( ("bdtScore_onGGH_" + systName).c_str(), "; ; ",  20, -1, 1);   
+        histosMap_["bdtScore_onGGH"] = new TH1F( ("bdtScore_onGGH_" + systName).c_str(), "; ; ",  40, -1, 1);   
+
+        histosMap_["dimuon_0"] = new TH1F( ("dimuon_mass_cat0_" + systName).c_str(), " cat 0 ; dimuon mass (GeV); Events", 400, 110, 150);
+        histosMap_["dimuon_1"] = new TH1F( ("dimuon_mass_cat1_" + systName).c_str(), " cat 1 ; dimuon mass (GeV); Events", 400, 110, 150);
+        histosMap_["dimuon_2"] = new TH1F( ("dimuon_mass_cat2_" + systName).c_str(), " cat 2 ; dimuon mass (GeV); Events", 400, 110, 150);
+        histosMap_["dimuon_3"] = new TH1F( ("dimuon_mass_cat3_" + systName).c_str(), " cat 3 ; dimuon mass (GeV); Events", 400, 110, 150);
+        histosMap_["dimuon_4"] = new TH1F( ("dimuon_mass_cat4_" + systName).c_str(), " cat 4 ; dimuon mass (GeV); Events", 400, 110, 150);
+        histosMap_["dimuon_5"] = new TH1F( ("dimuon_mass_cat5_" + systName).c_str(), " cat 5 ; dimuon mass (GeV); Events", 400, 110, 150);
+        histosMap_["dimuon_6"] = new TH1F( ("dimuon_mass_cat6_" + systName).c_str(), " cat 6 ; dimuon mass (GeV); Events", 400, 110, 150);
+        histosMap_["dimuon_7"] = new TH1F( ("dimuon_mass_cat7_" + systName).c_str(), " cat 7 ; dimuon mass (GeV); Events", 400, 110, 150);
+        histosMap_["dimuon_8"] = new TH1F( ("dimuon_mass_cat8_" + systName).c_str(), " cat 8 ; dimuon mass (GeV); Events", 400, 110, 150);
+        histosMap_["dimuon_9"] = new TH1F( ("dimuon_mass_cat9_" + systName).c_str(), " cat 9 ; dimuon mass (GeV); Events", 400, 110, 150);
+    }
+
+    void addEventSystMap(std::string systName) {
+        TH1::SetDefaultSumw2();
+        histosMap_["dimuon_mass_onZ"] = new TH1F( ("dimuon_mass_onZ_" + systName).c_str(), "Dimuon Mass;M_{\\mu \\mu}  (Gev);Events", 80, 70, 110);
+        histosMap_["bdtScore_onZ"] = new TH1F( ("bdtScore_onZ_" + systName).c_str(), "; ; ",  40, -1, 1);   
+
+        // Inclusive (All Categories) Plots
+        histosMap_["dimuon_mass_onH"] = new TH1F( ("dimuon_mass_onH_" + systName).c_str(), "Dimuon Mass;M_{\\mu \\mu}  (Gev);Events", 80, 110, 150);
+        histosMap_["bdtScore_onH"] = new TH1F( ("bdtScore_onH_" + systName).c_str(), "; ; ",  40, -1, 1);   
+
+        // ggH-enriched Category Plots
+        histosMap_["dimuon_mass_onGGH"] = new TH1F( ("dimuon_mass_onGGH_" + systName).c_str(), "Dimuon Mass;M_{\\mu \\mu}  (Gev);Events", 80, 110, 150);
+        histosMap_["bdtScore_onGGH"] = new TH1F( ("bdtScore_onGGH_" + systName).c_str(), "; ; ",  40, -1, 1);   
+
+        histosMap_["dimuon_0"] = new TH1F( ("dimuon_mass_cat0_" + systName).c_str(), " cat 0 ; dimuon mass (GeV); Events", 400, 110, 150);
+        histosMap_["dimuon_1"] = new TH1F( ("dimuon_mass_cat1_" + systName).c_str(), " cat 1 ; dimuon mass (GeV); Events", 400, 110, 150);
+        histosMap_["dimuon_2"] = new TH1F( ("dimuon_mass_cat2_" + systName).c_str(), " cat 2 ; dimuon mass (GeV); Events", 400, 110, 150);
+        histosMap_["dimuon_3"] = new TH1F( ("dimuon_mass_cat3_" + systName).c_str(), " cat 3 ; dimuon mass (GeV); Events", 400, 110, 150);
+        histosMap_["dimuon_4"] = new TH1F( ("dimuon_mass_cat4_" + systName).c_str(), " cat 4 ; dimuon mass (GeV); Events", 400, 110, 150);
+        histosMap_["dimuon_5"] = new TH1F( ("dimuon_mass_cat5_" + systName).c_str(), " cat 5 ; dimuon mass (GeV); Events", 400, 110, 150);
+        histosMap_["dimuon_6"] = new TH1F( ("dimuon_mass_cat6_" + systName).c_str(), " cat 6 ; dimuon mass (GeV); Events", 400, 110, 150);
+        histosMap_["dimuon_7"] = new TH1F( ("dimuon_mass_cat7_" + systName).c_str(), " cat 7 ; dimuon mass (GeV); Events", 400, 110, 150);
+        histosMap_["dimuon_8"] = new TH1F( ("dimuon_mass_cat8_" + systName).c_str(), " cat 8 ; dimuon mass (GeV); Events", 400, 110, 150);
+        histosMap_["dimuon_9"] = new TH1F( ("dimuon_mass_cat9_" + systName).c_str(), " cat 9 ; dimuon mass (GeV); Events", 400, 110, 150);
+    }
+
+    void addJetSystMap(std::string systName) {
+        TH1::SetDefaultSumw2();
+        histosMap_["leadjet_pt_onZ"] = new TH1F( ("leadjet_pt_onZ_" + systName).c_str(), "Leading Jet p_{T};p_{T}  (GeV);Events", 300, 0, 300);
+        histosMap_["subjet_pt_onZ"] = new TH1F( ("subjet_pt_onZ_" + systName).c_str(), "Subleading Jet p_{T};p_{T}  (GeV);Events", 250, 0, 250);
+        histosMap_["dijet_mass_onZ"] = new TH1F( ("dijet_mass1_onZ_" + systName).c_str(), "DiJet Mass;M_{jj}  (GeV);Events", 60, 0, 600);
+        histosMap_["bdtScore_onZ"] = new TH1F( ("bdtScore_onZ_" + systName).c_str(), "; ; ",  40, -1, 1);   
+        histosMap_["dimuon_mass_onZ"] = new TH1F( ("dimuon_mass_onZ_" + systName).c_str(), "Dimuon Mass;M_{\\mu \\mu}  (Gev);Events", 80, 70, 110);
+
+        // Inclusive (All Categories) Plots
+        histosMap_["leadjet_pt_onH"] = new TH1F( ("leadjet_pt_onH_" + systName).c_str(), "Leading Jet p_{T};p_{T}  (GeV);Events", 300, 0, 300);
+        histosMap_["subjet_pt_onH"] = new TH1F( ("subjet_pt_onH_" + systName).c_str(), "Subleading Jet p_{T};p_{T}  (GeV);Events", 250, 0, 250);
+        histosMap_["dijet_mass_onH"] = new TH1F( ("dijet_mass1_onH_" + systName).c_str(), "DiJet Mass;M_{jj}  (GeV);Events", 60, 0, 600);
+        histosMap_["bdtScore_onH"] = new TH1F( ("bdtScore_onH_" + systName).c_str(), "; ; ",  40, -1, 1);   
+        histosMap_["dimuon_mass_onH"] = new TH1F( ("dimuon_mass_onH_" + systName).c_str(), "Dimuon Mass;M_{\\mu \\mu}  (Gev);Events", 80, 110, 150);
+
+        // ggH-enriched Category Plots
+        histosMap_["leadjet_pt_onGGH"] = new TH1F( ("leadjet_pt_onGGH_" + systName).c_str(), "Leading Jet p_{T};p_{T}  (GeV);Events", 300, 0, 300);
+        histosMap_["subjet_pt_onGGH"] = new TH1F( ("subjet_pt_onGGH_" + systName).c_str(), "Subleading Jet p_{T};p_{T}  (GeV);Events", 250, 0, 250);
+        histosMap_["dijet_mass_onGGH"] = new TH1F( ("dijet_mass1_onGGH_" + systName).c_str(), "DiJet Mass;M_{jj}  (GeV);Events", 60, 0, 600);
+        histosMap_["bdtScore_onGGH"] = new TH1F( ("bdtScore_onGGH_" + systName).c_str(), "; ; ",  40, -1, 1);   
+        histosMap_["dimuon_mass_onGGH"] = new TH1F( ("dimuon_mass_onGGH_" + systName).c_str(), "Dimuon Mass;M_{\\mu \\mu}  (Gev);Events", 80, 110, 150);
 
         histosMap_["dimuon_0"] = new TH1F( ("dimuon_mass_cat0_" + systName).c_str(), " cat 0 ; dimuon mass (GeV); Events", 400, 110, 150);
         histosMap_["dimuon_1"] = new TH1F( ("dimuon_mass_cat1_" + systName).c_str(), " cat 1 ; dimuon mass (GeV); Events", 400, 110, 150);
@@ -250,6 +315,105 @@ class histosMap {
 
     }
 
+    void fillEventSystEntry(eventEntry data, float weight) {
+        if (data.higgsCandMass > 70 && data.higgsCandMass < 110) {
+            //std::cout << "filling z event " << std::endl;
+            histosMap_["dimuon_mass_onZ"]->Fill( data.higgsCandMass ,weight);
+            histosMap_["bdtScore_onZ"]->Fill( data.bdtScore ,weight);
+            //std::cout << "filled z event success" << std::endl;
+
+        }
+        
+        if (data.higgsCandMass > 110 && data.higgsCandMass < 150) {
+            //std::cout << "filling H event " << std::endl;
+            histosMap_["dimuon_mass_onH"]->Fill( data.higgsCandMass ,weight);
+            histosMap_["bdtScore_onH"]->Fill( data.bdtScore ,weight);
+
+            //std::cout << "filled H event success " << std::endl;
+
+            if ( data.category < 5)
+            {
+                //std::cout << "filling ggH event " << std::endl;
+
+                histosMap_["dimuon_mass_onGGH"]->Fill( data.higgsCandMass ,weight);
+                histosMap_["bdtScore_onGGH"]->Fill( data.bdtScore ,weight);
+
+            //std::cout << "filled ggH event success" << std::endl;
+
+            } 
+
+            //std::cout << "filling dimuon histo " << std::endl;
+            
+            histosMap_["dimuon_" + std::to_string(data.category)]->Fill(data.higgsCandMass, weight);
+            //std::cout << "filled dimuon histo " << std::endl;
+            
+        }
+
+    }
+
+    void fillJetSystEntry(eventEntry data, float weight) {
+        if (data.higgsCandMass > 70 && data.higgsCandMass < 110) {
+            //std::cout << "filling z event " << std::endl;
+            if (data.nJets > 0) {
+                histosMap_["leadjet_pt_onZ"]->Fill( data.jetOnePt ,weight);
+
+                if (data.nJets > 1) {
+                    histosMap_["subjet_pt_onZ"]->Fill( data.jetTwoPt ,weight);
+                    histosMap_["dijet_mass_onZ"]->Fill( data.dijetMass ,weight);
+                }
+            }
+            histosMap_["dimuon_mass_onZ"]->Fill( data.higgsCandMass ,weight);
+            histosMap_["bdtScore_onZ"]->Fill( data.bdtScore ,weight);
+            //std::cout << "filled z event success" << std::endl;
+
+        }
+        
+        if (data.higgsCandMass > 110 && data.higgsCandMass < 150) {
+            //std::cout << "filling H event " << std::endl;
+            if (data.nJets > 0) {
+                histosMap_["leadjet_pt_onH"]->Fill( data.jetOnePt ,weight);
+            
+                if (data.nJets > 1) {
+                    histosMap_["subjet_pt_onH"]->Fill( data.jetTwoPt ,weight);
+                    histosMap_["dijet_mass_onH"]->Fill( data.dijetMass ,weight);
+                }
+            }
+            histosMap_["dimuon_mass_onH"]->Fill( data.higgsCandMass ,weight);
+            histosMap_["bdtScore_onH"]->Fill( data.bdtScore ,weight);
+
+            //std::cout << "filled H event success " << std::endl;
+
+            if ( data.category < 5)
+            {
+                //std::cout << "filling ggH event " << std::endl;
+
+                if (data.nJets > 0) {
+                    histosMap_["leadjet_pt_onGGH"]->Fill( data.jetOnePt ,weight);
+                
+                    if (data.nJets > 1) {
+                        histosMap_["subjet_pt_onGGH"]->Fill( data.jetTwoPt ,weight);
+                        histosMap_["dijet_mass_onGGH"]->Fill( data.dijetMass ,weight);
+                    }
+                }
+                histosMap_["dimuon_mass_onGGH"]->Fill( data.higgsCandMass ,weight);
+                histosMap_["bdtScore_onGGH"]->Fill( data.bdtScore ,weight);
+
+            //std::cout << "filled ggH event success" << std::endl;
+
+            } 
+
+            //std::cout << "filling dimuon histo " << std::endl;
+            
+            histosMap_["dimuon_" + std::to_string(data.category)]->Fill(data.higgsCandMass, weight);
+            //std::cout << "filled dimuon histo " << std::endl;
+            
+        }
+
+    }
+    TH1F* getHistogram(std::string histoName){
+        return histosMap_[histoName];
+    }
+
     std::vector<TH1F*> getHistograms() {
         std::vector<TH1F*> histosVec;
         
@@ -259,4 +423,5 @@ class histosMap {
         }
         return histosVec;
     }
+
 };
