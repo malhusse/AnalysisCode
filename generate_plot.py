@@ -12,34 +12,73 @@ from math import sqrt
 import numpy as np
 
 variable_label = {
-    "lead_muon_eta_onH" : " \eta (\mu_{1}) ",
-    "sub_muon_eta_onH" : "\eta (\mu_{2})",
-    "dimuon_mass_onH" : "M_{\mu \mu}",
-    "dimuon_pt_onH" : "p_{T} (\mu,\mu)",
-    "dimuon_eta_onH" : "\eta (\mu,\mu)",
-    "num_jets_onH" : "# jets",
-    "num_bjets_onH" : "# bjets)",
-    "leadjet_pt_onH" : "p_{T} (j_{1})",
-    "leadjet_eta_onH" : "\eta (j_1)",
-    "subjet_pt_onH" : "p_{T} (j_{2})",
-    "dijet_mass1_onH" : "M_{j j}",
-    "dijet_deta1_onH" : "\Delta \eta_{j j}",
-    "met_pt_onH" : "p_{MET}",
-    "met_phi_onH" : "\phi_{MET}",
-    "zeppen_onH" : "zepen",
-    "csTheta_onH" : "cos(\theta_{cs})",
-    "csPhi_onH" : "\phi_{CS}",
-    "h_bdtScore01jet" : "BDT Output",
-    "dimuon_mass_cat0": "M_{\mu \mu}", 
-    "dimuon_mass_cat1": "M_{\mu \mu}",
-    "dimuon_mass_cat2": "M_{\mu \mu}", 
-    "dimuon_mass_cat3": "M_{\mu \mu}",
-    "dimuon_mass_cat4": "M_{\mu \mu}", 
-    "dimuon_mass_cat5": "M_{\mu \mu}",
-    "dimuon_mass_cat6": "M_{\mu \mu}", 
-    "dimuon_mass_cat7": "M_{\mu \mu}",
-    "dimuon_mass_cat8": "M_{\mu \mu}", 
-    "dimuon_mass_cat9": "M_{\mu \mu}"
+                    "lead_muon_eta_onH_noSyst" : " \eta (\mu_{1}) ",
+                    "sub_muon_eta_onH_noSyst" : "\eta (\mu_{2})",
+                    "dimuon_mass_onH_noSyst" : "M_{\mu\mu}",
+                    "dimuon_pt_onH_noSyst" : "p_{T} (\mu,\mu)",
+                    "dimuon_eta_onH_noSyst" : "\eta (\mu,\mu)",
+                    "num_jets_onH_noSyst" : "# jets",
+                    "num_bjets_onH_noSyst" : "# bjets)",
+                    "leadjet_pt_onH_noSyst" : "p_{T} (j_{1})",
+                    "leadjet_eta_onH_noSyst" : "\eta (j_1)",
+                    "subjet_pt_onH_noSyst" : "p_{T} (j_{2})",
+                    "dijet_mass1_onH_noSyst" : "M_{j j}",
+                    "dijet_deta1_onH_noSyst" : "\Delta \eta_{j j}",
+                    "met_pt_onH_noSyst" : "p_{MET}",
+                    "met_phi_onH_noSyst" : "\phi_{MET}",
+                    "zeppen_onH_noSyst" : "zepen",
+                    "csTheta_onH_noSyst" : "cos(\theta_{cs})",
+                    "csPhi_onH_noSyst" : "\phi_{CS}",
+                    "bdtScore_onH_noSyst" : "BDT Output",
+
+                    "dimuon_mass_cat0_noSyst": "M_{\mu\mu}", 
+                    "dimuon_mass_cat1_noSyst": "M_{\mu\mu}",
+                    "dimuon_mass_cat2_noSyst": "M_{\mu\mu}", 
+                    "dimuon_mass_cat3_noSyst": "M_{\mu\mu}",
+                    "dimuon_mass_cat4_noSyst": "M_{\mu\mu}", 
+                    "dimuon_mass_cat5_noSyst": "M_{\mu\mu}",
+                    "dimuon_mass_cat6_noSyst": "M_{\mu\mu}", 
+                    "dimuon_mass_cat7_noSyst": "M_{\mu\mu}",
+                    "dimuon_mass_cat8_noSyst": "M_{\mu\mu}", 
+                    "dimuon_mass_cat9_noSyst": "M_{\mu\mu}",
+                   "dimuon_mass_onZ_noSyst": "M_{\mu\mu}",
+
+                    "dimuon_deta_onGGH_noSyst" : "\Delta \eta_{\mu\mu}",
+                    "dimuon_deta_onH_noSyst" : "\Delta \eta_{\mu\mu}",
+                    "dimuon_dphi_onGGH_noSyst" : "\Delta \phi_{\mu\mu}",
+                    "dimuon_dphi_onH_noSyst" : "\Delta \phi_{\mu\mu}",
+                    "dimuon_phi_onGGH_noSyst" : "\phi_{\mu\mu}",
+                    "dimuon_phi_onH_noSyst" : "\phi_{\mu\mu}",
+                    "lead_muon_phi_onGGH_noSyst" : "\phi (\mu_1)",
+                    "lead_muon_phi_onH_noSyst" : "\phi (\mu_1)",
+                    "lead_muon_pt_onGGH_noSyst" : "p_T (\mu_1)",
+                    "lead_muon_pt_onH_noSyst" : "p_T (\mu_1)",
+                    "sub_muon_phi_onGGH_noSyst" : "\phi (\mu_2)",
+                    "sub_muon_phi_onH_noSyst" : "\phi (\mu_2)",
+                    "sub_muon_pt_onGGH_noSyst" : "p_T (\mu_2)",
+                    "sub_muon_pt_onH_noSyst" : "p_T (\mu_2)",
+                    "subjet_eta_onGGH_noSyst": "\eta (j_2)",
+                    "subjet_eta_onH_noSyst": "\eta (j_2)",
+
+
+                    "lead_muon_eta_onGGH_noSyst" : " \eta (\mu_{1}) ",
+                    "sub_muon_eta_onGGH_noSyst" : "\eta (\mu_{2})",
+                    "dimuon_mass_onGGH_noSyst" : "M_{\mu\mu}",
+                    "dimuon_pt_onGGH_noSyst" : "p_{T} (\mu,\mu)",
+                    "dimuon_eta_onGGH_noSyst" : "\eta (\mu,\mu)",
+                    "num_jets_onGGH_noSyst" : "# jets",
+                    "num_bjets_onGGH_noSyst" : "# bjets)",
+                    "leadjet_pt_onGGH_noSyst" : "p_{T} (j_{1})",
+                    "leadjet_eta_onGGH_noSyst" : "\eta (j_1)",
+                    "subjet_pt_onGGH_noSyst" : "p_{T} (j_{2})",
+                    "dijet_mass1_onGGH_noSyst" : "M_{j j}",
+                    "dijet_deta1_onGGH_noSyst" : "\Delta \eta_{j j}",
+                    "met_pt_onGGH_noSyst" : "p_{MET}",
+                    "met_phi_onGGH_noSyst" : "\phi_{MET}",
+                    "zeppen_onGGH_noSyst" : "zepen",
+                    "csTheta_onGGH_noSyst" : "cos(\theta_{cs})",
+                    "csPhi_onGGH_noSyst" : "\phi_{CS}",
+                    "bdtScore_onGGH_noSyst" : "BDT Output",
     }
 
 # systematic_TGraphErrors = {}
@@ -66,9 +105,9 @@ variable_systematics = {
     "leadjet_pt_onGGH_": 2,
     "subjet_pt_onGGH_": 2,
     "dijet_mass1_onGGH_" : 2,
-    "dimuon_mass_onZ_": 3,
-    "dimuon_mass_onH_": 3,
-    "dimuon_mass_onGGH_": 3
+    "dimuon_mass_onZ_": 1,
+    "dimuon_mass_onH_": 1,
+    "dimuon_mass_onGGH_": 1
 }
 
 systematics_map = {
@@ -76,7 +115,7 @@ systematics_map = {
         "id",
         "iso",
         "jetTotal_",
-        #  "pileup",
+        "pileup",
         "prefire",
         "trig"
         ],
@@ -129,21 +168,25 @@ def calculate_unc(variable, nominalRatio):
         exl.append(.5*hdata.GetBinWidth(i))
         exh.append(.5*hdata.GetBinWidth(i))
 
-    for sys in systematics:
+
+    doLumiUnc = True
+    if (doLumiUnc):
+        lumi_up = 1.025
+        lumi_down = .975
+
         bkgStack_up = R.THStack("bkgStackUp", "")
         bkgStack_down = R.THStack("bkgStackDown","")
 
-        varUp = variable.split("noSyst")[0] + sys + "Up"
-        varDown = variable.split("noSyst")[0] + sys + "Down"
-    
-        # print(variable, varUp, varDown)
         for v in root_dic:
-            # if not v[1]["isSignal"]:
-            # print(v[0])
-            histoUp = v[1]["TFile"].Get(varUp).Clone()
-            histoDown = v[1]["TFile"].Get(varDown).Clone()
-            histoUp.Scale(lumi[v[1]["year"]] * v[1]["xsec"])
-            histoDown.Scale(lumi[v[1]["year"]] * v[1]["xsec"])
+            if "onZ" in variable and "M-105" in v[0]:
+                continue
+            elif "M-50" in v[0] and ("onH" in variable or "onGGH" in variable or "cat" in variable):
+                continue
+
+            histoUp = v[1]["TFile"].Get(variable).Clone()
+            histoDown = v[1]["TFile"].Get(variable).Clone()
+            histoUp.Scale(lumi[v[1]["year"]] * v[1]["xsec"] * lumi_up)
+            histoDown.Scale(lumi[v[1]["year"]] * v[1]["xsec"] * lumi_down)
             bkgStack_up.Add(histoUp)
             bkgStack_down.Add(histoDown)
 
@@ -152,56 +195,151 @@ def calculate_unc(variable, nominalRatio):
         stackDown = hdata.Clone()
         stackDown.Divide(bkgStack_down.GetStack().Last())
 
-        # print( stackUp.Integral() )
-        # print( stack.Integral() )
-        # print( stackDown.Integral() )
-
-    
-            # now the (bgkStack_up - bgkStack_down) / 2 should estimate the uncertainty?
-        combined_systematics_up = []
-        combined_systematics_down = []
-        # print(len(combined_systematics_up))
-        # print(nbins)
-        # total_syst_error = 0
-        for i in range(1,nbins+1):
-            if (stackUp.GetBinContent(i)):
-                combined_systematics_up.append(stackUp.GetBinError(i) / stackUp.GetBinContent(i))
-                combined_systematics_down.append(stackDown.GetBinError(i) / stackDown.GetBinContent(i))
-            else:
-                combined_systematics_up.append(0)
-                combined_systematics_down.append(0)
-
-        combined_systematics_dic['stat'] = (np.asarray(combined_systematics_up), np.asarray(combined_systematics_down))
-        # if (hnominal->GetBinContent(i) > 0) g_ratio_err->SetBinError(i, hnominal->GetBinError(i)/hnominal->GetBinContent(i));
-        
         combined_systematics_up = []
         combined_systematics_down = []
 
         for i in range(1,nbins+1):
             if stackUp.GetBinContent(i):
+                if "dimuon_mass" in variable and stackUp.GetBinCenter(i) > 120 and stackUp.GetBinCenter(i) < 130:
+                    error_up = 0
+                    error_down = 0
+
                 # print(sys, variable, stackDown.GetBinContent(i), stack.GetBinContent(i), stackUp.GetBinContent(i))
                 # print(sys, variable, stackUp.GetBinContent(i)/stack.GetBinContent(i), abs(stackDown.GetBinContent(i) / stack.GetBinContent(i) ))
                 # print( abs(stackUp.GetBinContent(i) - stackDown.GetBinContent(i)) / 2)
-                error_up = abs(stackUp.GetBinContent(i) - nominalRatio.GetBinContent(i))
-                error_down = abs(stackDown.GetBinContent(i) - nominalRatio.GetBinContent(i))
-
+                
+                else:
+                    error_up = abs(stackUp.GetBinContent(i) - nominalRatio.GetBinContent(i))
+                    error_down = abs(stackDown.GetBinContent(i) - nominalRatio.GetBinContent(i))
+            else:
+                error_up = 0
+                error_down = 0
                 # syst_error = max(error_up, error_down)
                 # total_syst_error += syst_error
                 # eyl.append( stackUp.GetBinError(i) / stackUp.GetBinContent(i) )
                 # eyh.append( stackDown.GetBinError(i) / stackDown.GetBinContent(i) )
                 # eyl.append( (stackDown.GetBinContent(i) / stack.GetBinContent(i)) )
                 # eyh.append( (stackUp.GetBinContent(i) / stack.GetBinContent(i)) )    
-                combined_systematics_up.append(error_up)
-                combined_systematics_down.append(error_down)
+            combined_systematics_up.append(error_up)
+            combined_systematics_down.append(error_down)
                 # eyl.append(0)
                 # eyh.append(0)
-            else:
-                combined_systematics_up.append(0)
-                combined_systematics_down.append(0)
+            # else:
+                # combined_systematics_up.append(0)
+                # combined_systematics_down.append(0)
 
         # print(len(combined_systematics))
-        combined_systematics_dic[sys] = (np.asarray(combined_systematics_up), np.asarray(combined_systematics_down))
+        combined_systematics_dic["lumi"] = (np.asarray(combined_systematics_up), np.asarray(combined_systematics_down))
         # combined_systematics_dic[sys+"Down"] = combined_systematics_down
+
+    doStat = True
+    if (doStat):
+
+        combined_systematics_up = []
+        combined_systematics_down = []
+        
+        for i in range(1,nbins+1):
+            if nominalRatio.GetBinContent(i):
+                if "dimuon_mass" in variable and nominalRatio.GetBinCenter(i) > 120 and nominalRatio.GetBinCenter(i) < 130:
+                    error = 0
+                else:
+                    error = abs(nominalRatio.GetBinError(i) / nominalRatio.GetBinContent(i))
+            else:
+                error = 0
+
+            combined_systematics_up.append(error)
+            combined_systematics_down.append(error)
+
+        combined_systematics_dic["stat"] = (np.asarray(combined_systematics_up), np.asarray(combined_systematics_down))
+        
+    doSysts = True
+    if (doSysts):
+        for sys in systematics:
+            bkgStack_up = R.THStack("bkgStackUp", "")
+            bkgStack_down = R.THStack("bkgStackDown","")
+
+            varUp = variable.split("noSyst")[0] + sys + "Up"
+            varDown = variable.split("noSyst")[0] + sys + "Down"
+        
+            # print(variable, varUp, varDown)
+            for v in root_dic:
+                if "onZ" in variable and "M-105" in v[0]:
+                    continue
+                elif "M-50" in v[0] and ("onH" in variable or "onGGH" in variable or "cat" in variable):
+                    continue
+                # if not v[1]["isSignal"]:
+                # print(v[0])
+                histoUp = v[1]["TFile"].Get(varUp).Clone()
+                histoDown = v[1]["TFile"].Get(varDown).Clone()
+                histoUp.Scale(lumi[v[1]["year"]] * v[1]["xsec"])
+                histoDown.Scale(lumi[v[1]["year"]] * v[1]["xsec"])
+                bkgStack_up.Add(histoUp)
+                bkgStack_down.Add(histoDown)
+
+            stackUp = hdata.Clone()
+            stackUp.Divide(bkgStack_up.GetStack().Last())
+            stackDown = hdata.Clone()
+            stackDown.Divide(bkgStack_down.GetStack().Last())
+
+            # print( stackUp.Integral() )
+            # print( stack.Integral() )
+            # print( stackDown.Integral() )
+
+        
+                # now the (bgkStack_up - bgkStack_down) / 2 should estimate the uncertainty?
+            # combined_systematics_up = []
+            # combined_systematics_down = []
+            # # print(len(combined_systematics_up))
+            # # print(nbins)
+            # # total_syst_error = 0
+            # for i in range(1,nbins+1):
+
+            #     if (stackUp.GetBinContent(i)):
+            #         combined_systematics_up.append(stackUp.GetBinError(i) / stackUp.GetBinContent(i))
+            #         combined_systematics_down.append(stackDown.GetBinError(i) / stackDown.GetBinContent(i))
+            #     else:
+            #         combined_systematics_up.append(0)
+            #         combined_systematics_down.append(0)
+
+            # combined_systematics_dic['stat'] = (np.asarray(combined_systematics_up), np.asarray(combined_systematics_down))
+            # if (hnominal->GetBinContent(i) > 0) g_ratio_err->SetBinError(i, hnominal->GetBinError(i)/hnominal->GetBinContent(i));
+            
+            combined_systematics_up = []
+            combined_systematics_down = []
+
+            for i in range(1,nbins+1):
+                if stackUp.GetBinContent(i):
+                    if "dimuon_mass" in variable and stackUp.GetBinCenter(i) > 120 and stackUp.GetBinCenter(i) < 130:
+                        error_up = 0
+                        error_down = 0
+
+                    # print(sys, variable, stackDown.GetBinContent(i), stack.GetBinContent(i), stackUp.GetBinContent(i))
+                    # print(sys, variable, stackUp.GetBinContent(i)/stack.GetBinContent(i), abs(stackDown.GetBinContent(i) / stack.GetBinContent(i) ))
+                    # print( abs(stackUp.GetBinContent(i) - stackDown.GetBinContent(i)) / 2)
+                    
+                    else:
+                        error_up = abs(stackUp.GetBinContent(i) - nominalRatio.GetBinContent(i))
+                        error_down = abs(stackDown.GetBinContent(i) - nominalRatio.GetBinContent(i))
+                else:
+                    error_up = 0
+                    error_down = 0
+                    # syst_error = max(error_up, error_down)
+                    # total_syst_error += syst_error
+                    # eyl.append( stackUp.GetBinError(i) / stackUp.GetBinContent(i) )
+                    # eyh.append( stackDown.GetBinError(i) / stackDown.GetBinContent(i) )
+                    # eyl.append( (stackDown.GetBinContent(i) / stack.GetBinContent(i)) )
+                    # eyh.append( (stackUp.GetBinContent(i) / stack.GetBinContent(i)) )    
+                combined_systematics_up.append(error_up)
+                combined_systematics_down.append(error_down)
+                    # eyl.append(0)
+                    # eyh.append(0)
+                # else:
+                    # combined_systematics_up.append(0)
+                    # combined_systematics_down.append(0)
+
+            # print(len(combined_systematics))
+            combined_systematics_dic[sys] = (np.asarray(combined_systematics_up), np.asarray(combined_systematics_down))
+            # combined_systematics_dic[sys+"Down"] = combined_systematics_down
 
 
     total_up = np.zeros(nbins)
@@ -220,10 +358,10 @@ def calculate_unc(variable, nominalRatio):
             # eyl[i] = ( sqrt(total_error * total_error + combined_systematics[i] * combined_systematics[i]) )
             # eyh[i] = ( sqrt(total_error * total_error + combined_systematics[i] * combined_systematics[i]) )
 
-    # print( nbins, len(x), len(y) , len(exl), len(exh), len(eyl), len(eyh) )
 
-    print(np.sqrt(total_up))
-    print(np.sqrt(total_down))
+    # print( nbins, len(x), len(y) , len(exl), len(exh), len(eyl), len(eyh) )
+    # print(np.sqrt(total_up))
+    # print(np.sqrt(total_down))
     # print(eyl)
     # print(eyh)
     # exit()
@@ -232,6 +370,11 @@ def calculate_unc(variable, nominalRatio):
     g.SetFillStyle(3144)
 
     return g
+
+CMS_Text = R.TPaveText(0.15,0.91,0.35,.96,"NB NDC")
+CMS_Text.SetTextSize(0.04)
+CMS_Text.SetFillColor(0)
+CMS_Text.AddText("CMS #font[12]{work in progress}")
 
 def plot_variable(variable, modifier, logy=True):
     canvas = R.TCanvas("c1", "c1", 400,700)
@@ -287,7 +430,7 @@ def plot_variable(variable, modifier, logy=True):
 
 
     allStack = R.THStack("allStack", "")
-    print(variable)
+    # print(variable)
     hdata = dataTFile.Get(variable).Clone()
     # Nbins = hdata.GetNbinsX()
     # lowbin = hdata.GetBinLowEdge(0)+hdata.GetBinWidth(0)
@@ -299,18 +442,24 @@ def plot_variable(variable, modifier, logy=True):
     # gghStack  = R.TH1F("gghStack","",Nbins, lowbin, highbin)
     # zHStack  = R.TH1F("zHStack","",Nbins, lowbin, highbin)
 
+
     leg = R.TLegend(0.45, 0.70, .88, .88)
     # leg.SetHeader("Samples")
     leg.SetNColumns(3)
     # leg.SetTextSize(12)
     leg.SetBorderSize(0)
-    fb = "fb^{-1}"
+    # fb = "fb^{-1}"
     lumis = float(lumi[year])/1000
+    lumi_Text = R.TPaveText(0.75,0.91,0.85,.96,"NB NDC")
+    lumi_Text.SetTextSize(0.04)
+    lumi_Text.SetFillColor(0)
+    lumi_Text.AddText("#font[132]{{ {:.1f} fb^{{-1}} (13 TeV)}}".format(lumis))
+
     if "2019" in year:
         # print(year)
         leg.AddEntry(hdata, "Run II Data")
     else:
-        leg.AddEntry(hdata, "{} Data".format(year))
+        leg.AddEntry(hdata, "Data")
 
     # sigHistos = []
     for v in root_dic:
@@ -393,10 +542,11 @@ def plot_variable(variable, modifier, logy=True):
                 # print("VV")
                 diBosonStack.Add(histo)
             elif "DY" in v[0]:
-#                # if "onZ" in variable and "M-50" in v[0]:
+                if "onZ" in variable and "M-105" in v[0]:
+                    continue
+                elif "M-50" in v[0] and ("onH" in variable or "onGGH" in variable or "cat" in variable):
+                    continue
                 dyStack.Add(histo)
-                # elif "onH" in variable and "M-150" in v[0]:
-                    # dyStack.Add(histo)
 
             elif "EWK" in v[0]:
                 ewkStack.Add(histo)
@@ -572,14 +722,16 @@ def plot_variable(variable, modifier, logy=True):
     # bkgStack.GetXaxis().SetTitle(variable)
     bkgStack.GetYaxis().SetTitle("# Events")
     leg.Draw()
+    CMS_Text.Draw()
+    lumi_Text.Draw()
     # pad1.BuildLegend()
     R.gPad.Modified()
 
     pad2.cd()
     hratio = hdata.Clone()
     hratio.SetTitle("")
-    hratio.GetYaxis().SetTitle("Data / MC")
-    hratio.GetXaxis().SetTitle(variable)
+    hratio.GetYaxis().SetTitle("Data / Pred")
+    hratio.GetXaxis().SetTitle(variable_label[variable])
     hratio.GetYaxis().SetNdivisions(4, R.kFALSE)
     hratio.GetYaxis().SetTitleSize(15)
     hratio.GetYaxis().SetTitleFont(43)
@@ -601,11 +753,10 @@ def plot_variable(variable, modifier, logy=True):
     # hratio.Draw("E P")
 
     if variable.split("noSyst")[0] in variable_systematics:
-        print("systematics apply..?")
         g = calculate_unc(variable, hratio.Clone())
         g.SetTitle("")
-        g.GetYaxis().SetTitle("Data / MC")
-        g.GetXaxis().SetTitle(variable)
+        g.GetYaxis().SetTitle("Data / Pred")
+        g.GetXaxis().SetTitle(variable_label[variable])
         g.GetYaxis().SetNdivisions(4, R.kFALSE)
         g.GetYaxis().SetTitleSize(15)
         g.GetYaxis().SetTitleFont(43)
@@ -644,9 +795,9 @@ def plot_variable(variable, modifier, logy=True):
 
 if __name__ == "__main__":
     R.gROOT.SetBatch(R.kTRUE)
-    years = ["2016", "2017", "2018"]
-    # years = ["2019"] 
-    years = ["2018"]
+    # years = ["2016", "2017", "2018"]
+    # years = ["2018"] 
+    years = ["2019"]
     # 5405018017057433 04/21 356
     if len(sys.argv) > 1:
         # years = [sys.argv[1]]
@@ -784,7 +935,7 @@ if __name__ == "__main__":
 #                    "lead_muon_eta_onZ_noSyst",
                     "lead_muon_phi_onGGH_noSyst",
                     "lead_muon_phi_onH_noSyst",
-                   "lead_muon_phi_onZ_noSyst",
+                #    "lead_muon_phi_onZ_noSyst",
                     "lead_muon_pt_onGGH_noSyst",
                     "lead_muon_pt_onH_noSyst",
 #                    "lead_muon_pt_onZ_noSyst",
@@ -822,8 +973,8 @@ if __name__ == "__main__":
                     "subjet_pt_onH_noSyst",
 #                    "subjet_pt_onZ_noSyst",
                     "zeppen_onGGH_noSyst",
-                    "zeppen_onH_noSyst"
-#                   "zeppen_onZ_noSyst"]
+                    "zeppen_onH_noSyst",
+                #   "zeppen_onZ_noSyst"
 ]
             
 
@@ -837,7 +988,7 @@ if __name__ == "__main__":
         #     variables.append(histo_name)
 
         if "2019" in year:
-            outfile = R.TFile.Open("FitHistosAll.root", "RECREATE")
+            outfile = R.TFile.Open("FitHistos_2019.root", "RECREATE")
         
 
         for variable in variables:
