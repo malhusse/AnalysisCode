@@ -12,7 +12,6 @@ struct eventEntry
     // float muonIDSF;
     // float muonIsoSF;
     // float muonTrigSF;
-    // float btagSF;
     bool isValid;
     // float totalWeight;
     // Observed Variables //
@@ -41,8 +40,6 @@ struct eventEntry
 
     // Jet Quantities
     int nJets;
-    int nCentralJets;
-    int nForwardJets;
     int nBtagJetsL;
     int nBtagJetsM;
 
@@ -74,5 +71,6 @@ struct eventEntry
     // event cateogrization
     float bdtScore;
     int category;
+    float btagSF;
 
 };

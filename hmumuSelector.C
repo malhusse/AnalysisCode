@@ -168,7 +168,7 @@ void hmumuSelector::SlaveBegin(TTree * /*tree*/)
    m1eta = new float(0.0);
    m2eta = new float(0.0);
    event = new float(1.0);
-   hmass = new float(125);
+   hmass = new float(0.0);
    hmerr = new float(1.0);
    weight = new float(1.0);
    bdtucsd_2jet_nonvbf = new float(0.0);
@@ -313,55 +313,60 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    // pass the required cuts
    std::vector<analysis::core::Muon> goodMuons;
    std::vector<analysis::core::Electron> goodElectrons;
-   std::vector<analysis::core::Jet> goodJets;
+   std::vector<analysis::core::Jet> cleanedJets;
 
    // start with muons
    // correct Muons using geofit after rochester + fsr?
    for (analysis::core::Muon iMu : Muons)
    {
-      // Try to FSR correct the muon, set pt to roch Cor one or roch Cor + FSR
-      if (iMu._corrPT > 20 and passFSR(iMu.fsrP4))
-      {
-         TLorentzVector p4mu; 
-         p4mu.SetPtEtaPhiM(iMu._corrPT, iMu._eta, iMu._phi, PDG_MASS_Mu);
-         if ( (iMu.fsrP4.Et() / p4mu.Et()) < 0.4)
-         {            
-            p4mu = p4mu + iMu.fsrP4;
-            iMu._pt = p4mu.Pt();
-            iMu._eta = p4mu.Eta();
-            iMu._phi = p4mu.Phi();
-         }         
-      }
-      else
-      {
-            iMu._pt = iMu._geoPT;
-      }
-      
-      if (passMuon(iMu, true)) // corrected should be more than 20?
-      {
-         goodMuons.push_back(iMu);
-      }
+      if (passMuon(iMu, false))
+         {
+            // IF there is fsr, set muon to Roch + FSR
+            if (passFSR(iMu.fsrP4))
+            {
+               TLorentzVector p4mu; 
+               p4mu.SetPtEtaPhiM(iMu._corrPT, iMu._eta, iMu._phi, PDG_MASS_Mu);
+               if ( (iMu.fsrP4.Et() / p4mu.Et()) < 0.4)
+               {            
+                  p4mu = p4mu + iMu.fsrP4;
+                  iMu._corrPT = p4mu.Pt();
+                  iMu._eta = p4mu.Eta();
+                  iMu._phi = p4mu.Phi();
+               }
+               else
+               {
+                  iMu._corrPT = iMu._geoPT;
+               }
+                     
+            }
+            else
+            {
+               iMu._corrPT = iMu._geoPT;
+            }
+            goodMuons.push_back(iMu);
+         }
    }
+
    // skip event if didn't find two good muons
    if (goodMuons.size() < 2)
       return kFALSE;
 
-   std::sort(goodMuons.begin(), goodMuons.end(), [](analysis::core::Muon a, analysis::core::Muon b) -> bool { return a._pt > b._pt; });
+   // sort by corrected pt
+   std::sort(goodMuons.begin(), goodMuons.end(), [](analysis::core::Muon a, analysis::core::Muon b) -> bool { return a._corrPT > b._corrPT; });
 
    analysis::core::Muon *leadMuon = nullptr;
    analysis::core::Muon *subMuon = nullptr;
+
    for (analysis::core::Muon &im : goodMuons)
    {
       if (leadMuon == nullptr)
          leadMuon = &im;
-      // if (subMuon == nullptr and passMuons(*leadMuon, im, year))
-      if (subMuon == nullptr and leadMuon->_charge * im._charge == -1)
+      if (subMuon == nullptr and passMuons(*leadMuon, im, year))
          subMuon = &im;
    }
 
    if (leadMuon == nullptr or subMuon == nullptr)
          return kFALSE;
-
 
    int nMuons = goodMuons.size();
 
@@ -381,78 +386,41 @@ Bool_t hmumuSelector::Process(Long64_t entry)
    // int nLeptons = nMuons + nElectrons;
 
    // do jets - cleaned against both muons and electrons!
-   int _btagJetsL = 0;
-   int _btagJetsM = 0;
-
-   int _ncentJets = 0;
-   int _nfwdJets = 0;
-   // int _numJets = 0;
-
-   float btagSF = 1.0;
-   // float maxBDisc = 0.0;
-
+   int jetsPreselected = 0;
    for (analysis::core::Jet iJet : Jets)
    {
-      if (iJet._pt > _JetPt and TMath::Abs(iJet._eta) < _JetEta and passJetID(iJet, year) and passPUID(iJet, year))
+      // clean against leptons..
+      bool cleanJet = true;
+      for (analysis::core::Muon iM : goodMuons)
       {
-         // clean against leptons..
-         bool cleanJet = true;
-         for (analysis::core::Muon iM : goodMuons)
-         {
-            if (jetMuondR(iJet._eta, iJet._phi, iM._eta, iM._phi) < 0.4)
-               cleanJet = false;
-         }
-         if (!cleanJet)
-            continue;
-
-         for (analysis::core::Electron iE : goodElectrons)
-         {
-            if (jetMuondR(iJet._eta, iJet._phi, iE._eta, iE._phi) < 0.4)
-               cleanJet = false;
-         }
-         if (!cleanJet)
-            continue;
-
-         // _numJets++;
-         
-         btagSF *= iJet._btag_sf ? iJet._btag_sf : 1.0;
-
-         // now the jet is clean and can be used further
-
-         // maxBDisc = std::max(maxBDisc, iJet._btag);
-         if (iJet._dscvLoose)
-            _btagJetsL++;
-         if (iJet._dcsvMedium)
-            _btagJetsM++;
-         if (TMath::Abs(iJet._eta) <= 2.4)
-            _ncentJets++;
-         else
-            _nfwdJets++;
-         goodJets.push_back(iJet);
+         if (jetMuondR(iJet._eta, iJet._phi, iM._eta, iM._phi) < 0.4)
+            cleanJet = false;
       }
+      if (!cleanJet)
+         continue;
+
+      for (analysis::core::Electron iE : goodElectrons)
+      {
+         if (jetMuondR(iJet._eta, iJet._phi, iE._eta, iE._phi) < 0.4)
+            cleanJet = false;
+      }
+      if (!cleanJet)
+         continue;
+
+      cleanedJets.push_back(iJet);
+      jetsPreselected++;
    }
-   std::sort(goodJets.begin(), goodJets.end(), [](analysis::core::Jet a, analysis::core::Jet b) -> bool { return a._pt > b._pt; });
-
-
-   // now we have jets muons and electrons..
-   // start looking into muon pair
-
-   // We can start this as it's own function that takes
-   // goodJets, goodElectrons, goodMuons
-
-
-
+         
    float pileupWeight = 1.0;
    float zptWeight = 1.0;
    float eWeight = 1.0;
    float baselineWeight = 1.0;
 
-   eventEntry baselineResult = analyze(leadMuon, subMuon, goodMuons, goodElectrons, goodJets, 
-                                      nMuons, nElectrons, _ncentJets, _nfwdJets, _btagJetsL, _btagJetsM);
+   eventEntry baselineResult = analyze(leadMuon, subMuon, goodMuons, goodElectrons, cleanedJets);
 
    if (((string)_outputRoot.Data()).find("DY") != string::npos) //is Drell-Yan Sample
    {
-      zptWeight = zptweighter->getZPtReweight(baselineResult.higgsCandPt, year, std::min(2,  (_ncentJets + _nfwdJets )));
+      zptWeight = zptweighter->getZPtReweight(baselineResult.higgsCandPt, year, std::min(2,  baselineResult.nJets));
    }
 
    if (mcLabel)
@@ -462,59 +430,63 @@ Bool_t hmumuSelector::Process(Long64_t entry)
 
       eWeight =  (float)*_genWeight / valueSumEventsWeighted;
 
-      baselineWeight = (eWeight) * (pileupWeight) * (zptWeight) * (*_prefiringweight) * (*_idSF) * (*_isoSF) * (*_trigEffSF) * (btagSF);
+      baselineWeight = (eWeight) * (pileupWeight) * (zptWeight) * (*_prefiringweight) * (*_idSF) * (*_isoSF) * (*_trigEffSF);
 
-      float totalWeightPileupUp = (eWeight) * (zptWeight) * (*_prefiringweight) * (*_idSF) * (*_isoSF) * (*_trigEffSF) * (btagSF) *  weighter_up->weight(*_nPU);
-      float totalWeightPileupDown = (eWeight) * (zptWeight) * (*_prefiringweight) * (*_idSF) * (*_isoSF) * (*_trigEffSF) * (btagSF) *  weighter_down->weight(*_nPU);
+      // float totalWeightPileupUp = (eWeight) * (zptWeight) * (*_prefiringweight) * (*_idSF) * (*_isoSF) * (*_trigEffSF) * (btagSF) *  weighter_up->weight(*_nPU);
+      // float totalWeightPileupDown = (eWeight) * (zptWeight) * (*_prefiringweight) * (*_idSF) * (*_isoSF) * (*_trigEffSF) * (btagSF) *  weighter_down->weight(*_nPU);
 
-      float totalWeightIsoUp = baselineWeight / (*_isoSF) * (*_isoSF_up);
-      float totalWeightIsoDown =  baselineWeight / (*_isoSF) *(*_isoSF_down);
+      // float totalWeightIsoUp = baselineWeight / (*_isoSF) * (*_isoSF_up);
+      // float totalWeightIsoDown =  baselineWeight / (*_isoSF) *(*_isoSF_down);
 
-      float totalWeightIDUp = baselineWeight / (*_idSF) * (*_idSF_up);
-      float totalWeightIDDown = baselineWeight / (*_idSF) * (*_idSF_down);
+      // float totalWeightIDUp = baselineWeight / (*_idSF) * (*_idSF_up);
+      // float totalWeightIDDown = baselineWeight / (*_idSF) * (*_idSF_down);
 
-      float totalWeightTrigUp = (eWeight) * (pileupWeight) * (zptWeight) * (*_prefiringweight) * (*_idSF) * (*_isoSF) * (*_trigEffSF_up) * (btagSF);
-      float totalWeightTrigDown = (eWeight) * (pileupWeight) * (zptWeight) * (*_prefiringweight) * (*_idSF) * (*_isoSF) * (*_trigEffSF_down) * (btagSF);
+      // float totalWeightTrigUp = (eWeight) * (pileupWeight) * (zptWeight) * (*_prefiringweight) * (*_idSF) * (*_isoSF) * (*_trigEffSF_up) * (btagSF);
+      // float totalWeightTrigDown = (eWeight) * (pileupWeight) * (zptWeight) * (*_prefiringweight) * (*_idSF) * (*_isoSF) * (*_trigEffSF_down) * (btagSF);
 
-      float totalWeightPrefireUp = baselineWeight / (*_prefiringweight) * (*_prefiringweightup);
-      float totalWeightPrefireDown = baselineWeight / (*_prefiringweight) * (*_prefiringweightdown);
+      // float totalWeightPrefireUp = baselineWeight / (*_prefiringweight) * (*_prefiringweightup);
+      // float totalWeightPrefireDown = baselineWeight / (*_prefiringweight) * (*_prefiringweightdown);
 
-      outputHistograms->fillHistograms(baselineResult, "isoUp", totalWeightIsoUp);
-      outputHistograms->fillHistograms(baselineResult, "isoDown", totalWeightIsoDown);
-      outputHistograms->fillHistograms(baselineResult, "idUp", totalWeightIDUp);
-      outputHistograms->fillHistograms(baselineResult, "idDown", totalWeightIDDown);
-      outputHistograms->fillHistograms(baselineResult, "trigUp", totalWeightTrigUp);
-      outputHistograms->fillHistograms(baselineResult, "trigDown", totalWeightTrigDown);
-      outputHistograms->fillHistograms(baselineResult, "pileupUp", totalWeightPileupUp);
-      outputHistograms->fillHistograms(baselineResult, "pileupDown", totalWeightPileupDown);
-      outputHistograms->fillHistograms(baselineResult, "prefireUp", totalWeightPrefireUp);
-      outputHistograms->fillHistograms(baselineResult, "prefireDown", totalWeightPrefireDown);
+      // outputHistograms->fillHistograms(baselineResult, "isoUp", totalWeightIsoUp);
+      // outputHistograms->fillHistograms(baselineResult, "isoDown", totalWeightIsoDown);
+      // outputHistograms->fillHistograms(baselineResult, "idUp", totalWeightIDUp);
+      // outputHistograms->fillHistograms(baselineResult, "idDown", totalWeightIDDown);
+      // outputHistograms->fillHistograms(baselineResult, "trigUp", totalWeightTrigUp);
+      // outputHistograms->fillHistograms(baselineResult, "trigDown", totalWeightTrigDown);
+      // outputHistograms->fillHistograms(baselineResult, "pileupUp", totalWeightPileupUp);
+      // outputHistograms->fillHistograms(baselineResult, "pileupDown", totalWeightPileupDown);
+      // outputHistograms->fillHistograms(baselineResult, "prefireUp", totalWeightPrefireUp);
+      // outputHistograms->fillHistograms(baselineResult, "prefireDown", totalWeightPrefireDown);
 
-      if (_ncentJets + _nfwdJets > 0) {
+      if (jetsPreselected > 0) {
          std::vector<analysis::core::Jet> shiftedJets;
          eventEntry shiftedResult;
          for (auto name: jetUncertainties_) {
-            shiftedJets = shiftJets(goodJets, name.first, true);
-            shiftedResult = analyze(leadMuon, subMuon, goodMuons, goodElectrons, shiftedJets, 
-                                    nMuons, nElectrons, _ncentJets, _nfwdJets, _btagJetsL, _btagJetsM);
+            shiftedJets = shiftJets(cleanedJets, name.first, true);
+            shiftedResult = analyze(leadMuon, subMuon, goodMuons, goodElectrons, shiftedJets);
             outputHistograms->fillHistograms(shiftedResult, "jet"+name.first+"_Up", baselineWeight);
 
-            shiftedJets = shiftJets(goodJets, name.first, false);
-            shiftedResult = analyze(leadMuon, subMuon, goodMuons, goodElectrons, shiftedJets, 
-                                    nMuons, nElectrons, _ncentJets, _nfwdJets, _btagJetsL, _btagJetsM);
+            shiftedJets = shiftJets(cleanedJets, name.first, false);
+            shiftedResult = analyze(leadMuon, subMuon, goodMuons, goodElectrons, shiftedJets);
             outputHistograms->fillHistograms(shiftedResult, "jet"+name.first+"_Down", baselineWeight);
 
          }
+
+         std::vector<analysis::core::Jet> smearedJets;
+         eventEntry smearedResult;
+         smearedJets = smearJets(cleanedJets);
+         smearedResult = analyze(leadMuon, subMuon, goodMuons, goodElectrons, smearedJets);
+         outputHistograms->fillHistograms(smearedResult, "jetResolution", baselineWeight);
       }
 
       else {
          for (auto name: jetUncertainties_) {
             outputHistograms->fillHistograms(baselineResult, "jet"+name.first+"_Up", baselineWeight);
             outputHistograms->fillHistograms(baselineResult, "jet"+name.first+"_Down", baselineWeight);
-
          }
-      }
+         outputHistograms->fillHistograms(baselineResult, "jetResolution", baselineWeight);
 
+      }
    }
 
    outputHistograms->fillHistograms(baselineResult, "noSyst", baselineWeight);
@@ -623,22 +595,22 @@ bool hmumuSelector::passMuon(analysis::core::Muon const &m, bool useMiniIso)
    // miniIso is found as m._miniIso .. _muonMiniIso
    bool isIsoMuon = useMiniIso ? m._miniIso < _muonMiniIso : m._pfIso < _muonIso;
 
-   if (m._isGlobal and m._isTracker and
-       m._pt > _muonPt and TMath::Abs(m._eta) < _muonEta and
-       m._isMedium and isIsoMuon)
+   // if (m._isGlobal and m._isTracker and
+   if ( m._pt > _muonPt and TMath::Abs(m._eta) < _muonEta and m._isMedium and isIsoMuon)
       return true;
    return false;
 }
 
 bool hmumuSelector::passMuonHLT(analysis::core::Muon const &m, int year)
 {
-   // std::map<int, int> _muonMatchedPt = { {2016, 26}, {2017, 29}, {2018, 26}};
-   // if ((m._isHLTMatched[1] || m._isHLTMatched[0]) and m._pt > _muonMatchedPt[year] and TMath::Abs(m._eta) < _muonMatchedEta)
-   //    return true;
+   std::map<int, int> _muonMatchedPt = { {2016, 26}, {2017, 29}, {2018, 26}};
+   if ((m._isHLTMatched[1] || m._isHLTMatched[0]) and m._pt > _muonMatchedPt[year] and TMath::Abs(m._eta) < _muonMatchedEta)
+   // if ( m._pt > _muonMatchedPt[year] and TMath::Abs(m._eta) < _muonMatchedEta)
+      return true;
 
-   // return false;
+   return false;
   // bypass for the moment since the trigger paths are not correct?
-  return true;
+//   return true;
 }
 
 bool hmumuSelector::passMuons(analysis::core::Muon const &m1, analysis::core::Muon const &m2, int year)
@@ -671,6 +643,14 @@ float hmumuSelector::jetMuondR(float jeta, float jphi, float meta, float mphi)
 //    }
 //    return pass;
 // }
+
+float hmumuSelector::deltaPhi(float phiOne, float phiTwo)
+{
+   float dphi = phiOne - phiTwo;
+   while (dphi > TMath::Pi() ) dphi -= TMath::TwoPi(); 
+   while (dphi < -TMath::Pi() ) dphi += TMath::TwoPi();
+   return fabs(dphi);
+}
 
 float hmumuSelector::getCsTheta(TLorentzVector& v1, TLorentzVector& v2)
 {
@@ -796,192 +776,103 @@ std::vector<analysis::core::Jet> hmumuSelector::shiftJets(std::vector<analysis::
    return shiftedJets;
 }
 
-eventEntry hmumuSelector::analyze(analysis::core::Muon* leadMuon, analysis::core::Muon* subMuon, std::vector<analysis::core::Muon> goodMuons, std::vector<analysis::core::Electron> goodElectrons, std::vector<analysis::core::Jet> goodJets, 
-                                  int numMuons, int numElectrons, int numCentJets, int numFwdJets, int numBtagL, int numBtagM) {
+std::vector<analysis::core::Jet> hmumuSelector::smearJets(std::vector<analysis::core::Jet> inputJets) {
+   std::vector<analysis::core::Jet> smearedJets;
+   
+   for (analysis::core::Jet iJet : inputJets) {
+      TLorentzVector jetVec;
+      jetVec.SetPtEtaPhiM(iJet._pt, iJet._eta, iJet._phi, iJet._mass);
 
-   int _numJets = numCentJets + numFwdJets;
-   int nLeptons = numMuons + numElectrons;
+      double smearFactor = 1.0;
+      if (iJet._genMatched)
+      {
+         double dPt = iJet._pt - iJet._genjet._pt;
+         smearFactor = 1 + (iJet._jerSF - 1.) * dPt / iJet._pt;
+      }
+      else if (iJet._jerSF > 1)
+      {
+         double sigma = iJet._jer * std::sqrt(iJet._jerSF * iJet._jerSF - 1);
+         std::normal_distribution<> d(0, sigma);
+         smearFactor = 1. + d(m_random_generator);
+      }
+      if (jetVec.E() * smearFactor < 1e-2)
+      {
+         smearFactor = 1e-2 / jetVec.E();
+      }
+      jetVec = jetVec * smearFactor;
+      analysis::core::Jet newJet = analysis::core::Jet(iJet);
+      newJet._pt = jetVec.Pt();
+      newJet._mass = jetVec.M();
+      smearedJets.push_back(newJet);
+   }
+
+   return smearedJets;
+}
+
+eventEntry hmumuSelector::analyze(analysis::core::Muon* leadMuon, analysis::core::Muon* subMuon, std::vector<analysis::core::Muon> goodMuons, std::vector<analysis::core::Electron> goodElectrons, std::vector<analysis::core::Jet> preselectedJets) 
+{
+   float _btagSF = 1.0;
+   int btagJetsL = 0;
+   int btagJetsM = 0;
+   int numGoodJets = 0;
+
+   std::vector<analysis::core::Jet> goodJets;
+   for (analysis::core::Jet iJet : preselectedJets)
+   {
+      if (iJet._pt > _JetPt and TMath::Abs(iJet._eta) < _JetEta and passJetID(iJet, year) and passPUID(iJet, year))
+      {
+         _btagSF *= iJet._btag_sf ? iJet._btag_sf : 1.0;
+
+         if (iJet._dscvLoose)
+            btagJetsL++;
+         if (iJet._dcsvMedium)
+            btagJetsM++;
+         
+         numGoodJets++;
+         goodJets.push_back(iJet);
+      }
+   }
+   std::sort(goodJets.begin(), goodJets.end(), [](analysis::core::Jet a, analysis::core::Jet b) -> bool { return a._pt > b._pt; });
+
+   int nLeptons = goodMuons.size() + goodElectrons.size();
    
    // Start of categorization
    TLorentzVector higgsCandidate;
    TLorentzVector p4m1, p4m2;
-   p4m1.SetPtEtaPhiM(leadMuon->_pt, leadMuon->_eta, leadMuon->_phi, PDG_MASS_Mu);
-   p4m2.SetPtEtaPhiM(subMuon->_pt, subMuon->_eta, subMuon->_phi, PDG_MASS_Mu);
+   p4m1.SetPtEtaPhiM(leadMuon->_corrPT, leadMuon->_eta, leadMuon->_phi, PDG_MASS_Mu);
+   p4m2.SetPtEtaPhiM(subMuon->_corrPT, subMuon->_eta, subMuon->_phi, PDG_MASS_Mu);
    higgsCandidate = p4m1 + p4m2;
 
    TLorentzVector diJet, leadJetV, subJetV;
    analysis::core::Jet leadJet, subJet;
 
-   if (_numJets > 0)
-      leadJet = goodJets.at(0);
- 
-   if (_numJets > 1)
+   if (numGoodJets > 0)
    {
-     subJet = goodJets.at(1);
-
-      TLorentzVector p4lead, p4sub, p4dijet;
-      
-      for (unsigned int i = 0; i < goodJets.size(); ++i)
-      {
-         for (unsigned int j = i + 1; j < goodJets.size(); ++j)
-         {
-            analysis::core::Jet j1 = goodJets.at(i);
-            analysis::core::Jet j2 = goodJets.at(j);
-
-            p4lead.SetPtEtaPhiM(j1._pt, j1._eta, j1._phi, j1._mass);
-            p4sub.SetPtEtaPhiM(j2._pt, j2._eta, j2._phi, j2._mass);
-            p4dijet = p4lead + p4sub;
-
-            if ((p4dijet.M() > 400) and (TMath::Abs(j1._eta - j2._eta) > 2.5) and (p4dijet.M() > diJet.M())) // highest mass jet pair > 400 GeV means VBF category.. otherwise use highest pT jets
-            {
-               leadJet = j1;
-               subJet = j2;
-               diJet = p4dijet;
-            }
-         }
-      }
+      leadJet = goodJets.at(0);
+      leadJetV.SetPtEtaPhiM(leadJet._pt, leadJet._eta, leadJet._phi, leadJet._mass);
    }
 
-   if (_numJets > 0)
-      leadJetV.SetPtEtaPhiM(leadJet._pt, leadJet._eta, leadJet._phi, leadJet._mass);
-   if (_numJets > 1)
-   {      
+   if (numGoodJets > 1)
+   {
+      subJet = goodJets.at(1);
       subJetV.SetPtEtaPhiM(subJet._pt, subJet._eta, subJet._phi, subJet._mass);
       diJet = leadJetV + subJetV;
-   }  
-   
+   }
+
    int category = -99;
 
 
-   if ((category < 0) and (numBtagL > 1 or numBtagM > 0) and nLeptons > 2)
+   if ((category < 0) and (btagJetsL > 1 or btagJetsM > 0) and nLeptons > 2)
       category = 6; // ttH Leptonic
    
-   if ((category < 0) and (numBtagL > 1 or numBtagM > 0) and _numJets > 4)
+   if ((category < 0) and (btagJetsL > 1 or btagJetsM > 0))
       category = 5; // ttH Hadronic
 
-   if ((category < 0) and numElectrons > 1) // ZH, Z to electrons
+   if ((category < 0) and nLeptons > 2)
    {
-      analysis::core::Electron *e1 = nullptr;
-      analysis::core::Electron *e2 = nullptr;
-
-      for (analysis::core::Electron &ie : goodElectrons)
-      {
-         if (e1 == nullptr)
-            e1 = &ie;
-         if (e2 == nullptr and (e1->_charge * ie._charge == -1))
-            e2 = &ie;
-      }
-
-      if (e1 != nullptr and e2 != nullptr)
-      {
-         TLorentzVector e1LV, e2LV;
-         e1LV.SetPtEtaPhiM(e1->_pt, e1->_eta, e1->_phi, 0.511);
-         e2LV.SetPtEtaPhiM(e2->_pt, e2->_eta, e2->_phi, 0.511);
-         if ((e1LV + e2LV).M() > 71 and (e1LV + e2LV).M() < 111) category = 7;
-      }
+      category = 7; // VH Tag
    }
-
-   
-
-   if ((category < 0) and numMuons > 3) // ZH Z to mumu
-   {
-      analysis::core::Muon *muZ1 = nullptr;
-      analysis::core::Muon *muZ2 = nullptr;
-
-      float zpt = -1;
-      for (unsigned i = 0; i < goodMuons.size(); ++i)
-      {
-         analysis::core::Muon *m1 = &goodMuons[i];
-         for (unsigned j = 0; j < goodMuons.size(); ++j)
-         {
-            analysis::core::Muon *m2 = &goodMuons[j];
-            if (m1->_charge * m2->_charge != -1)
-               continue;
-            TLorentzVector m1LV, m2LV;
-            m1LV.SetPtEtaPhiM(m1->_pt, m1->_eta, m1->_phi, PDG_MASS_Mu);
-            m2LV.SetPtEtaPhiM(m2->_pt, m2->_eta, m2->_phi, PDG_MASS_Mu);
-
-            if ( (m1LV + m2LV).M() > 71 and (m1LV + m2LV).M() < 111 and (zpt < 0 or (m1LV + m2LV).Pt() < zpt ))
-            {
-               muZ1 = m1;
-               muZ2 = m2;
-               zpt = (m1LV + m2LV).Pt();
-            }
-         }
-      }
-   
-      
-
-
-      if (zpt > 0)
-      {
-         analysis::core::Muon *mt1 = nullptr;
-         analysis::core::Muon *mt2 = nullptr;
-
-         for (analysis::core::Muon &m : goodMuons)
-         {
-            
-            if (&m == muZ1)
-               {
-               
-                  continue;}
-            if (&m == muZ2)
-               {
-            
-                  continue;}
-            if (mt1 == nullptr)
-               {
-                  
-                  mt1 = &m;}
-            if (mt2 == nullptr and mt1->_charge * m._charge == -1)
-               {
-                
-                  mt2 = &m;}
-         }
-
-         if (mt1 != nullptr and mt2 != nullptr)
-         {
-            
-            leadMuon = mt1;
-            subMuon = mt2;
-            category = 7;
-         }
-      }
-   }
-
-   
-
-   if ((category < 0) and nLeptons >= 3) // WH leptonic
-   {
-      category = 7;
-   }
-
-   
-
-   if ((category < 0) and _numJets >= 2 and numFwdJets == 0 and numBtagM == 0 and
-       diJet.M() >= 64 and diJet.M() < 106 and
-       TMath::Abs(higgsCandidate.DeltaR(diJet) - TMath::Pi()) < 0.4 and
-       std::min(leadJet._qgLikelihood, subJet._qgLikelihood) > .25 and
-       std::max(leadJet._qgLikelihood, subJet._qgLikelihood) > .65 and
-       diJet.Pt() > 75)
-   {
-      category = 8; // VH Hadronic
-   }
-
-
-   
-
-   if (category and category != 8) // change the Higgs muons and p4 if exclusive
-   {
-      higgsCandidate.SetPtEtaPhiM(0, 0, 0, 0);
-      TLorentzVector p4mu1, p4mu2;
-      p4mu1.SetPtEtaPhiM(leadMuon->_pt, leadMuon->_eta, leadMuon->_phi, PDG_MASS_Mu);
-      p4mu2.SetPtEtaPhiM(subMuon->_pt, subMuon->_eta, subMuon->_phi, PDG_MASS_Mu);
-      higgsCandidate = p4mu1 + p4mu2;
-   }
-
-   
-   
+         
    *hmass = higgsCandidate.M();
    *hmmpt = higgsCandidate.Pt();
    *hmmrap = higgsCandidate.Rapidity();
@@ -996,47 +887,36 @@ eventEntry hmumuSelector::analyze(analysis::core::Muon* leadMuon, analysis::core
    *m2eta = subMuon->_eta;
    // float muphi_2 = subMuon->_phi;
 
-   if (_numJets > 0)
+   if (numGoodJets > 0)
    {
       *j1pt = leadJet._pt;
       *j1eta = leadJet._eta;
-      *dphimmj = TMath::Abs(higgsCandidate.Phi() - leadJet._phi);
+      *dphimmj = deltaPhi(higgsCandidate.Phi(), leadJet._phi);
+
       *detammj = TMath::Abs(higgsCandidate.Eta() - leadJet._eta);
 
-      if( _numJets > 1)
+      if( numGoodJets > 1)
       {
          *j2pt = subJet._pt;
          *mjj = diJet.M();
          *detajj = TMath::Abs(leadJet._eta - subJet._eta);
-         *dphijj = TMath::Abs(leadJet._phi - subJet._phi);
-         *dphimmj = std::min( TMath::Abs(higgsCandidate.Phi() - leadJet._phi) , TMath::Abs(higgsCandidate.Phi() - subJet._phi) );
+         *dphijj = deltaPhi(leadJet._phi, subJet._phi);
+
+         *dphimmj = std::min( deltaPhi(higgsCandidate.Phi(), leadJet._phi) , deltaPhi(higgsCandidate.Phi(), subJet._phi) );
 	      *detammj = std::min( TMath::Abs(higgsCandidate.Eta() - leadJet._eta) , TMath::Abs(higgsCandidate.Eta() - subJet._eta) );
       }
 
    }
 
-   if (_numJets > 1)
+   if (numGoodJets > 1)
       // *zepen = (higgsCandidate.Rapidity() - .5 * (leadJet._eta + subJet._eta)) / *detajj;
       *zepen = ( higgsCandidate.Rapidity() -  ( leadJetV.Rapidity() + subJetV.Rapidity() ) / 2 ) / ( leadJetV.Rapidity() - subJetV.Rapidity() );
-
-
-   // 
-
-   // 
-   // 
-
-
-
-   // TLorentzVector leadMuonP4, subMuonP4;
-   // leadMuonP4.SetPtEtaPhiM(hMu1->_pt, hMu1->_eta, hMu1->_phi, PDG_MASS_Mu);
-   // subMuonP4.SetPtEtaPhiM(hMu2->_pt, hMu2->_eta, hMu2->_phi, PDG_MASS_Mu);
-
 
    *hmmthetacs = CosThetaCSPos(*leadMuon, *subMuon);
 
    *hmmphics = PhiCSPos(*leadMuon, *subMuon);
 
-   *njets = _numJets;
+   *njets = numGoodJets;
 
    *m1ptOverMass = (leadMuon->_pt / higgsCandidate.M());
    *m2ptOverMass = (subMuon->_pt / higgsCandidate.M());
@@ -1047,26 +927,27 @@ eventEntry hmumuSelector::analyze(analysis::core::Muon* leadMuon, analysis::core
    std::pair<double,double> met_pt_phi = METXYCorr_Met_MetPhi( *_pt, *_phi, *_run, year, bool(mcLabel), *_nvtx);
    float met_pt = met_pt_phi.first;
    float met_phi = met_pt_phi.second;
-   
-   if ((category < 0) and *mjj > 400 and *detajj > 2.5 and *j1pt > 35)
+   float dimuon_dphi = deltaPhi(leadMuon->_phi, subMuon->_phi);
+
+   if ((category < 0) and numGoodJets > 1 and *mjj > 400 and *detajj > 2.5 and *j1pt > 35)
    {
-      category = 9; // VBF
+      category = 8; // VBF
    }
 
-
-   if ((category < 0))
+   if (category < 0)
    {
       bdtScore = reader_bdt->EvaluateMVA("BDTreader");
       auto ib = std::lower_bound(bound.begin(), bound.end(), bdtScore);
       category = (ib - bound.begin()) - 1;
    }
  
-   eventEntry toReturn = {true, leadMuon->_pt, *m1eta, leadMuon->_phi, subMuon->_pt, *m2eta, subMuon->_phi, 
+   if (!mcLabel) _btagSF = 1.0; // make sure data doesn't have btagSF 
+   eventEntry toReturn = {true, leadMuon->_corrPT, *m1eta, leadMuon->_phi, subMuon->_corrPT, *m2eta, subMuon->_phi, 
                           *hmass, *hmmpt, static_cast<float>(higgsCandidate.Eta()), static_cast<float>(higgsCandidate.Phi()),
                           static_cast<float>(higgsCandidate.Rapidity()), TMath::Abs(*m1eta - *m2eta),
-                          TMath::Abs(leadMuon->_phi - subMuon->_phi), *hmmthetacs,
-                          *hmmphics, _numJets, numCentJets, numFwdJets, numBtagL, numBtagM, *j1pt, *j1eta, leadJet._phi,
+                          dimuon_dphi, *hmmthetacs,
+                          *hmmphics, numGoodJets, btagJetsL, btagJetsM, *j1pt, *j1eta, leadJet._phi,
                           *j2pt, subJet._eta, subJet._phi, *mjj, *detajj, *dphijj, *zepen, *dphimmj, *detammj, met_pt, met_phi,
-                          bdtScore, category};
+                          bdtScore, category, _btagSF};
    return toReturn;
 }

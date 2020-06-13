@@ -14,6 +14,7 @@
 #include <TTreeReader.h>
 #include <TTreeReaderValue.h>
 #include <TTreeReaderArray.h>
+#include <random>
 // #include <TH1.h>
 #include <TLorentzVector.h>
 #include <vector>
@@ -88,6 +89,7 @@ public :
 
    vector<float> bound;
 
+   std::mt19937 m_random_generator;
    // std::vector<std::string> jetUncertainties_;
    std::map<std::string, JetCorrectionUncertainty*> jetUncertainties_;
    // Readers to access the data (delete the ones you do not need).
@@ -164,14 +166,16 @@ public :
    bool passFSR(TLorentzVector& fsrP4);
    // should already be correct using _passedMetFilters
    // bool passMetFilters(std::vector<std::pair<string,int>> filterBits);
+   float deltaPhi(float phiOne, float phiTwo);
    float getCsTheta(TLorentzVector& v1, TLorentzVector& v2);
    float getCsPhi(TLorentzVector& v1, TLorentzVector& v2);
    double CosThetaStar(TLorentzVector& v1, TLorentzVector& v2);
    double CosThetaCSPos(analysis::core::Muon& a, analysis::core::Muon& b);
    double PhiCSPos(analysis::core::Muon& a, analysis::core::Muon& b);
    std::vector<analysis::core::Jet> shiftJets(std::vector<analysis::core::Jet> inputJets, std::string uncSource, bool shiftUp);
-   eventEntry analyze(analysis::core::Muon* leadMuon, analysis::core::Muon* subMuon, std::vector<analysis::core::Muon> goodMuons, std::vector<analysis::core::Electron> goodElectrons, std::vector<analysis::core::Jet> goodJets, 
-                      int numMuons, int numElectrons, int numCentJets, int numFwdJets, int numBtagL, int numBtagM);
+   std::vector<analysis::core::Jet> smearJets(std::vector<analysis::core::Jet> inputJets);
+
+   eventEntry analyze(analysis::core::Muon* leadMuon, analysis::core::Muon* subMuon, std::vector<analysis::core::Muon> goodMuons, std::vector<analysis::core::Electron> goodElectrons, std::vector<analysis::core::Jet> preselectedJets);
    ClassDef(hmumuSelector,0);
 
 };
